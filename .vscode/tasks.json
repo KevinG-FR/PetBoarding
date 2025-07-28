@@ -19,6 +19,16 @@
           }
         }
       }
+    },
+    {
+      "label": "build-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Core_PetBoarding_Backend/PetBoarding_Api/PetBoarding_Api.csproj"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }
