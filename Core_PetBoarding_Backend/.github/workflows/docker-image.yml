@@ -1,0 +1,57 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DOTNET_VERSION: "8.0.x"
+
+jobs:
+  build_and_test:  
+    runs-on: ubuntu-latest    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name : Resotre dependencies
+      run: dotnet restore ./Core_PetBoarding_Backend.sln
+    - name: Build
+      run: dotnet build ./Core_PetBoarding_Backend.sln --configuration Release --no-restore
+    - name: Test
+      run: dotnet test ./Core_PetBoarding_Backend.sln --configuration Release --no-build --no-restore --verbosity normal 
+
+  build_and_publich_GHCR:
+    runs-on: ubuntu-latest
+    name: Docker build image GHCR
+    needs: [build_and_test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and push image
+        run: |
+          docker login --username keving-fr --password ${{ secrets.GHCR_PASSWORD }} ghcr.io
+          docker build . --tag ghcr.io/keving-fr/petboarding_api:latest -f PetBoarding_Api/Dockerfile
+          docker push ghcr.io/keving-fr/petboarding_api:latest
+          
+  deploy:
+    runs-on: ubuntu-latest
+    name: Continuous Deployment
+    needs: [build_and_publich_GHCR]
+    steps:
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_VPS }}
+          username: ${{ secrets.USERNAME_VPS }}
+          password: ${{ secrets.PASSWORD_VPS }}
+          port: 22
+          script: |
+            cd app/backend/
+            docker pull ghcr.io/keving-fr/petboarding_api:latest 
+            docker stop petboarding_api || true 
+            docker rm petboarding_api || true 
+            docker run -d -p 5000:8080 --name petboarding_api ghcr.io/keving-fr/petboarding_api:latest 

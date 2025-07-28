@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBoarding_Api", "PetBoarding_Api\PetBoarding_Api.csproj", "{FC50DF45-CB12-4833-AF7E-69D83DDF2959}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBoarding_Domain", "PetBoarding_Domain\PetBoarding_Domain.csproj", "{CDF1600C-9C22-4600-BF04-15713272E280}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBoarding_Application", "PetBoarding_Application\PetBoarding_Application.csproj", "{DF6E520E-FCAC-45A6-95CF-0246195DA10A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBoarding_Infrastructure", "PetBoarding_Infrastructure\PetBoarding_Infrastructure.csproj", "{7E216203-C0C7-467F-B929-65502D9F6B36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FF1D8F3F-0982-4968-BEF4-BF9078FC5424}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArchitectureTests", "Tests\ArchitectureTests\ArchitectureTests.csproj", "{7C4A052C-131E-4269-897A-0217AFBBD2C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBoarding_Persistence", "PetBoarding_Persistence\PetBoarding_Persistence.csproj", "{FA8C4373-E011-418D-8F06-BED70E736B12}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{97E3D01B-05C1-481A-9E9C-7DF722250BEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC50DF45-CB12-4833-AF7E-69D83DDF2959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC50DF45-CB12-4833-AF7E-69D83DDF2959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC50DF45-CB12-4833-AF7E-69D83DDF2959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC50DF45-CB12-4833-AF7E-69D83DDF2959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF1600C-9C22-4600-BF04-15713272E280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF1600C-9C22-4600-BF04-15713272E280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF1600C-9C22-4600-BF04-15713272E280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF1600C-9C22-4600-BF04-15713272E280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF6E520E-FCAC-45A6-95CF-0246195DA10A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF6E520E-FCAC-45A6-95CF-0246195DA10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF6E520E-FCAC-45A6-95CF-0246195DA10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF6E520E-FCAC-45A6-95CF-0246195DA10A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E216203-C0C7-467F-B929-65502D9F6B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E216203-C0C7-467F-B929-65502D9F6B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E216203-C0C7-467F-B929-65502D9F6B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E216203-C0C7-467F-B929-65502D9F6B36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C4A052C-131E-4269-897A-0217AFBBD2C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C4A052C-131E-4269-897A-0217AFBBD2C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C4A052C-131E-4269-897A-0217AFBBD2C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C4A052C-131E-4269-897A-0217AFBBD2C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA8C4373-E011-418D-8F06-BED70E736B12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA8C4373-E011-418D-8F06-BED70E736B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA8C4373-E011-418D-8F06-BED70E736B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA8C4373-E011-418D-8F06-BED70E736B12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97E3D01B-05C1-481A-9E9C-7DF722250BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E3D01B-05C1-481A-9E9C-7DF722250BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97E3D01B-05C1-481A-9E9C-7DF722250BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97E3D01B-05C1-481A-9E9C-7DF722250BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7C4A052C-131E-4269-897A-0217AFBBD2C6} = {FF1D8F3F-0982-4968-BEF4-BF9078FC5424}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  petboarding_api:
+    image: ${DOCKER_REGISTRY-}petboardingapi
+    container_name: petboarding.api
+    build:
+      context: .
+      dockerfile: PetBoarding_Api/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+
+  postgres.database:
+    image: postgres:latest
+    container_name: petboarding.postgres.database
+    environment:
+      - POSTGRES_DB=petboarding
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres 
+    volumes:
+      - ./.containers/petboarding-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  
