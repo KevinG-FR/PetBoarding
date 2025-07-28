@@ -399,7 +399,8 @@ FodyWeavers.xsd
 /.containers/petboarding-db
 
 # Compiled output
-/dist
+dist/
+*/dist
 /tmp
 /out-tsc
 /bazel-out
@@ -427,7 +428,8 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+.angular/cache/
+*/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
