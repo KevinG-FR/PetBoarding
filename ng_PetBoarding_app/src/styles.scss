@@ -36,5 +36,74 @@ body {
   @include card;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Classes utilitaires pour les couleurs
+.text-primary {
+  color: $primary-color !important;
+}
+
+.text-secondary {
+  color: $secondary-color !important;
+}
+
+.text-tertiary {
+  color: $tertiary-color !important;
+}
+
+.text-success {
+  color: $success-color !important;
+}
+
+.text-warning {
+  color: $warning-color !important;
+}
+
+.text-error {
+  color: $error-color !important;
+}
+
+.text-info {
+  color: $info-color !important;
+}
+
+.bg-primary {
+  background-color: $primary-color !important;
+  color: $white;
+}
+
+.bg-secondary {
+  background-color: $secondary-color !important;
+  color: $white;
+}
+
+.bg-tertiary {
+  background-color: $tertiary-color !important;
+  color: $white;
+}
+
+// Personnalisation des couleurs Angular Material
+.mat-toolbar.mat-primary {
+  background-color: $primary-color !important;
+  color: white !important;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: #{$primary-color} !important;
+  --mdc-protected-button-label-text-color: white !important;
+}
+
+.mat-mdc-button.mat-accent {
+  --mdc-text-button-label-text-color: #{$secondary-color} !important;
+}
+
+.mat-mdc-card {
+  background-color: $surface-color;
+  color: $text-color;
+}
+
+.mat-mdc-card-title {
+  color: $primary-color !important;
+}
+
+.mat-icon {
+  color: inherit;
+}

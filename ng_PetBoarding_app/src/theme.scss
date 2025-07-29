@@ -1,0 +1,104 @@
+// Thème Angular Material personnalisé pour PetBoarding
+
+@use "@angular/material" as mat;
+@use "./variables" as vars;
+
+// Inclusion des styles de base Material
+@include mat.core();
+
+// Définition des palettes de couleurs personnalisées
+$petboarding-primary: (
+  50: #e8f5e8,
+  100: #c8e6c9,
+  200: #a5d6a7,
+  300: #81c784,
+  400: #66bb6a,
+  500: #4caf50,
+  600: #43a047,
+  700: #388e3c,
+  800: #2e7d32,
+  900: #1b5e20,
+  A100: #b9f6ca,
+  A200: #69f0ae,
+  A400: #00e676,
+  A700: #00c853,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: rgba(black, 0.87),
+  ),
+);
+
+$petboarding-accent: (
+  50: #fff3e0,
+  100: #ffe0b2,
+  200: #ffcc80,
+  300: #ffb74d,
+  400: #ffa726,
+  500: #ff9800,
+  600: #fb8c00,
+  700: #f57c00,
+  800: #ef6c00,
+  900: #e65100,
+  A100: #ffd180,
+  A200: #ffab40,
+  A400: #ff9100,
+  A700: #ff6d00,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: rgba(black, 0.87),
+  ),
+);
+
+// Création du thème
+$petboarding-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: mat.define-palette($petboarding-primary),
+      accent: mat.define-palette($petboarding-accent),
+      warn: mat.define-palette(mat.$red-palette),
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+// Application du thème
+@include mat.all-component-themes($petboarding-theme);
+
+// Variables CSS personnalisées pour une utilisation globale
+:root {
+  --petboarding-primary: #{vars.$primary-color};
+  --petboarding-secondary: #{vars.$secondary-color};
+  --petboarding-tertiary: #{vars.$tertiary-color};
+  --petboarding-background: #{vars.$background-color};
+  --petboarding-text: #{vars.$text-color};
+  --petboarding-text-secondary: #{vars.$text-secondary};
+  --petboarding-success: #{vars.$success-color};
+  --petboarding-warning: #{vars.$warning-color};
+  --petboarding-error: #{vars.$error-color};
+  --petboarding-info: #{vars.$info-color};
+}

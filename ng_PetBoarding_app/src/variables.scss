@@ -1,27 +1,32 @@
 /* Variables globales SCSS */
 
-// Couleurs Material Design
-$primary-color: #1976d2; // Material Blue
-$primary-light: #42a5f5;
-$primary-dark: #1565c0;
-$secondary-color: #dc004e; // Material Pink
-$secondary-light: #ff5983;
-$secondary-dark: #9a0036;
+// Couleurs principales PetBoarding
+$primary-color: #4caf50; // Vert - Boutons principaux, en-têtes
+$primary-light: #81c784; // Vert clair
+$primary-dark: #388e3c; // Vert foncé
+
+$secondary-color: #ff9800; // Orange - Boutons secondaires, icônes
+$secondary-light: #ffb74d; // Orange clair
+$secondary-dark: #f57c00; // Orange foncé
+
+$tertiary-color: #2196f3; // Bleu - Accents, détails
+$tertiary-light: #64b5f6; // Bleu clair
+$tertiary-dark: #1976d2; // Bleu foncé
 
 // Couleurs neutres
-$background-color: #fafafa;
-$surface-color: #ffffff;
-$text-color: #212121;
-$text-secondary: #757575;
-$divider-color: #e0e0e0;
+$background-color: #fdfaf6; // Fond du site
+$surface-color: #ffffff; // Surfaces (cartes, modales)
+$text-color: #2c2c2c; // Texte principal
+$text-secondary: #6b6b6b; // Texte secondaire
+$divider-color: #e8f5e8; // Bordures et séparateurs
 $white: #ffffff;
 $black: #000000;
 
 // Couleurs d'état
-$success-color: #4caf50;
-$warning-color: #ff9800;
-$error-color: #f44336;
-$info-color: #2196f3;
+$success-color: #4caf50; // Messages de succès (même que primaire)
+$warning-color: #ff9800; // Messages d'avertissement (même que secondaire)
+$error-color: #f44336; // Messages d'erreur
+$info-color: #2196f3; // Messages d'information (même que tertiaire)
 
 // Espacements
 $spacing-xs: 0.25rem;

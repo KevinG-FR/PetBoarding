@@ -18,6 +18,25 @@
     <mat-card-content>
       <p>This application helps you manage pet boarding services with ease.</p>
 
+      <!-- Démonstration des couleurs -->
+      <div class="color-demo">
+        <h4>Color Palette Demo:</h4>
+        <div class="color-grid">
+          <div class="color-item">
+            <span class="color-swatch bg-primary"></span>
+            <span class="color-label">Primary (#4CAF50)</span>
+          </div>
+          <div class="color-item">
+            <span class="color-swatch bg-secondary"></span>
+            <span class="color-label">Secondary (#FF9800)</span>
+          </div>
+          <div class="color-item">
+            <span class="color-swatch bg-tertiary"></span>
+            <span class="color-label">Tertiary (#2196F3)</span>
+          </div>
+        </div>
+      </div>
+
       @if (data) {
       <div class="api-demo">
         <h4>API Demo Data:</h4>
@@ -28,7 +47,7 @@
 
     <mat-card-actions>
       <button mat-raised-button color="primary">Get Started</button>
-      <button mat-button>Learn More</button>
+      <button mat-button color="accent">Learn More</button>
     </mat-card-actions>
   </mat-card>
 </div>

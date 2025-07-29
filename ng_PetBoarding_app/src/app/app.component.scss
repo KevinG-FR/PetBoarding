@@ -60,16 +60,56 @@
     margin-top: $spacing-sm;
   }
 
+  .color-demo {
+    margin: $spacing-lg 0;
+    padding: $spacing-md;
+    background-color: rgba($tertiary-color, 0.05);
+    border-radius: $border-radius-sm;
+    border: 1px solid rgba($tertiary-color, 0.2);
+
+    h4 {
+      margin: 0 0 $spacing-md 0;
+      color: $tertiary-color;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: $spacing-sm;
+
+      .color-item {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+
+        .color-swatch {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          display: inline-block;
+          border: 2px solid $white;
+          box-shadow: $box-shadow;
+        }
+
+        .color-label {
+          font-size: 0.9rem;
+          color: $text-secondary;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
   .api-demo {
     margin-top: $spacing-lg;
     padding: $spacing-md;
     background-color: $background-color;
     border-radius: $border-radius-sm;
-    border-left: 4px solid $primary-color;
+    border-left: 4px solid $tertiary-color; // Utilisation de la couleur tertiaire
 
     h4 {
       margin: 0 0 $spacing-sm 0;
-      color: $primary-color;
+      color: $tertiary-color; // Utilisation de la couleur tertiaire
     }
 
     pre {
@@ -78,6 +118,7 @@
       border-radius: $border-radius-sm;
       font-size: 0.85rem;
       overflow-x: auto;
+      border: 1px solid $divider-color;
     }
   }
 
