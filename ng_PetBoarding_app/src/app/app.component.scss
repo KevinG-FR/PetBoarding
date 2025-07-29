@@ -1,0 +1,28 @@
+/* App Component Styles */
+
+// Import des variables
+@use "../variables" as *;
+
+:host {
+  display: block;
+  min-height: 100vh;
+
+  h1 {
+    color: $primary-color;
+    text-align: center;
+    margin: $spacing-lg 0;
+
+    @include mobile {
+      font-size: 1.5rem;
+      margin: $spacing-md 0;
+    }
+
+    @include tablet {
+      font-size: 2rem;
+    }
+
+    @include desktop {
+      font-size: 2.5rem;
+    }
+  }
+}
