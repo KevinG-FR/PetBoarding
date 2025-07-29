@@ -6,23 +6,91 @@
 :host {
   display: block;
   min-height: 100vh;
+  background-color: $background-color;
+}
 
-  h1 {
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  mat-icon {
+    margin-right: $spacing-sm;
+  }
+}
+
+.app-content {
+  padding: $spacing-lg;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+}
+
+.welcome-card {
+  max-width: 800px;
+  margin: 0 auto;
+  @include card;
+
+  @include mobile {
+    margin: $spacing-sm;
+  }
+
+  mat-card-header {
+    margin-bottom: $spacing-lg;
+  }
+
+  mat-card-title {
     color: $primary-color;
-    text-align: center;
-    margin: $spacing-lg 0;
+    font-size: 2rem;
 
     @include mobile {
       font-size: 1.5rem;
-      margin: $spacing-md 0;
+    }
+  }
+
+  mat-card-subtitle {
+    font-size: 1.1rem;
+    margin-top: $spacing-sm;
+  }
+
+  .api-demo {
+    margin-top: $spacing-lg;
+    padding: $spacing-md;
+    background-color: $background-color;
+    border-radius: $border-radius-sm;
+    border-left: 4px solid $primary-color;
+
+    h4 {
+      margin: 0 0 $spacing-sm 0;
+      color: $primary-color;
     }
 
-    @include tablet {
-      font-size: 2rem;
+    pre {
+      background: $white;
+      padding: $spacing-sm;
+      border-radius: $border-radius-sm;
+      font-size: 0.85rem;
+      overflow-x: auto;
     }
+  }
 
-    @include desktop {
-      font-size: 2.5rem;
+  mat-card-actions {
+    padding-top: $spacing-lg;
+
+    button {
+      margin-right: $spacing-sm;
+
+      @include mobile {
+        width: 100%;
+        margin: $spacing-xs 0;
+      }
     }
   }
 }

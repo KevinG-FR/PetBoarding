@@ -1,1 +1,34 @@
-<h1 class="container">Welcome to {{ title }}!</h1>
+<mat-toolbar color="primary" class="app-toolbar">
+  <mat-icon>pets</mat-icon>
+  <span class="spacer"></span>
+  <span>{{ title }}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="app-content">
+  <mat-card class="welcome-card">
+    <mat-card-header>
+      <mat-card-title>Welcome to PetBoarding!</mat-card-title>
+      <mat-card-subtitle>Your pet care management system</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>This application helps you manage pet boarding services with ease.</p>
+
+      @if (data) {
+      <div class="api-demo">
+        <h4>API Demo Data:</h4>
+        <pre>{{ data | json }}</pre>
+      </div>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary">Get Started</button>
+      <button mat-button>Learn More</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
