@@ -1,0 +1,71 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header class="login-header">
+      <mat-card-title class="login-title">
+        <mat-icon class="login-icon">pets</mat-icon>
+        Connexion PetBoarding
+      </mat-card-title>
+      <mat-card-subtitle class="login-subtitle"> Connectez-vous à votre espace </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="login-content">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse email</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="votre@email.com"
+            autocomplete="email" />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            {{ getEmailErrorMessage() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Password Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Masquer le mot de passe'"
+            [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            {{ getPasswordErrorMessage() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Remember Me Checkbox -->
+        <div class="checkbox-container">
+          <mat-checkbox formControlName="rememberMe" class="remember-checkbox">
+            Rester connecté(e)
+          </mat-checkbox>
+        </div>
+
+        <!-- Submit Button -->
+        <button mat-raised-button type="submit" class="login-button" [disabled]="loginForm.invalid">
+          <mat-icon>login</mat-icon>
+          Se connecter
+        </button>
+
+        <!-- Additional Links -->
+        <div class="login-links">
+          <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
