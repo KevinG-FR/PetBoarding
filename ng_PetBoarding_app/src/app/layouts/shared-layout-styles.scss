@@ -1,0 +1,116 @@
+// Mixins optimisés pour réduire la taille CSS
+@use '../../variables.scss' as *;
+
+// Mixins pour les media queries standardisées
+@mixin mobile-up {
+  @media (min-width: 576px) {
+    @content;
+  }
+}
+
+@mixin tablet-down {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet-only {
+  @media (min-width: 769px) and (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: 1025px) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: 769px) {
+    @content;
+  }
+}
+
+// Mixin compact pour header
+@mixin header-layout {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  box-shadow: $box-shadow-lg;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 $spacing-md;
+
+  @include tablet-down {
+    padding: 0 $spacing-sm;
+  }
+}
+
+// Mixin compact pour navigation
+@mixin nav-link {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $white;
+  text-decoration: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+  }
+
+  @include tablet-down {
+    padding: $spacing-sm;
+    width: 100%;
+  }
+}
+
+// Mixin pour boutons auth
+@mixin auth-button($type: login) {
+  transition: all 0.3s ease;
+
+  @if $type == login {
+    color: $white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  } @else if $type == register {
+    background-color: $secondary-color;
+    color: $white;
+    &:hover {
+      background-color: $secondary-dark;
+    }
+  }
+
+  @include tablet-down {
+    padding: $spacing-sm $spacing-lg;
+    width: 100%;
+    text-align: center;
+    margin-bottom: $spacing-xs;
+  }
+}
+
+// Mixin pour footer
+@mixin footer-base {
+  background: linear-gradient(135deg, $text-color 0%, #1a1a1a 100%);
+  color: $white;
+  margin-top: auto;
+
+  .container {
+    @include tablet-down {
+      padding: $spacing-lg $spacing-sm $spacing-sm;
+    }
+  }
+}

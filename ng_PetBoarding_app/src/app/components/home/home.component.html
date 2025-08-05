@@ -1,0 +1,91 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            La pension de <span class="text-primary">confiance</span> <br />pour vos compagnons
+          </h1>
+          <p class="hero-description lead">
+            Offrez à vos animaux de compagnie des vacances inoubliables dans notre pension de luxe.
+            Soins personnalisés, environnement sécurisé et amour garantis.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" routerLink="/reservations">
+              <mat-icon class="me-2">calendar_today</mat-icon>
+              Réserver maintenant
+            </button>
+            <button class="btn btn-outline-secondary btn-lg" routerLink="/prestations">
+              <mat-icon class="me-2">info</mat-icon>
+              Découvrir nos services
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image">
+          <img
+            src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Animaux heureux en pension"
+            class="img-fluid rounded shadow-lg" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Nos Services</h2>
+      <p class="section-subtitle text-muted">
+        Des prestations complètes pour le bien-être de vos animaux
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3" *ngFor="let service of services">
+        <mat-card class="service-card h-100 text-center">
+          <mat-card-content class="p-4">
+            <div class="service-icon mb-3">
+              <mat-icon>{{ service.icon }}</mat-icon>
+            </div>
+            <h5 class="service-title">{{ service.title }}</h5>
+            <p class="service-description text-muted">{{ service.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <mat-card class="cta-card">
+          <mat-card-content class="p-5">
+            <h3 class="cta-title mb-4">Prêt à offrir des vacances à votre animal ?</h3>
+            <p class="cta-description mb-4">
+              Rejoignez des milliers de propriétaires qui nous font confiance pour prendre soin de
+              leurs compagnons. Réservation simple, service de qualité garanti.
+            </p>
+            <div class="cta-actions">
+              <button class="btn btn-primary btn-lg" routerLink="/reservations">
+                <mat-icon class="me-2">pets</mat-icon>
+                Commencer la réservation
+              </button>
+              <button class="btn btn-outline-secondary" routerLink="/contact">
+                <mat-icon class="me-2">phone</mat-icon>
+                Nous contacter
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</section>

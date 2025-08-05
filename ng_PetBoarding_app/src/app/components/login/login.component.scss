@@ -5,47 +5,47 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--background-color) 0%, #f0f8f0 100%);
-  padding: var(--spacing-md);
+  background: linear-gradient(135deg, $background-color 0%, #f0f8f0 100%);
+  padding: $spacing-md;
 
   @media (max-width: 768px) {
-    padding: var(--spacing-sm);
+    padding: $spacing-sm;
   }
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
-  background: var(--surface-color);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--box-shadow-lg);
+  background: $surface-color;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow-lg;
   overflow: hidden;
 
   @media (max-width: 768px) {
     max-width: 100%;
-    margin: var(--spacing-sm);
+    margin: $spacing-sm;
   }
 }
 
 .login-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: $white;
+  padding: $spacing-lg;
   text-align: center;
 
   .login-title {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: $spacing-sm;
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: var(--spacing-xs);
-    color: var(--white);
+    margin-bottom: $spacing-xs;
+    color: $white;
 
     .login-icon {
       font-size: 2rem;
-      color: var(--secondary-light);
+      color: $secondary-light;
     }
   }
 
@@ -57,17 +57,17 @@
 }
 
 .login-content {
-  padding: var(--spacing-lg);
+  padding: $spacing-lg;
 
   @media (max-width: 768px) {
-    padding: var(--spacing-md);
+    padding: $spacing-md;
   }
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: $spacing-md;
 }
 
 .full-width {
@@ -79,13 +79,13 @@
   .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
       background-color: #fbfbfb;
-      border-radius: var(--border-radius-sm);
+      border-radius: $border-radius-sm;
     }
 
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
-      border-color: var(--divider-color);
+      border-color: $divider-color;
       border-width: 1px;
     }
 
@@ -93,30 +93,30 @@
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: var(--primary-color);
+        border-color: $primary-color;
         border-width: 2px;
       }
     }
 
     .mat-mdc-input-element {
-      color: var(--text-color);
+      color: $text-color;
 
       &::placeholder {
-        color: var(--text-secondary);
+        color: $text-secondary;
       }
     }
 
     .mat-mdc-form-field-label {
-      color: var(--text-secondary);
+      color: $text-secondary;
     }
 
     .mat-icon {
-      color: var(--text-secondary);
+      color: $text-secondary;
     }
   }
 
   .mat-mdc-form-field-error {
-    color: var(--error-color);
+    color: $error-color;
     font-size: 0.85rem;
   }
 }
@@ -124,19 +124,19 @@
 .checkbox-container {
   display: flex;
   align-items: center;
-  margin: var(--spacing-sm) 0;
+  margin: $spacing-sm 0;
 }
 
 .remember-checkbox {
   ::ng-deep {
     .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
     .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
+      background-color: $primary-color;
+      border-color: $primary-color;
     }
 
     .mdc-form-field {
-      color: var(--text-color);
+      color: $text-color;
       font-size: 0.95rem;
     }
   }
@@ -146,27 +146,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-sm);
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
+  gap: $spacing-sm;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: $white;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius;
   font-size: 1rem;
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.5px;
-  margin-top: var(--spacing-sm);
+  margin-top: $spacing-sm;
   transition: all 0.3s ease;
   border: none;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #2e7d32 100%);
-    box-shadow: var(--box-shadow-lg);
+    background: linear-gradient(135deg, $primary-dark 0%, #2e7d32 100%);
+    box-shadow: $box-shadow-lg;
     transform: translateY(-1px);
   }
 
   &:disabled {
-    background: var(--text-secondary);
+    background: $text-secondary;
     color: rgba(255, 255, 255, 0.7);
     cursor: not-allowed;
     transform: none;
@@ -179,17 +179,17 @@
 
 .login-links {
   text-align: center;
-  margin-top: var(--spacing-lg);
+  margin-top: $spacing-lg;
 }
 
 .forgot-password {
-  color: var(--tertiary-color);
+  color: $tertiary-color;
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.3s ease;
 
   &:hover {
-    color: var(--tertiary-dark);
+    color: $tertiary-dark;
     text-decoration: underline;
   }
 }
@@ -213,7 +213,7 @@
 // Responsive adjustments
 @media (max-width: 768px) {
   .login-header {
-    padding: var(--spacing-md);
+    padding: $spacing-md;
 
     .login-title {
       font-size: 1.3rem;
@@ -229,7 +229,7 @@
   }
 
   .login-button {
-    padding: var(--spacing-md);
+    padding: $spacing-md;
     font-size: 0.95rem;
   }
 }

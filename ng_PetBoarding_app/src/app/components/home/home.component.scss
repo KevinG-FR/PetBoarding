@@ -1,0 +1,318 @@
+@use '../../../variables.scss' as *;
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    rgba($primary-color, 0.05) 0%,
+    rgba($tertiary-color, 0.05) 100%
+  );
+  padding: $spacing-md 0 $spacing-md 0;
+
+  .min-vh-75 {
+    min-height: 60vh;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: $spacing-lg;
+    line-height: 1.2;
+
+    @include mobile {
+      font-size: 2.2rem;
+    }
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    color: $text-secondary;
+    margin-bottom: $spacing-xl;
+    line-height: 1.6;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    align-items: center;
+    width: 100%;
+
+    .btn {
+      border-radius: $border-radius;
+      font-weight: 500;
+      padding: $spacing-md $spacing-lg;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+      }
+
+      &.btn-primary {
+        background-color: $primary-color;
+        border-color: $primary-color;
+
+        &:hover {
+          background-color: $primary-dark;
+          border-color: $primary-dark;
+          transform: translateY(-2px);
+          box-shadow: $box-shadow-lg;
+        }
+      }
+
+      &.btn-outline-primary {
+        color: $primary-color;
+        border-color: $primary-color;
+
+        &:hover {
+          background-color: $primary-color;
+          border-color: $primary-color;
+          transform: translateY(-2px);
+          box-shadow: $box-shadow;
+        }
+      }
+    }
+
+    // Responsive pour mobile
+    @media (max-width: 576px) {
+      align-items: center;
+
+      .btn {
+        max-width: none;
+      }
+    }
+
+    // Responsive pour tablette et plus
+    @media (min-width: 577px) {
+      .btn {
+        min-width: 250px;
+      }
+    }
+  }
+
+  .hero-image {
+    img {
+      border-radius: $border-radius-lg;
+      box-shadow: $box-shadow-lg;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
+    @include mobile {
+      margin-top: $spacing-md;
+    }
+  }
+}
+
+// Services Section
+.services-section {
+  background-color: $surface-color;
+  padding-top: $spacing-lg !important;
+  padding-bottom: $spacing-lg !important;
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .service-card {
+    border: none;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $box-shadow-lg;
+    }
+
+    .service-icon {
+      mat-icon {
+        font-size: 3rem;
+        width: 3rem;
+        height: 3rem;
+        color: $primary-color;
+        background: linear-gradient(
+          135deg,
+          rgba($primary-color, 0.1) 0%,
+          rgba($secondary-color, 0.1) 100%
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+      }
+    }
+
+    .service-title {
+      font-weight: 600;
+      color: $text-color;
+      margin-bottom: $spacing-sm;
+    }
+
+    .service-description {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+// CTA Section
+.cta-section {
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: white;
+
+  .cta-card {
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow-lg;
+    background: $surface-color;
+    border: none;
+
+    .cta-title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: $primary-color;
+    }
+
+    .cta-description {
+      font-size: 1.1rem;
+      color: $text-secondary;
+      line-height: 1.6;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+      align-items: center;
+
+      .btn {
+        border-radius: $border-radius;
+        font-weight: 500;
+        padding: $spacing-md $spacing-lg;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        mat-icon {
+          font-size: 1.2rem;
+          margin-right: 0.5rem;
+          vertical-align: middle;
+        }
+
+        &.btn-primary {
+          background-color: $primary-color;
+          border-color: $primary-color;
+
+          &:hover {
+            background-color: $primary-dark;
+            border-color: $primary-dark;
+            transform: translateY(-2px);
+            box-shadow: $box-shadow-lg;
+          }
+        }
+
+        &.btn-outline-secondary {
+          color: $text-secondary;
+          border-color: $text-secondary;
+
+          &:hover {
+            background-color: $text-secondary;
+            border-color: $text-secondary;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: $box-shadow;
+          }
+        }
+      }
+
+      // Responsive pour mobile
+      @media (max-width: 576px) {
+        .btn {
+          max-width: none;
+        }
+      }
+
+      // Responsive pour tablette et plus
+      @media (min-width: 577px) {
+        .btn {
+          min-width: 250px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@include mobile {
+  .hero-section {
+    padding: $spacing-md 0;
+    text-align: center;
+
+    .min-vh-75 {
+      min-height: 50vh;
+    }
+  }
+
+  .services-section {
+    padding-top: $spacing-md !important;
+    padding-bottom: $spacing-md !important;
+
+    .section-title {
+      font-size: 2rem;
+    }
+  }
+
+  .cta-section {
+    .cta-card {
+      .cta-title {
+        font-size: 1.5rem;
+      }
+
+      .cta-description {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Animation for service cards
+.service-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

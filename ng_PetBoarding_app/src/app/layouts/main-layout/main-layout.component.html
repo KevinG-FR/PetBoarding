@@ -1,0 +1,280 @@
+<!-- Layout principal de l'application -->
+<div class="main-layout">
+  <!-- Header / Navigation Bar -->
+  <mat-toolbar class="app-header" color="primary">
+    <!-- Logo et titre -->
+    <div class="nav-brand">
+      <button
+        mat-icon-button
+        (click)="toggleSidenav()"
+        *ngIf="isMobile() || isTablet()"
+        class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-icon class="logo-icon">pets</mat-icon>
+      <span class="app-title">PetBoarding</span>
+    </div>
+
+    <!-- Navigation principale (desktop uniquement) -->
+    <nav class="nav-links" *ngIf="!isMobile() && !isTablet()">
+      <a routerLink="/home" routerLinkActive="active" mat-button>
+        <mat-icon>home</mat-icon>
+        Accueil
+      </a>
+      <a routerLink="/services" routerLinkActive="active" mat-button>
+        <mat-icon>room_service</mat-icon>
+        Services
+      </a>
+      <a routerLink="/reservations" routerLinkActive="active" mat-button>
+        <mat-icon>event</mat-icon>
+        Réservations
+      </a>
+      <a routerLink="/about" routerLinkActive="active" mat-button>
+        <mat-icon>info</mat-icon>
+        À propos
+      </a>
+      <a routerLink="/contact" routerLinkActive="active" mat-button>
+        <mat-icon>contact_mail</mat-icon>
+        Contact
+      </a>
+    </nav>
+
+    <!-- Spacer -->
+    <span class="spacer"></span>
+
+    <!-- Actions utilisateur -->
+    <div class="user-actions">
+      <!-- Non connecté (masquer boutons sur mobile/tablette) -->
+      <div *ngIf="!isAuthenticated() && !isMobile() && !isTablet()" class="auth-buttons">
+        <button mat-button routerLink="/login" class="login-btn">
+          <mat-icon>login</mat-icon>
+          Connexion
+        </button>
+        <button mat-raised-button routerLink="/register" class="register-btn">
+          <mat-icon>person_add</mat-icon>
+          S'inscrire
+        </button>
+      </div>
+
+      <!-- Connecté -->
+      <div *ngIf="isAuthenticated()" class="user-menu">
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            Mon profil
+          </button>
+          <button mat-menu-item routerLink="/my-reservations">
+            <mat-icon>event_note</mat-icon>
+            Mes réservations
+          </button>
+          <button mat-menu-item routerLink="/settings">
+            <mat-icon>settings</mat-icon>
+            Paramètres
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Déconnexion
+          </button>
+        </mat-menu>
+      </div>
+
+      <!-- Bouton de test pour basculer l'authentification -->
+      <button mat-icon-button (click)="toggleAuth()" class="test-auth" title="Test Auth">
+        <mat-icon>swap_horiz</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Sidenav pour mobile et tablette -->
+  <mat-sidenav-container
+    class="sidenav-container"
+    [class.is-mobile]="isMobile()"
+    [class.is-tablet]="isTablet()">
+    <mat-sidenav
+      #sidenav
+      [(opened)]="sidenavOpened"
+      [mode]="isMobile() || isTablet() ? 'over' : 'side'"
+      [fixedInViewport]="isMobile() || isTablet()"
+      class="app-sidenav">
+      <div class="sidenav-header">
+        <mat-icon class="logo-icon">pets</mat-icon>
+        <span class="app-title">PetBoarding</span>
+        <!-- Bouton de fermeture pour mobile/tablette -->
+        <button
+          mat-icon-button
+          (click)="toggleSidenav()"
+          *ngIf="isMobile() || isTablet()"
+          class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <nav class="sidenav-nav">
+        <a
+          routerLink="/home"
+          routerLinkActive="active"
+          mat-button
+          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          <mat-icon>home</mat-icon>
+          Accueil
+        </a>
+        <a
+          routerLink="/services"
+          routerLinkActive="active"
+          mat-button
+          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          <mat-icon>room_service</mat-icon>
+          Services
+        </a>
+        <a
+          routerLink="/reservations"
+          routerLinkActive="active"
+          mat-button
+          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          <mat-icon>event</mat-icon>
+          Réservations
+        </a>
+        <a
+          routerLink="/about"
+          routerLinkActive="active"
+          mat-button
+          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          <mat-icon>info</mat-icon>
+          À propos
+        </a>
+        <a
+          routerLink="/contact"
+          routerLinkActive="active"
+          mat-button
+          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          <mat-icon>contact_mail</mat-icon>
+          Contact
+        </a>
+
+        <!-- Actions mobiles et tablettes -->
+        <div class="mobile-auth" *ngIf="!isAuthenticated() && (isMobile() || isTablet())">
+          <a routerLink="/login" mat-button (click)="toggleSidenav()">
+            <mat-icon>login</mat-icon>
+            Connexion
+          </a>
+          <a routerLink="/register" mat-raised-button (click)="toggleSidenav()">
+            <mat-icon>person_add</mat-icon>
+            S'inscrire
+          </a>
+        </div>
+      </nav>
+    </mat-sidenav>
+
+    <!-- Contenu principal -->
+    <mat-sidenav-content class="main-content">
+      <!-- Zone de contenu avec router-outlet -->
+      <main class="content-area">
+        <router-outlet></router-outlet>
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="container">
+          <div class="row">
+            <!-- Section À propos -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="footer-section">
+                <h5 class="footer-title">
+                  <mat-icon>pets</mat-icon>
+                  PetBoarding
+                </h5>
+                <p class="footer-text">
+                  Votre partenaire de confiance pour la garde et le bien-être de vos animaux de
+                  compagnie. Des services professionnels avec tout l'amour qu'ils méritent.
+                </p>
+                <div class="social-links">
+                  <a href="#" class="social-link" aria-label="Facebook">
+                    <mat-icon>facebook</mat-icon>
+                  </a>
+                  <a href="#" class="social-link" aria-label="Instagram">
+                    <mat-icon>camera_alt</mat-icon>
+                  </a>
+                  <a href="#" class="social-link" aria-label="Twitter">
+                    <mat-icon>alternate_email</mat-icon>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Services -->
+            <div class="col-lg-2 col-md-6 mb-4">
+              <div class="footer-section">
+                <h6 class="footer-subtitle">Services</h6>
+                <ul class="footer-links">
+                  <li><a routerLink="/services/boarding">Pension</a></li>
+                  <li><a routerLink="/services/daycare">Garderie</a></li>
+                  <li><a routerLink="/services/grooming">Toilettage</a></li>
+                  <li><a routerLink="/services/training">Dressage</a></li>
+                  <li><a routerLink="/services/veterinary">Vétérinaire</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Section Liens rapides -->
+            <div class="col-lg-2 col-md-6 mb-4">
+              <div class="footer-section">
+                <h6 class="footer-subtitle">Liens rapides</h6>
+                <ul class="footer-links">
+                  <li><a routerLink="/home">Accueil</a></li>
+                  <li><a routerLink="/about">À propos</a></li>
+                  <li><a routerLink="/contact">Contact</a></li>
+                  <li><a routerLink="/faq">FAQ</a></li>
+                  <li><a routerLink="/policies">Conditions</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Section Contact -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="footer-section">
+                <h6 class="footer-subtitle">Contact</h6>
+                <div class="contact-info">
+                  <div class="contact-item">
+                    <mat-icon>location_on</mat-icon>
+                    <span>123 Rue des Animaux, 75000 Paris</span>
+                  </div>
+                  <div class="contact-item">
+                    <mat-icon>phone</mat-icon>
+                    <span>+33 1 23 45 67 89</span>
+                  </div>
+                  <div class="contact-item">
+                    <mat-icon>email</mat-icon>
+                    <span>contact&#64;petboarding.fr</span>
+                  </div>
+                  <div class="contact-item">
+                    <mat-icon>schedule</mat-icon>
+                    <span>Lun-Dim: 7h00 - 20h00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section copyright -->
+          <div class="row">
+            <div class="col-12">
+              <hr class="footer-divider" />
+              <div class="footer-bottom">
+                <p class="copyright">&copy; {{ currentYear }} PetBoarding. Tous droits réservés.</p>
+                <div class="footer-bottom-links">
+                  <a routerLink="/privacy">Politique de confidentialité</a>
+                  <a routerLink="/terms">Conditions d'utilisation</a>
+                  <a routerLink="/cookies">Cookies</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,412 @@
+@use '../../../variables.scss' as *;
+@use '../shared-layout-styles.scss' as shared;
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $background-color;
+}
+
+.app-header {
+  @include shared.header-layout;
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    .menu-button {
+      margin-right: $spacing-sm;
+    }
+    .logo-icon {
+      font-size: 2rem;
+      color: $secondary-light;
+    }
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-left: $spacing-xl;
+
+    a {
+      @include shared.nav-link;
+      mat-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-right: $spacing-sm;
+
+    .auth-buttons {
+      display: flex;
+      gap: $spacing-sm;
+      .login-btn {
+        @include shared.auth-button(login);
+      }
+      .register-btn {
+        @include shared.auth-button(register);
+      }
+    }
+
+    .user-menu .user-avatar {
+      color: $white;
+      padding: $spacing-xs;
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .test-auth {
+      opacity: 0.7;
+      margin-left: $spacing-sm;
+      min-width: 40px;
+      width: 40px;
+      height: 40px;
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.sidenav-container {
+  flex: 1;
+}
+
+.app-sidenav {
+  width: 280px;
+  background-color: $surface-color;
+  border-right: 1px solid $divider-color;
+
+  .sidenav-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-lg;
+    background: linear-gradient(135deg, $primary-light 0%, $primary-color 100%);
+    color: $white;
+
+    .logo-icon {
+      font-size: 2rem;
+      color: $secondary-light;
+    }
+    .app-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+  }
+
+  .sidenav-nav {
+    padding: $spacing-md;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      width: 100%;
+      padding: $spacing-md;
+      margin-bottom: $spacing-xs;
+      text-decoration: none;
+      color: $text-color;
+      border-radius: $border-radius;
+      transition: all 0.3s ease;
+      text-align: left;
+
+      &:hover {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: $primary-color;
+        transform: translateY(-1px);
+      }
+
+      &.active {
+        background-color: $primary-color;
+        color: $white;
+      }
+      mat-icon {
+        font-size: 1.3rem;
+      }
+    }
+
+    .mobile-auth {
+      margin-top: $spacing-lg;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $divider-color;
+
+      a {
+        margin-bottom: $spacing-sm;
+        &[mat-raised-button] {
+          @include shared.auth-button(register);
+        }
+      }
+    }
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+}
+
+.content-area {
+  flex: 1;
+  padding: $spacing-lg;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+  }
+}
+
+.app-footer {
+  @include shared.footer-base;
+
+  .container {
+    padding: $spacing-xl $spacing-md $spacing-md;
+  }
+
+  .footer-section {
+    margin-bottom: $spacing-lg;
+
+    .footer-title {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: $spacing-md;
+      color: $primary-light;
+
+      mat-icon {
+        font-size: 1.8rem;
+        color: $secondary-light;
+      }
+    }
+
+    .footer-subtitle {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: $spacing-md;
+      color: $primary-light;
+    }
+    .footer-text {
+      line-height: 1.6;
+      margin-bottom: $spacing-md;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: $spacing-xs;
+        a {
+          color: rgba(255, 255, 255, 0.7);
+          text-decoration: none;
+          transition: color 0.3s ease;
+          &:hover {
+            color: $primary-light;
+          }
+        }
+      }
+    }
+
+    .social-links {
+      display: flex;
+      gap: $spacing-sm;
+
+      .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        color: $white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: $primary-color;
+          transform: translateY(-2px);
+        }
+        mat-icon {
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .contact-info .contact-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-sm;
+      color: rgba(255, 255, 255, 0.8);
+
+      mat-icon {
+        color: $primary-light;
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .footer-divider {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: $spacing-lg 0 $spacing-md;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    .copyright {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: $spacing-md;
+
+      a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-size: 0.9rem;
+        &:hover {
+          color: $primary-light;
+        }
+      }
+    }
+  }
+}
+
+// Responsive amélioré
+@media (max-width: 1024px) {
+  .app-header .nav-links {
+    display: none;
+  }
+
+  .user-actions .auth-buttons {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 $spacing-sm;
+  }
+
+  .user-actions {
+    margin-right: 0;
+
+    .user-avatar {
+      min-width: 44px !important;
+      width: 44px !important;
+      height: 44px !important;
+
+      mat-icon {
+        font-size: 1.8rem !important;
+        width: 1.8rem !important;
+        height: 1.8rem !important;
+      }
+    }
+
+    .test-auth {
+      min-width: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    .footer-bottom-links {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  .app-footer .container {
+    padding: $spacing-lg $spacing-sm $spacing-sm;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer-bottom-links a {
+    font-size: 0.8rem;
+  }
+
+  .app-header .nav-brand .app-title {
+    font-size: 1.2rem;
+  }
+}
+
+// Styles pour tablette
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-sidenav {
+    width: 320px; // Plus large sur tablette
+  }
+
+  .user-actions .user-avatar {
+    min-width: 46px;
+    width: 46px;
+    height: 46px;
+
+    mat-icon {
+      font-size: 1.9rem;
+      width: 1.9rem;
+      height: 1.9rem;
+    }
+  }
+}
+
+::ng-deep {
+  .mat-toolbar.mat-primary {
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%) !important;
+  }
+  .mat-menu-panel {
+    max-width: 280px !important;
+  }
+  .mat-sidenav-content {
+    background-color: $background-color;
+  }
+  .mat-divider {
+    border-top-color: rgba(255, 255, 255, 0.2) !important;
+  }
+}

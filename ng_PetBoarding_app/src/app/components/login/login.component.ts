@@ -39,7 +39,6 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       const formData = this.loginForm.value;
-      console.log('Login data:', formData);
       // Ici vous pourrez ajouter la logique d'authentification
     } else {
       this.markFormGroupTouched();
