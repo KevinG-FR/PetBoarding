@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,7 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-  services = [
+  services = signal([
     {
       icon: 'hotel',
       title: 'Hébergement',
@@ -34,5 +34,5 @@ export class HomeComponent {
       title: 'Nouvelles quotidiennes',
       description: 'Photos et vidéos de votre compagnon chaque jour.'
     }
-  ];
+  ]);
 }

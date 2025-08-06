@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,7 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  hidePassword = true;
+  hidePassword = signal(true);
 
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
@@ -72,5 +72,9 @@ export class LoginComponent {
       return 'Le mot de passe doit contenir au moins 6 caractères';
     }
     return '';
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword.update((value) => !value);
   }
 }

@@ -46,7 +46,7 @@
     </div>
 
     <div class="row g-4">
-      @for (service of services; track service.icon) {
+      @for (service of services(); track service.icon) {
         <div class="col-md-6 col-lg-3">
           <mat-card class="service-card h-100 text-center">
             <mat-card-content class="p-4">

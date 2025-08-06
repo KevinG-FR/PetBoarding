@@ -32,7 +32,7 @@ export class MainLayoutComponent {
   isMobile = signal(false);
   isTablet = signal(false);
   sidenavOpened = signal(false);
-  currentYear = new Date().getFullYear();
+  currentYear = signal(new Date().getFullYear());
 
   constructor(private breakpointObserver: BreakpointObserver) {
     // Détection responsive améliorée
