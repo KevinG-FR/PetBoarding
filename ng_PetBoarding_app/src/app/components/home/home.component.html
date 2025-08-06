@@ -46,17 +46,19 @@
     </div>
 
     <div class="row g-4">
-      <div class="col-md-6 col-lg-3" *ngFor="let service of services">
-        <mat-card class="service-card h-100 text-center">
-          <mat-card-content class="p-4">
-            <div class="service-icon mb-3">
-              <mat-icon>{{ service.icon }}</mat-icon>
-            </div>
-            <h5 class="service-title">{{ service.title }}</h5>
-            <p class="service-description text-muted">{{ service.description }}</p>
-          </mat-card-content>
-        </mat-card>
-      </div>
+      @for (service of services; track service.icon) {
+        <div class="col-md-6 col-lg-3">
+          <mat-card class="service-card h-100 text-center">
+            <mat-card-content class="p-4">
+              <div class="service-icon mb-3">
+                <mat-icon>{{ service.icon }}</mat-icon>
+              </div>
+              <h5 class="service-title">{{ service.title }}</h5>
+              <p class="service-description text-muted">{{ service.description }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      }
     </div>
   </div>
 </section>

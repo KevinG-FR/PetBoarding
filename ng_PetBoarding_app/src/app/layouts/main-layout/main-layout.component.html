@@ -4,40 +4,40 @@
   <mat-toolbar class="app-header" color="primary">
     <!-- Logo et titre -->
     <div class="nav-brand">
-      <button
-        mat-icon-button
-        (click)="toggleSidenav()"
-        *ngIf="isMobile() || isTablet()"
-        class="menu-button">
-        <mat-icon>menu</mat-icon>
-      </button>
+      @if (isMobile() || isTablet()) {
+        <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
       <mat-icon class="logo-icon">pets</mat-icon>
       <span class="app-title">PetBoarding</span>
     </div>
 
     <!-- Navigation principale (desktop uniquement) -->
-    <nav class="nav-links" *ngIf="!isMobile() && !isTablet()">
-      <a routerLink="/home" routerLinkActive="active" mat-button>
-        <mat-icon>home</mat-icon>
-        Accueil
-      </a>
-      <a routerLink="/services" routerLinkActive="active" mat-button>
-        <mat-icon>room_service</mat-icon>
-        Services
-      </a>
-      <a routerLink="/reservations" routerLinkActive="active" mat-button>
-        <mat-icon>event</mat-icon>
-        Réservations
-      </a>
-      <a routerLink="/about" routerLinkActive="active" mat-button>
-        <mat-icon>info</mat-icon>
-        À propos
-      </a>
-      <a routerLink="/contact" routerLinkActive="active" mat-button>
-        <mat-icon>contact_mail</mat-icon>
-        Contact
-      </a>
-    </nav>
+    @if (!isMobile() && !isTablet()) {
+      <nav class="nav-links">
+        <a routerLink="/home" routerLinkActive="active" mat-button>
+          <mat-icon>home</mat-icon>
+          Accueil
+        </a>
+        <a routerLink="/services" routerLinkActive="active" mat-button>
+          <mat-icon>room_service</mat-icon>
+          Services
+        </a>
+        <a routerLink="/reservations" routerLinkActive="active" mat-button>
+          <mat-icon>event</mat-icon>
+          Réservations
+        </a>
+        <a routerLink="/about" routerLinkActive="active" mat-button>
+          <mat-icon>info</mat-icon>
+          À propos
+        </a>
+        <a routerLink="/contact" routerLinkActive="active" mat-button>
+          <mat-icon>contact_mail</mat-icon>
+          Contact
+        </a>
+      </nav>
+    }
 
     <!-- Spacer -->
     <span class="spacer"></span>
@@ -45,43 +45,46 @@
     <!-- Actions utilisateur -->
     <div class="user-actions">
       <!-- Non connecté (masquer boutons sur mobile/tablette) -->
-      <div *ngIf="!isAuthenticated() && !isMobile() && !isTablet()" class="auth-buttons">
-        <button mat-button routerLink="/login" class="login-btn">
-          <mat-icon>login</mat-icon>
-          Connexion
-        </button>
-        <button mat-raised-button routerLink="/register" class="register-btn">
-          <mat-icon>person_add</mat-icon>
-          S'inscrire
-        </button>
-      </div>
+      @if (!isAuthenticated() && !isMobile() && !isTablet()) {
+        <div class="auth-buttons">
+          <button mat-button routerLink="/login" class="login-btn">
+            <mat-icon>login</mat-icon>
+            Connexion
+          </button>
+          <button mat-raised-button routerLink="/register" class="register-btn">
+            <mat-icon>person_add</mat-icon>
+            S'inscrire
+          </button>
+        </div>
+      }
 
       <!-- Connecté -->
-      <div *ngIf="isAuthenticated()" class="user-menu">
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-avatar">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-        <mat-menu #userMenu="matMenu">
-          <button mat-menu-item routerLink="/profile">
-            <mat-icon>person</mat-icon>
-            Mon profil
+      @if (isAuthenticated()) {
+        <div class="user-menu">
+          <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
           </button>
-          <button mat-menu-item routerLink="/my-reservations">
-            <mat-icon>event_note</mat-icon>
-            Mes réservations
-          </button>
-          <button mat-menu-item routerLink="/settings">
-            <mat-icon>settings</mat-icon>
-            Paramètres
-          </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            Déconnexion
-          </button>
-        </mat-menu>
-      </div>
-
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item routerLink="/profile">
+              <mat-icon>person</mat-icon>
+              Mon profil
+            </button>
+            <button mat-menu-item routerLink="/my-reservations">
+              <mat-icon>event_note</mat-icon>
+              Mes réservations
+            </button>
+            <button mat-menu-item routerLink="/settings">
+              <mat-icon>settings</mat-icon>
+              Paramètres
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              Déconnexion
+            </button>
+          </mat-menu>
+        </div>
+      }
       <!-- Bouton de test pour basculer l'authentification -->
       <button mat-icon-button (click)="toggleAuth()" class="test-auth" title="Test Auth">
         <mat-icon>swap_horiz</mat-icon>
@@ -104,13 +107,11 @@
         <mat-icon class="logo-icon">pets</mat-icon>
         <span class="app-title">PetBoarding</span>
         <!-- Bouton de fermeture pour mobile/tablette -->
-        <button
-          mat-icon-button
-          (click)="toggleSidenav()"
-          *ngIf="isMobile() || isTablet()"
-          class="close-button">
-          <mat-icon>close</mat-icon>
-        </button>
+        @if (isMobile() || isTablet()) {
+          <button mat-icon-button (click)="toggleSidenav()" class="close-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </div>
 
       <nav class="sidenav-nav">
@@ -156,16 +157,18 @@
         </a>
 
         <!-- Actions mobiles et tablettes -->
-        <div class="mobile-auth" *ngIf="!isAuthenticated() && (isMobile() || isTablet())">
-          <a routerLink="/login" mat-button (click)="toggleSidenav()">
-            <mat-icon>login</mat-icon>
-            Connexion
-          </a>
-          <a routerLink="/register" mat-raised-button (click)="toggleSidenav()">
-            <mat-icon>person_add</mat-icon>
-            S'inscrire
-          </a>
-        </div>
+        @if (!isAuthenticated() && (isMobile() || isTablet())) {
+          <div class="mobile-auth">
+            <a routerLink="/login" mat-button (click)="toggleSidenav()">
+              <mat-icon>login</mat-icon>
+              Connexion
+            </a>
+            <a routerLink="/register" mat-raised-button (click)="toggleSidenav()">
+              <mat-icon>person_add</mat-icon>
+              S'inscrire
+            </a>
+          </div>
+        }
       </nav>
     </mat-sidenav>
 

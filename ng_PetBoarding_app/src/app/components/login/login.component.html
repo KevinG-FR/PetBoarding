@@ -20,9 +20,11 @@
             placeholder="votre@email.com"
             autocomplete="email" />
           <mat-icon matSuffix>email</mat-icon>
-          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-            {{ getEmailErrorMessage() }}
-          </mat-error>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <mat-error>
+              {{ getEmailErrorMessage() }}
+            </mat-error>
+          }
         </mat-form-field>
 
         <!-- Password Field -->
@@ -42,10 +44,11 @@
             [attr.aria-pressed]="hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          <mat-error
-            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-            {{ getPasswordErrorMessage() }}
-          </mat-error>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <mat-error>
+              {{ getPasswordErrorMessage() }}
+            </mat-error>
+          }
         </mat-form-field>
 
         <!-- Remember Me Checkbox -->
