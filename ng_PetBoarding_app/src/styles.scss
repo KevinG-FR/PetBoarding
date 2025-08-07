@@ -1,10 +1,13 @@
 /* Global Styles - PetBoarding App */
 
 // Import des variables
-@use "./variables" as *;
+@use './variables' as *;
 
 // Import Bootstrap
-@import "~bootstrap/dist/css/bootstrap.css";
+@import '~bootstrap/dist/css/bootstrap.css';
+
+// Import FontAwesome
+@import '~@fortawesome/fontawesome-free/css/all.css';
 
 // Global styles
 html,
@@ -14,7 +17,7 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   background-color: $background-color;
   color: $text-color;
 }
