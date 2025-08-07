@@ -4,40 +4,36 @@
   <mat-toolbar class="app-header" color="primary">
     <!-- Logo et titre -->
     <div class="nav-brand">
-      @if (isMobile() || isTablet()) {
-        <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
-          <mat-icon>menu</mat-icon>
-        </button>
-      }
+      <button mat-icon-button (click)="toggleSidenav()" class="menu-button d-xl-none">
+        <mat-icon>menu</mat-icon>
+      </button>
       <mat-icon class="logo-icon">pets</mat-icon>
       <span class="app-title">PetBoarding</span>
     </div>
 
     <!-- Navigation principale (desktop uniquement) -->
-    @if (!isMobile() && !isTablet()) {
-      <nav class="nav-links">
-        <a routerLink="/home" routerLinkActive="active" mat-button>
-          <mat-icon>home</mat-icon>
-          Accueil
-        </a>
-        <a routerLink="/services" routerLinkActive="active" mat-button>
-          <mat-icon>room_service</mat-icon>
-          Services
-        </a>
-        <a routerLink="/reservations" routerLinkActive="active" mat-button>
-          <mat-icon>event</mat-icon>
-          Réservations
-        </a>
-        <a routerLink="/about" routerLinkActive="active" mat-button>
-          <mat-icon>info</mat-icon>
-          À propos
-        </a>
-        <a routerLink="/contact" routerLinkActive="active" mat-button>
-          <mat-icon>contact_mail</mat-icon>
-          Contact
-        </a>
-      </nav>
-    }
+    <nav class="nav-links d-none d-xl-flex">
+      <a routerLink="/home" routerLinkActive="active" mat-button>
+        <mat-icon>home</mat-icon>
+        Accueil
+      </a>
+      <a routerLink="/services" routerLinkActive="active" mat-button>
+        <mat-icon>room_service</mat-icon>
+        Services
+      </a>
+      <a routerLink="/reservations" routerLinkActive="active" mat-button>
+        <mat-icon>event</mat-icon>
+        Réservations
+      </a>
+      <a routerLink="/about" routerLinkActive="active" mat-button>
+        <mat-icon>info</mat-icon>
+        À propos
+      </a>
+      <a routerLink="/contact" routerLinkActive="active" mat-button>
+        <mat-icon>contact_mail</mat-icon>
+        Contact
+      </a>
+    </nav>
 
     <!-- Spacer -->
     <span class="spacer"></span>
@@ -45,8 +41,8 @@
     <!-- Actions utilisateur -->
     <div class="user-actions">
       <!-- Non connecté (masquer boutons sur mobile/tablette) -->
-      @if (!isAuthenticated() && !isMobile() && !isTablet()) {
-        <div class="auth-buttons">
+      @if (!isAuthenticated()) {
+        <div class="auth-buttons d-none d-xl-flex">
           <button mat-button routerLink="/login" class="login-btn">
             <mat-icon>login</mat-icon>
             Connexion
@@ -93,41 +89,28 @@
   </mat-toolbar>
 
   <!-- Sidenav pour mobile et tablette -->
-  <mat-sidenav-container
-    class="sidenav-container"
-    [class.is-mobile]="isMobile()"
-    [class.is-tablet]="isTablet()">
+  <mat-sidenav-container class="sidenav-container">
     <mat-sidenav
       #sidenav
       [(opened)]="sidenavOpened"
-      [mode]="isMobile() || isTablet() ? 'over' : 'side'"
-      [fixedInViewport]="isMobile() || isTablet()"
+      mode="over"
+      [fixedInViewport]="true"
       class="app-sidenav">
       <div class="sidenav-header">
         <mat-icon class="logo-icon">pets</mat-icon>
         <span class="app-title">PetBoarding</span>
         <!-- Bouton de fermeture pour mobile/tablette -->
-        @if (isMobile() || isTablet()) {
-          <button mat-icon-button (click)="toggleSidenav()" class="close-button">
-            <mat-icon>close</mat-icon>
-          </button>
-        }
+        <button mat-icon-button (click)="toggleSidenav()" class="close-button d-xl-none">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
 
       <nav class="sidenav-nav">
-        <a
-          routerLink="/home"
-          routerLinkActive="active"
-          mat-button
-          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+        <a routerLink="/home" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>home</mat-icon>
           Accueil
         </a>
-        <a
-          routerLink="/services"
-          routerLinkActive="active"
-          mat-button
-          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+        <a routerLink="/services" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>room_service</mat-icon>
           Services
         </a>
@@ -135,30 +118,22 @@
           routerLink="/reservations"
           routerLinkActive="active"
           mat-button
-          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+          (click)="toggleSidenav()">
           <mat-icon>event</mat-icon>
           Réservations
         </a>
-        <a
-          routerLink="/about"
-          routerLinkActive="active"
-          mat-button
-          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+        <a routerLink="/about" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>info</mat-icon>
           À propos
         </a>
-        <a
-          routerLink="/contact"
-          routerLinkActive="active"
-          mat-button
-          (click)="(isMobile() || isTablet()) && toggleSidenav()">
+        <a routerLink="/contact" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>contact_mail</mat-icon>
           Contact
         </a>
 
         <!-- Actions mobiles et tablettes -->
-        @if (!isAuthenticated() && (isMobile() || isTablet())) {
-          <div class="mobile-auth">
+        @if (!isAuthenticated()) {
+          <div class="mobile-auth d-xl-none">
             <a routerLink="/login" mat-button (click)="toggleSidenav()">
               <mat-icon>login</mat-icon>
               Connexion

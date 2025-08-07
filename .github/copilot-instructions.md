@@ -77,4 +77,4 @@ This workspace contains two main projects:
 - Follow conventional commits
 - Use meaningful variable and function names
 - Document complex business logic
-- I use windows 11,
+- I use windows 11 (important information for scripts and tools compatibility),

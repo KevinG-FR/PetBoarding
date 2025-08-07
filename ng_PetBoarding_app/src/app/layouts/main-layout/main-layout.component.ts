@@ -1,4 +1,3 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,41 +28,11 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class MainLayoutComponent {
   isAuthenticated = signal(false);
-  isMobile = signal(false);
-  isTablet = signal(false);
   sidenavOpened = signal(false);
   currentYear = signal(new Date().getFullYear());
 
-  constructor(private breakpointObserver: BreakpointObserver) {
-    // Détection responsive améliorée
-    this.breakpointObserver
-      .observe([
-        '(max-width: 768px)', // Mobile et petites tablettes
-        Breakpoints.Handset,
-        Breakpoints.Small
-      ])
-      .subscribe((result) => {
-        this.isMobile.set(result.matches);
-        if (!result.matches) {
-          this.sidenavOpened.set(false);
-        }
-      });
-
-    // Détection tablette séparée
-    this.breakpointObserver
-      .observe(['(min-width: 769px) and (max-width: 1024px)'])
-      .subscribe((result) => {
-        this.isTablet.set(result.matches);
-      });
-  }
-
   toggleSidenav() {
     this.sidenavOpened.update((value) => !value);
-  }
-
-  login() {
-    // Navigation vers la page de login
-    // TODO: Implémenter la navigation
   }
 
   logout() {
