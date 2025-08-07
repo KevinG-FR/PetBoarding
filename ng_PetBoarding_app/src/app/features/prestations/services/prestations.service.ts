@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { CategorieAnimal, Prestation, PrestationFilters } from '../models/prestation.model';
 
 export interface CategoryInfo {
@@ -86,55 +86,33 @@ export class PrestationsService {
     }
   ]);
 
-  private filters = signal<PrestationFilters>({});
-
-  // Computed signal pour filtrer les prestations
-  filteredPrestations = computed(() => {
-    const allPrestations = this.prestations();
-    const currentFilters = this.filters();
-
-    return allPrestations.filter((prestation) => {
-      // Filtre par catégorie d'animal
-      if (
-        currentFilters.categorieAnimal &&
-        prestation.categorieAnimal !== currentFilters.categorieAnimal
-      ) {
-        return false;
-      }
-
-      // Filtre par texte de recherche
-      if (currentFilters.searchText) {
-        const searchText = currentFilters.searchText.toLowerCase();
-        return (
-          prestation.libelle.toLowerCase().includes(searchText) ||
-          prestation.description.toLowerCase().includes(searchText)
-        );
-      }
-
-      return true;
-    });
-  });
-
   // Getters pour exposer les signals
   getAllPrestations() {
     return this.prestations.asReadonly();
   }
 
-  getFilteredPrestations() {
-    return this.filteredPrestations;
-  }
+  // Nouvelle méthode pour créer des filtres locaux par composant
+  createFilteredPrestations(prestations: Prestation[], filters: PrestationFilters) {
+    return prestations.filter((prestation) => {
+      // Filtre par catégorie d'animal
+      if (filters.categorieAnimal && prestation.categorieAnimal !== filters.categorieAnimal) {
+        return false;
+      }
 
-  getFilters() {
-    return this.filters.asReadonly();
-  }
+      // Filtre par texte de recherche
+      if (filters.searchText) {
+        const searchTerm = filters.searchText.toLowerCase().trim();
+        if (searchTerm) {
+          const matchesLibelle = prestation.libelle.toLowerCase().includes(searchTerm);
+          const matchesDescription = prestation.description.toLowerCase().includes(searchTerm);
+          if (!matchesLibelle && !matchesDescription) {
+            return false;
+          }
+        }
+      }
 
-  // Méthodes pour modifier les filtres
-  updateFilters(newFilters: PrestationFilters) {
-    this.filters.set({ ...this.filters(), ...newFilters });
-  }
-
-  clearFilters() {
-    this.filters.set({});
+      return true;
+    });
   }
 
   // Méthodes CRUD (pour plus tard)

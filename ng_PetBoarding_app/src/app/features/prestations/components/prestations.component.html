@@ -12,9 +12,9 @@
     </div>
 
     <!-- Filtres de recherche -->
-    <app-prestation-filters />
+    <app-prestation-filters (filtersChanged)="onFiltersChanged($event)" />
 
     <!-- Liste des prestations -->
-    <app-prestations-list />
+    <app-prestations-list [filters]="filters()" />
   </div>
 </div>

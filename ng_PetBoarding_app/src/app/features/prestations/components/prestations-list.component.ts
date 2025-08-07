@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { PrestationFilters } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 import { PrestationItemComponent } from './prestation-item.component';
 
@@ -14,9 +15,16 @@ import { PrestationItemComponent } from './prestation-item.component';
 export class PrestationsListComponent {
   private prestationsService = inject(PrestationsService);
 
-  // Propriétés exposées pour le template
-  filteredPrestations = this.prestationsService.getFilteredPrestations();
+  // Input pour recevoir les filtres du parent
+  filters = input<PrestationFilters>({});
+
+  // Données de base
   allPrestations = this.prestationsService.getAllPrestations();
+
+  // Prestations filtrées basées sur les filtres reçus
+  filteredPrestations = computed(() => {
+    return this.prestationsService.createFilteredPrestations(this.allPrestations(), this.filters());
+  });
 
   // Computed pour les statistiques
   hasResults = computed(() => this.filteredPrestations().length > 0);

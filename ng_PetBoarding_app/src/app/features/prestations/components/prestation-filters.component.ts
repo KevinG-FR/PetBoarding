@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { CategorieAnimal } from '../models/prestation.model';
+import { CategorieAnimal, PrestationFilters } from '../models/prestation.model';
 import { CategoryInfo, PrestationsService } from '../services/prestations.service';
 
 @Component({
@@ -26,6 +26,9 @@ import { CategoryInfo, PrestationsService } from '../services/prestations.servic
 })
 export class PrestationFiltersComponent {
   private prestationsService = inject(PrestationsService);
+  private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  filtersChanged = output<PrestationFilters>();
 
   categories = this.prestationsService.getCategoriesAnimaux();
   selectedCategory = signal<CategorieAnimal | null>(null);
@@ -42,23 +45,39 @@ export class PrestationFiltersComponent {
 
   onCategoryChange(category: CategorieAnimal | null) {
     this.selectedCategory.set(category);
-    this.updateFilters();
+    this.emitFilters(); // Pas de debounce pour la catégorie
   }
 
   onSearchChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.searchText.set(target.value);
-    this.updateFilters();
+
+    // Debounce de 300ms pour la recherche textuelle
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.emitFilters();
+    }, 300);
   }
 
   clearFilters() {
     this.selectedCategory.set(null);
     this.searchText.set('');
-    this.prestationsService.clearFilters();
+
+    // Annuler le timeout en cours si nécessaire
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = null;
+    }
+
+    this.emitFilters();
   }
 
   hasActiveFilters(): boolean {
-    return !!this.selectedCategory() || !!this.searchText();
+    const searchText = this.searchText().trim();
+    return !!this.selectedCategory() || searchText.length >= 3;
   }
 
   getCategoryLabel(category: CategorieAnimal): string {
@@ -73,10 +92,13 @@ export class PrestationFiltersComponent {
     return this.categoriesInfo().get(category)?.color || '#666666';
   }
 
-  private updateFilters() {
-    this.prestationsService.updateFilters({
+  private emitFilters() {
+    const searchText = this.searchText().trim();
+    const filters: PrestationFilters = {
       categorieAnimal: this.selectedCategory() || undefined,
-      searchText: this.searchText() || undefined
-    });
+      // N'inclure le texte de recherche que s'il y a au moins 3 caractères
+      searchText: searchText.length >= 3 ? searchText : undefined
+    };
+    this.filtersChanged.emit(filters);
   }
 }
