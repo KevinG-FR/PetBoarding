@@ -1,5 +1,7 @@
+@let prestations = filteredPrestations();
+
 <div class="prestations-list">
-  @if (prestationsService.getFilteredPrestations()().length === 0) {
+  @if (!hasResults()) {
     <div class="no-results">
       <div class="no-results-content">
         <mat-icon class="no-results-icon">search_off</mat-icon>
@@ -9,7 +11,7 @@
     </div>
   } @else {
     <div class="row g-4">
-      @for (prestation of prestationsService.getFilteredPrestations()(); track prestation.id) {
+      @for (prestation of prestations; track prestation.id) {
         <div class="col-lg-4 col-md-6 col-sm-12">
           <app-prestation-item [prestation]="prestation" />
         </div>
@@ -20,13 +22,10 @@
   <!-- Statistiques -->
   <div class="results-summary mt-4">
     <small class="text-muted">
-      {{ prestationsService.getFilteredPrestations()().length }}
-      prestation{{ prestationsService.getFilteredPrestations()().length > 1 ? 's' : '' }}
-      @if (
-        prestationsService.getFilteredPrestations()().length <
-        prestationsService.getAllPrestations()().length
-      ) {
-        sur {{ prestationsService.getAllPrestations()().length }}
+      {{ resultCount() }}
+      prestation{{ resultCount() > 1 ? 's' : '' }}
+      @if (isFiltered()) {
+        sur {{ totalCount() }}
       }
     </small>
   </div>
