@@ -15,8 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/login/login.component').then((m) => m.LoginComponent)
   },
   {
-    path: 'services',
-    loadComponent: () => import('./components/home/home.component').then((m) => m.HomeComponent) // Temporaire
+    path: 'prestations',
+    loadComponent: () =>
+      import('./features/prestations/components/prestations.component').then(
+        (m) => m.PrestationsComponent
+      )
   },
   {
     path: 'reservations',

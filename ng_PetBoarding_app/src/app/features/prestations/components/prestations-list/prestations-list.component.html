@@ -1,0 +1,33 @@
+<div class="prestations-list">
+  @if (prestationsService.getFilteredPrestations()().length === 0) {
+    <div class="no-results">
+      <div class="no-results-content">
+        <mat-icon class="no-results-icon">search_off</mat-icon>
+        <h3>Aucune prestation trouvée</h3>
+        <p>Essayez de modifier vos critères de recherche ou de filtrage.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="row g-4">
+      @for (prestation of prestationsService.getFilteredPrestations()(); track prestation.id) {
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <app-prestation-item [prestation]="prestation" />
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Statistiques -->
+  <div class="results-summary mt-4">
+    <small class="text-muted">
+      {{ prestationsService.getFilteredPrestations()().length }}
+      prestation{{ prestationsService.getFilteredPrestations()().length > 1 ? 's' : '' }}
+      @if (
+        prestationsService.getFilteredPrestations()().length <
+        prestationsService.getAllPrestations()().length
+      ) {
+        sur {{ prestationsService.getAllPrestations()().length }}
+      }
+    </small>
+  </div>
+</div>

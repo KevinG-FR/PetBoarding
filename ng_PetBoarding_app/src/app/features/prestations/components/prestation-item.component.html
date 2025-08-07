@@ -1,0 +1,56 @@
+@let prestationData = prestation();
+@let categoryData = categoryInfo();
+
+<mat-card class="prestation-card" [class.unavailable]="!prestationData.disponible">
+  <mat-card-header>
+    <div mat-card-avatar class="prestation-avatar">
+      <mat-icon>{{ getPrestationIcon() }}</mat-icon>
+    </div>
+    <mat-card-title>{{ prestationData.libelle }}</mat-card-title>
+    <mat-card-subtitle class="d-flex align-items-center gap-2">
+      <mat-chip-set>
+        <mat-chip [class]="getCategoryChipClass()">
+          <i [class]="categoryData.icon" class="chip-icon"></i>
+          {{ categoryData.label }}
+        </mat-chip>
+      </mat-chip-set>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ prestationData.description }}</p>
+
+    <div class="prestation-details">
+      <div class="detail-item">
+        <mat-icon class="detail-icon">euro</mat-icon>
+        <span class="detail-label">Prix :</span>
+        <span class="detail-value">{{ prestationData.prix }}€</span>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon class="detail-icon">schedule</mat-icon>
+        <span class="detail-label">Durée :</span>
+        <span class="detail-value">{{ prestationData.duree | duration }}</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    @if (!prestationData.disponible) {
+      <mat-chip color="warn" class="unavailable-chip">
+        <mat-icon matChipAvatar>block</mat-icon>
+        Non disponible
+      </mat-chip>
+    }
+    @if (prestationData.disponible) {
+      <button mat-button color="primary">
+        <mat-icon>info</mat-icon>
+        Plus d'infos
+      </button>
+      <button mat-raised-button color="primary">
+        <mat-icon>add_shopping_cart</mat-icon>
+        Réserver
+      </button>
+    }
+  </mat-card-actions>
+</mat-card>

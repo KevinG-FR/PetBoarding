@@ -1,0 +1,22 @@
+.filters-container {
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.active-filters {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.h-100 {
+  height: 100% !important;
+  min-height: 56px; /* Hauteur standard des mat-form-field */
+}

@@ -1,0 +1,62 @@
+<div class="filters-container">
+  <div class="row g-3">
+    <!-- Filtre par catégorie d'animal -->
+    <div class="col-md-4">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Catégorie d'animal</mat-label>
+        <mat-select [value]="selectedCategory()" (selectionChange)="onCategoryChange($event.value)">
+          <mat-option [value]="null">Toutes les catégories</mat-option>
+          @for (category of categories; track category) {
+            <mat-option [value]="category">
+              <span class="d-flex align-items-center gap-2">
+                <i
+                  [class]="getCategoryIcon(category)"
+                  [style.color]="getCategoryColor(category)"></i>
+                {{ getCategoryLabel(category) }}
+              </span>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Recherche par texte -->
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Rechercher une prestation</mat-label>
+        <input
+          matInput
+          type="text"
+          [value]="searchText()"
+          (input)="onSearchChange($event)"
+          placeholder="Nom ou description de la prestation..." />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Bouton de réinitialisation -->
+    <div class="col-md-2">
+      <button mat-stroked-button type="button" class="w-100 h-100" (click)="clearFilters()">
+        <mat-icon>clear</mat-icon>
+        Effacer
+      </button>
+    </div>
+  </div>
+
+  <!-- Résumé des filtres actifs -->
+  @if (hasActiveFilters()) {
+    <div class="active-filters mt-3">
+      <small class="text-muted">
+        Filtres actifs :
+        @if (selectedCategory()) {
+          <span class="badge bg-primary me-2">
+            {{ getCategoryLabel(selectedCategory()!) }}
+          </span>
+        }
+        @if (searchText()) {
+          <span class="badge bg-secondary me-2">"{{ searchText() }}"</span>
+        }
+      </small>
+    </div>
+  }
+</div>
