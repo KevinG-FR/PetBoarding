@@ -1,0 +1,135 @@
+<div class="filters-container">
+  <div class="row g-3">
+    <!-- Filtre par date de début -->
+    <div class="col-lg-2 col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date de début</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerDebut"
+          [value]="dateDebut()"
+          (dateChange)="onDateDebutChange($event.value)"
+          placeholder="DD/MM/YYYY" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDebut></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Filtre par date de fin -->
+    <div class="col-lg-2 col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date de fin</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerFin"
+          [value]="dateFin()"
+          (dateChange)="onDateFinChange($event.value)"
+          placeholder="DD/MM/YYYY" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Filtre par statut -->
+    <div class="col-lg-2 col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Statut</mat-label>
+        <mat-select [value]="selectedStatut()" (selectionChange)="onStatutChange($event.value)">
+          <mat-option [value]="null">Tous les statuts</mat-option>
+          @for (statut of statuts; track statut) {
+            <mat-option [value]="statut">
+              <span class="d-flex align-items-center gap-2">
+                <i [class]="getStatutIcon(statut)" [style.color]="getStatutColor(statut)"></i>
+                {{ getStatutLabel(statut) }}
+              </span>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Filtre par type d'animal -->
+    <div class="col-lg-2 col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Animal</mat-label>
+        <mat-select
+          [value]="selectedAnimalType()"
+          (selectionChange)="onAnimalTypeChange($event.value)">
+          <mat-option [value]="null">Tous les animaux</mat-option>
+          @for (type of animalTypes; track type) {
+            <mat-option [value]="type">
+              <span class="d-flex align-items-center gap-2">
+                <i [class]="getAnimalTypeIcon(type)" [style.color]="getAnimalTypeColor(type)"></i>
+                {{ getAnimalTypeLabel(type) }}
+              </span>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Bouton de réinitialisation -->
+    <div class="col-lg-2 col-md-3">
+      <div class="clear-button-wrapper">
+        <button
+          mat-raised-button
+          color="accent"
+          type="button"
+          class="w-100 clear-filters-btn"
+          (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon>
+          <span class="d-none d-lg-inline ms-1">Effacer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Résumé des filtres actifs -->
+  @if (hasActiveFilters()) {
+    <div class="active-filters mt-3 mb-4">
+      <small class="text-muted">
+        Filtres actifs :
+        @if (dateDebut()) {
+          <span
+            class="badge bg-primary me-2 filter-badge"
+            (click)="removeFilterDateDebut()"
+            role="button"
+            title="Cliquer pour supprimer ce filtre">
+            Depuis le {{ dateDebut()! | date: 'dd/MM/yyyy' }}
+            <mat-icon class="filter-remove-icon">close</mat-icon>
+          </span>
+        }
+        @if (dateFin()) {
+          <span
+            class="badge bg-primary me-2 filter-badge"
+            (click)="removeFilterDateFin()"
+            role="button"
+            title="Cliquer pour supprimer ce filtre">
+            Jusqu'au {{ dateFin()! | date: 'dd/MM/yyyy' }}
+            <mat-icon class="filter-remove-icon">close</mat-icon>
+          </span>
+        }
+        @if (selectedStatut()) {
+          <span
+            class="badge bg-secondary me-2 filter-badge"
+            (click)="removeFilterStatut()"
+            role="button"
+            title="Cliquer pour supprimer ce filtre">
+            {{ getStatutLabel(selectedStatut()!) }}
+            <mat-icon class="filter-remove-icon">close</mat-icon>
+          </span>
+        }
+        @if (selectedAnimalType()) {
+          <span
+            class="badge bg-success me-2 filter-badge"
+            (click)="removeFilterAnimalType()"
+            role="button"
+            title="Cliquer pour supprimer ce filtre">
+            {{ getAnimalTypeLabel(selectedAnimalType()!) }}
+            <mat-icon class="filter-remove-icon">close</mat-icon>
+          </span>
+        }
+      </small>
+    </div>
+  }
+</div>

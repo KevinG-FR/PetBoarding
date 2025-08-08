@@ -1,0 +1,88 @@
+<div class="reservations-list-container">
+  <!-- Informations sur les résultats et contrôles de pagination -->
+  <div class="results-info mb-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="results-text">
+        @if (hasResults()) {
+          <span class="text-muted">
+            @if (isFiltered()) {
+              {{ resultCount() }} réservation(s) trouvée(s) sur {{ totalCount() }} au total
+            } @else {
+              {{ totalCount() }} réservation(s) au total
+            }
+          </span>
+        } @else {
+          <span class="text-muted">Aucune réservation trouvée</span>
+        }
+      </div>
+
+      @if (hasResults()) {
+        <div class="pagination-controls d-flex align-items-center gap-2">
+          <span class="text-muted small">Éléments par page:</span>
+          <mat-form-field appearance="outline" class="pagination-select">
+            <mat-select
+              [value]="pageSize()"
+              (selectionChange)="pageSize.set($event.value); pageIndex.set(0)">
+              @for (size of pageSizeOptions; track size) {
+                <mat-option [value]="size">{{ size }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Liste des réservations -->
+  @if (hasResults()) {
+    <div class="row g-3">
+      @for (reservation of paginatedReservations(); track reservation.id) {
+        <div class="col-12">
+          <app-reservation-item [reservation]="reservation" />
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalItems() > 0) {
+      <div class="pagination-container mt-4">
+        <div class="d-flex justify-content-center align-items-center gap-3">
+          <mat-paginator
+            [length]="totalItems()"
+            [pageSize]="pageSize()"
+            [pageIndex]="pageIndex()"
+            [pageSizeOptions]="pageSizeOptions"
+            [showFirstLastButtons]="true"
+            [hidePageSize]="true"
+            (page)="onPageChange($event)"
+            class="reservation-paginator">
+          </mat-paginator>
+
+          <a
+            mat-mini-fab
+            color="accent"
+            class="scroll-to-top-btn"
+            [routerLink]="[]"
+            [fragment]="'page-top'"
+            [attr.aria-label]="'Retour en haut de la page'"
+            matTooltip="Retour en haut">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </a>
+        </div>
+      </div>
+    }
+  } @else {
+    <!-- Message vide -->
+    <div class="empty-state text-center py-5">
+      <mat-icon class="empty-icon mb-3">event_busy</mat-icon>
+      <h3 class="empty-title">Aucune réservation trouvée</h3>
+      <p class="empty-subtitle text-muted">
+        @if (isFiltered()) {
+          Essayez de modifier ou supprimer les filtres pour voir plus de résultats.
+        } @else {
+          Il n'y a actuellement aucune réservation dans le système.
+        }
+      </p>
+    </div>
+  }
+</div>

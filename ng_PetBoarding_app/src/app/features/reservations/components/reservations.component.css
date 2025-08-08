@@ -1,0 +1,113 @@
+/* Style pour le bouton FAB à côté du titre */
+.reservations-page {
+  scroll-behavior: smooth; /* Scroll fluide pour les ancres */
+}
+
+.scroll-anchor {
+  position: absolute;
+  top: -20px; /* Offset pour laisser de l'espace au-dessus des filtres */
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.title-icon {
+  color: #3f51b5;
+  font-size: 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+/* Style harmonieux pour le bouton FAB */
+.fab-btn {
+  --mdc-fab-container-width: 36px;
+  --mdc-fab-container-height: 36px;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.fab-btn .mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Style vert pour le bouton FAB sur mobile */
+.fab-btn-green {
+  background-color: #28a745 !important;
+}
+
+.fab-btn-green:hover {
+  background-color: #218838 !important;
+}
+
+.fab-btn-green .mat-icon {
+  color: white !important;
+}
+
+/* Surcharge spécifique pour Material Design Components */
+.fab-btn-green.mat-mdc-fab {
+  --mdc-fab-container-color: #28a745 !important;
+  --mat-fab-foreground-color: white !important;
+}
+
+.fab-btn-green.mat-mdc-fab:hover {
+  --mdc-fab-container-color: #218838 !important;
+}
+
+.fab-btn-green.mat-mdc-fab .mat-mdc-button-persistent-ripple::before {
+  background-color: #28a745 !important;
+}
+
+/* Responsive design pour l'en-tête */
+@media (max-width: 991.98px) {
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .title-icon {
+    font-size: 1.75rem !important;
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .title-icon {
+    font-size: 1.5rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .fab-btn {
+    --mdc-fab-container-width: 32px;
+    --mdc-fab-container-height: 32px;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .fab-btn .mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+}

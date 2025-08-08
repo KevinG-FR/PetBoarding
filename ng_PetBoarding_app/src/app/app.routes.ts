@@ -23,7 +23,10 @@ export const routes: Routes = [
   },
   {
     path: 'reservations',
-    loadComponent: () => import('./components/home/home.component').then((m) => m.HomeComponent) // Temporaire
+    loadComponent: () =>
+      import('./features/reservations/components/reservations.component').then(
+        (m) => m.ReservationsComponent
+      )
   },
   {
     path: 'about',

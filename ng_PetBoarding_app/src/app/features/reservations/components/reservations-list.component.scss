@@ -1,0 +1,153 @@
+// Styles pour la liste des réservations
+.reservations-list-container {
+  .results-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+
+    .results-text {
+      font-size: 0.9rem;
+    }
+  }
+
+  .empty-state {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    margin: 2rem 0;
+
+    .empty-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: #6c757d;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      color: #495057;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-subtitle {
+      font-size: 1rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  }
+}
+
+/* Styles pour la pagination */
+.pagination-controls {
+  flex-shrink: 0;
+}
+
+.pagination-select {
+  width: 80px;
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 32px;
+    padding: 8px 0;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.pagination-container {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+  margin-top: 2rem;
+}
+
+.reservation-paginator {
+  background: transparent;
+
+  ::ng-deep .mat-mdc-paginator-container {
+    min-height: 56px;
+    padding: 0 8px;
+  }
+}
+
+/* Style pour le bouton retour en haut */
+.scroll-to-top-btn {
+  --mdc-fab-small-container-width: 40px;
+  --mdc-fab-small-container-height: 40px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  text-decoration: none !important; /* Supprime le soulignement du lien */
+  display: inline-flex !important; /* Assure le bon affichage en tant que FAB */
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none; /* Assure qu'il n'y a pas de soulignement au hover */
+  }
+
+  &:focus {
+    text-decoration: none;
+  }
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .reservations-list-container .results-info {
+    padding: 0.75rem;
+  }
+
+  .pagination-controls {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .reservations-list-container .results-info .results-text {
+    text-align: center;
+    width: 100%;
+  }
+
+  .reservations-list-container .empty-state {
+    padding: 2rem 1rem;
+
+    .empty-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Ajustements pour le bouton retour en haut sur mobile */
+  .scroll-to-top-btn {
+    --mdc-fab-small-container-width: 36px;
+    --mdc-fab-small-container-height: 36px;
+
+    .mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  /* Stack vertical sur mobile pour pagination + bouton */
+  .pagination-container .d-flex {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: center !important;
+  }
+}

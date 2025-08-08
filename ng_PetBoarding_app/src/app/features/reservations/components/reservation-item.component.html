@@ -1,0 +1,111 @@
+@let statutInfo = getStatutInfo();
+@let dureeJours = getDureeSejourEnJours();
+
+<mat-card class="reservation-card h-100">
+  <mat-card-header class="reservation-header">
+    <div class="reservation-status">
+      <span
+        class="status-badge"
+        [style.background-color]="statutInfo.bgColor"
+        [style.color]="statutInfo.color">
+        <i [class]="statutInfo.icon"></i>
+        {{ statutInfo.label }}
+      </span>
+    </div>
+    <div class="reservation-creation ms-auto">
+      <small class="text-muted">
+        Créée le {{ reservation().dateCreation | date: 'dd/MM/yyyy' }}
+      </small>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content class="reservation-content">
+    <div class="row">
+      <!-- Informations animal -->
+      <div class="col-md-4 col-12">
+        <div class="animal-info">
+          <h6 class="section-title">
+            <i [class]="getAnimalIcon()" [style.color]="getAnimalColor()"></i>
+            Animal
+          </h6>
+          <div class="info-details">
+            <div class="animal-name">{{ reservation().animalNom }}</div>
+            <div class="animal-type">
+              <span
+                class="badge"
+                [style.background-color]="getAnimalColor() + '20'"
+                [style.color]="getAnimalColor()">
+                {{ reservation().animalType === 'CHIEN' ? 'Chien' : 'Chat' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations prestation -->
+      <div class="col-md-4 col-12">
+        <div class="prestation-info">
+          <h6 class="section-title">
+            <mat-icon class="section-icon">room_service</mat-icon>
+            Prestation
+          </h6>
+          <div class="info-details">
+            <div class="prestation-name">{{ reservation().prestationLibelle }}</div>
+            <div class="prestation-price">
+              <span class="price-amount">{{ reservation().prix }}€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations dates et durée -->
+      <div class="col-md-4 col-12">
+        <div class="dates-info">
+          <h6 class="section-title">
+            <mat-icon class="section-icon">calendar_today</mat-icon>
+            Dates & Durée
+          </h6>
+          <div class="info-details">
+            <div class="date-range">
+              {{ reservation().dateDebut | date: 'dd/MM' }} -
+              {{ reservation().dateFin | date: 'dd/MM/yyyy' }}
+            </div>
+            @if (dureeJours > 1) {
+              <div class="duration-info">
+                <span class="badge bg-light text-dark">{{ dureeJours }} jour(s)</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commentaires (si présents) -->
+    @if (reservation().commentaires) {
+      <div class="comments-section mt-3">
+        <h6 class="section-title">
+          <mat-icon class="section-icon">comment</mat-icon>
+          Commentaires
+        </h6>
+        <p class="comments-text">{{ reservation().commentaires }}</p>
+      </div>
+    }
+  </mat-card-content>
+
+  <mat-card-actions class="reservation-actions">
+    <div class="d-flex justify-content-center w-100">
+      <div class="action-buttons">
+        <button mat-button color="primary" class="me-2">
+          <mat-icon>visibility</mat-icon>
+          Détails
+        </button>
+        @if (!isPast()) {
+          <button mat-button color="accent">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+        }
+      </div>
+    </div>
+  </mat-card-actions>
+</mat-card>

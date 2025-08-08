@@ -1,0 +1,66 @@
+/* Style pour le conteneur des filtres */
+.filters-container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e9ecef;
+}
+
+/* Style harmonieux pour le bouton Effacer */
+.clear-button-wrapper {
+  height: 80px; /* Hauteur totale d'un mat-form-field avec outline */
+  display: flex;
+  align-items: center; /* Centre le bouton verticalement */
+  padding-top: 8px; /* Léger ajustement pour compenser le label */
+}
+
+.clear-filters-btn {
+  height: 56px; /* Même hauteur que la zone input des mat-form-field */
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-filters-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.clear-filters-btn .mat-icon {
+  margin-right: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Style pour les badges des filtres actifs */
+.active-filters {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 6px;
+  border-left: 4px solid #3f51b5;
+}
+
+.active-filters .badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 767.98px) {
+  .filters-container {
+    padding: 1rem;
+  }
+
+  .clear-filters-btn {
+    height: 48px;
+  }
+
+  .clear-filters-btn .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
