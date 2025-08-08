@@ -1,0 +1,254 @@
+<!-- Page À Propos - PetBoarding -->
+<div class="about-page">
+  <!-- Section Hero -->
+  <section class="hero-section">
+    <div class="container-fluid py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold text-primary mb-4">
+            <mat-icon class="hero-icon me-3">pets</mat-icon>
+            À Propos de PetBoarding
+          </h1>
+          <p class="lead mb-4">
+            Depuis 2016, nous offrons des services de pension et de soins pour animaux de compagnie
+            avec passion, professionnalisme et amour inconditionnel pour nos petits pensionnaires.
+          </p>
+          <button mat-raised-button color="primary" routerLink="/prestations" class="me-3">
+            <mat-icon>list_alt</mat-icon>
+            <span class="ms-2">Nos Services</span>
+          </button>
+          <button mat-stroked-button color="primary" routerLink="/reservations">
+            <mat-icon>event_note</mat-icon>
+            <span class="ms-2">Réserver</span>
+          </button>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-image">
+            <img
+              src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+              alt="Notre établissement de pension pour animaux"
+              class="img-fluid rounded-3 shadow"
+              loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Histoire -->
+  <section class="story-section bg-light py-5">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <h2 class="text-center mb-5">
+            <mat-icon class="section-icon me-2">auto_stories</mat-icon>
+            Notre Histoire
+          </h2>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <mat-icon>lightbulb</mat-icon>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1560743173-567a3b5658b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Idée de création"
+                    class="img-fluid rounded"
+                    loading="lazy" />
+                </div>
+                <h4>2016 - L'Idée Naît</h4>
+                <p>
+                  Tout a commencé quand Sarah Martinez, vétérinaire passionnée, a réalisé le manque
+                  de structures de qualité pour la garde d'animaux domestiques. Après avoir vu trop
+                  de propriétaires stressés par l'absence de solutions fiables, elle décide de créer
+                  PetBoarding.
+                </p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <mat-icon>home</mat-icon>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Premier centre"
+                    class="img-fluid rounded"
+                    loading="lazy" />
+                </div>
+                <h4>2017 - Ouverture du Premier Centre</h4>
+                <p>
+                  Ouverture de notre premier établissement avec 20 places. Focus sur la qualité
+                  plutôt que la quantité : surveillance 24h/24, espaces verts, équipe de
+                  professionnels qualifiés. Le bouche-à-oreille fait rapidement notre réputation.
+                </p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <mat-icon>trending_up</mat-icon>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Expansion services"
+                    class="img-fluid rounded"
+                    loading="lazy" />
+                </div>
+                <h4>2019 - Expansion des Services</h4>
+                <p>
+                  Face au succès et aux demandes de nos clients, nous ajoutons les services de
+                  toilettage professionnel et de soins vétérinaires. Thomas Dubois et Emma Wilson
+                  rejoignent l'équipe pour enrichir notre expertise.
+                </p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <mat-icon>star</mat-icon>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    alt="Innovation technologique"
+                    class="img-fluid rounded"
+                    loading="lazy" />
+                </div>
+                <h4>2024 - Reconnaissance et Innovation</h4>
+                <p>
+                  Avec plus de 2500 animaux accueillis et 98% de satisfaction client, nous lançons
+                  notre plateforme de réservation en ligne. Notre mission reste inchangée : offrir
+                  le meilleur service possible à vos compagnons.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Statistiques -->
+  <section class="stats-section py-5">
+    <div class="container-fluid">
+      <h2 class="text-center mb-5">
+        <mat-icon class="section-icon me-2">analytics</mat-icon>
+        Nos Chiffres Parlent
+      </h2>
+      <div class="row">
+        @for (stat of stats; track stat.label) {
+          <div class="col-md-6 col-lg-3 mb-4">
+            <mat-card class="stat-card text-center h-100">
+              <mat-card-content class="p-4">
+                <mat-icon class="stat-icon mb-3">{{ stat.icon }}</mat-icon>
+                <h3 class="stat-value">{{ stat.value }}</h3>
+                <p class="stat-label mb-0">{{ stat.label }}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Équipe -->
+  <section class="team-section bg-light py-5">
+    <div class="container-fluid">
+      <h2 class="text-center mb-5">
+        <mat-icon class="section-icon me-2">group</mat-icon>
+        Notre Équipe
+      </h2>
+      <div class="row">
+        @for (member of teamMembers; track member.name) {
+          <div class="col-lg-4 mb-4">
+            <mat-card class="team-card h-100">
+              <div class="team-avatar">
+                <div class="avatar-emoji">{{ member.avatar }}</div>
+              </div>
+              <mat-card-content class="p-4">
+                <h4 class="team-name">{{ member.name }}</h4>
+                <p class="team-role text-primary fw-bold">{{ member.role }}</p>
+                <p class="team-description">{{ member.description }}</p>
+                <div class="team-specialties">
+                  <h6>Spécialités :</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (specialty of member.specialties; track specialty) {
+                      <span class="badge bg-secondary">{{ specialty }}</span>
+                    }
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Services -->
+  <section class="services-section py-5">
+    <div class="container-fluid">
+      <h2 class="text-center mb-5">
+        <mat-icon class="section-icon me-2">medical_services</mat-icon>
+        Nos Services Principaux
+      </h2>
+      <div class="row">
+        @for (service of services; track service.title) {
+          <div class="col-lg-6 mb-4">
+            <mat-card class="service-card h-100">
+              <mat-card-content class="p-4">
+                <div class="d-flex align-items-start mb-3">
+                  <mat-icon class="service-icon me-3">{{ service.icon }}</mat-icon>
+                  <div>
+                    <h4 class="service-title">{{ service.title }}</h4>
+                    <p class="service-description">{{ service.description }}</p>
+                  </div>
+                </div>
+                <div class="service-features">
+                  <h6>Inclus :</h6>
+                  <ul class="list-unstyled">
+                    @for (feature of service.features; track feature) {
+                      <li class="mb-1">
+                        <mat-icon class="feature-icon me-2">check_circle</mat-icon>
+                        {{ feature }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Contact/CTA -->
+  <section class="cta-section bg-primary text-white py-5">
+    <div class="container-fluid text-center">
+      <h2 class="mb-4">Prêt à Confier Votre Compagnon ?</h2>
+      <p class="lead mb-4">
+        Rejoignez les centaines de propriétaires qui nous font confiance pour prendre soin de leurs
+        animaux.
+      </p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <button mat-raised-button color="accent" routerLink="/prestations" class="btn-lg">
+          <mat-icon>pets</mat-icon>
+          <span class="ms-2">Découvrir Nos Services</span>
+        </button>
+        <button mat-stroked-button class="btn-lg text-white border-white">
+          <mat-icon>phone</mat-icon>
+          <span class="ms-2">Nous Contacter</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

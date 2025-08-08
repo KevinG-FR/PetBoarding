@@ -1,0 +1,345 @@
+// Styles pour la page À propos
+.about-page {
+  // Section Hero
+  .hero-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+    .hero-icon {
+      font-size: 3rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .hero-image {
+      position: relative;
+
+      img {
+        max-height: 400px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.02);
+        }
+      }
+    }
+  }
+
+  // Section Histoire - Timeline
+  .story-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary-color, #3f51b5);
+      }
+
+      .timeline-item {
+        position: relative;
+        margin-bottom: 3rem;
+
+        .timeline-marker {
+          position: absolute;
+          left: -2.5rem;
+          top: 0;
+          width: 3rem;
+          height: 3rem;
+          background: var(--primary-color, #3f51b5);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 4px solid white;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          mat-icon {
+            color: white;
+            font-size: 1.2rem;
+          }
+        }
+
+        .timeline-content {
+          background: white;
+          padding: 1.5rem;
+          border-radius: 8px;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+          margin-left: 1rem;
+
+          .timeline-image {
+            float: right;
+            width: 120px;
+            height: 80px;
+            margin-left: 1rem;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            border-radius: 6px;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.3s ease;
+
+              &:hover {
+                transform: scale(1.1);
+              }
+            }
+          }
+
+          h4 {
+            color: var(--primary-color, #3f51b5);
+            margin-bottom: 1rem;
+            font-weight: 600;
+          }
+
+          p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 0;
+            text-align: justify;
+          }
+        }
+      }
+    }
+  }
+
+  // Section Statistiques
+  .stats-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .stat-card {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      border: none;
+
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-icon {
+        font-size: 3rem;
+        color: var(--primary-color, #3f51b5);
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color, #3f51b5);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #666;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Section Équipe
+  .team-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .team-card {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      overflow: hidden;
+      border: none;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .team-avatar {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+        .avatar-emoji {
+          font-size: 4rem;
+          line-height: 1;
+        }
+      }
+
+      .team-name {
+        color: var(--primary-color, #3f51b5);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .team-role {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .team-description {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .team-specialties {
+        h6 {
+          font-size: 0.8rem;
+          color: #888;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .badge {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+
+  // Section Services
+  .services-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .service-card {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      border: none;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .service-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color, #3f51b5);
+        margin-top: 0.25rem;
+      }
+
+      .service-title {
+        color: var(--primary-color, #3f51b5);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .service-description {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .service-features {
+        h6 {
+          font-size: 0.9rem;
+          color: #888;
+          margin-bottom: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .feature-icon {
+          color: #28a745;
+          font-size: 1rem;
+        }
+
+        li {
+          display: flex;
+          align-items: center;
+          color: #555;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  // Section CTA
+  .cta-section {
+    background: linear-gradient(135deg, var(--primary-color, #3f51b5) 0%, #303f9f 100%);
+
+    .btn-lg {
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .about-page {
+    .hero-section {
+      .hero-icon {
+        font-size: 2rem;
+      }
+
+      .hero-image img {
+        max-height: 250px;
+      }
+    }
+
+    .story-section {
+      .timeline {
+        padding-left: 1rem;
+
+        &::before {
+          left: 0.5rem;
+        }
+
+        .timeline-item {
+          .timeline-marker {
+            left: -1.5rem;
+            width: 2rem;
+            height: 2rem;
+
+            mat-icon {
+              font-size: 1rem;
+            }
+          }
+
+          .timeline-content {
+            margin-left: 0.5rem;
+            padding: 1rem;
+
+            .timeline-image {
+              float: none;
+              width: 100%;
+              height: 150px;
+              margin: 0 0 1rem 0;
+            }
+          }
+        }
+      }
+    }
+
+    .cta-section {
+      .d-flex {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  }
+}
