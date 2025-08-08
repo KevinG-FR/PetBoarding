@@ -1,0 +1,215 @@
+// Styles pour la page Contact
+.contact-page {
+  // Section Hero
+  .hero-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+    .hero-icon {
+      font-size: 3rem;
+      color: var(--primary-color, #3f51b5);
+    }
+  }
+
+  // Section Accès Rapide
+  .quick-actions-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .quick-service-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      height: 100%;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .service-icon {
+        font-size: 2.5rem;
+      }
+
+      .service-title {
+        color: var(--primary-color, #3f51b5);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .service-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Section Contact Principal
+  .main-contact-section {
+    .contact-info-card {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      border: none;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .contact-icon {
+        font-size: 2rem;
+        color: var(--primary-color, #3f51b5);
+        margin-top: 0.25rem;
+      }
+
+      h6 {
+        color: var(--primary-color, #3f51b5);
+        margin-bottom: 0.5rem;
+      }
+
+      a {
+        color: inherit;
+        font-weight: 500;
+
+        &:hover {
+          color: var(--primary-color, #3f51b5);
+        }
+      }
+
+      // Style spécial pour les urgences
+      &.border-warning {
+        border-left: 4px solid #ffc107 !important;
+
+        .contact-icon {
+          color: #ffc107;
+        }
+      }
+    }
+
+    // Formulaire de contact
+    #contact-form {
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+      .mat-mdc-card-header {
+        background: linear-gradient(135deg, var(--primary-color, #3f51b5) 0%, #303f9f 100%);
+        color: white;
+        margin: -24px -24px 24px -24px;
+        padding: 24px;
+        border-radius: 4px 4px 0 0;
+
+        .mat-mdc-card-title {
+          color: white;
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+
+        .mat-mdc-card-subtitle {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+
+      .contact-form {
+        .mat-mdc-form-field {
+          margin-bottom: 1rem;
+
+          .mat-mdc-form-field-error {
+            font-size: 0.8rem;
+          }
+        }
+
+        .btn-lg {
+          padding: 0.75rem 2rem;
+          font-size: 1.1rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  // Section FAQ
+  .faq-section {
+    .section-icon {
+      font-size: 2rem;
+      color: var(--primary-color, #3f51b5);
+    }
+
+    .faq-item {
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      border: none;
+
+      &:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .faq-question {
+        color: var(--primary-color, #3f51b5);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+      }
+
+      .faq-answer {
+        color: #555;
+        line-height: 1.6;
+        padding-left: 2rem;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .contact-page {
+    .hero-section {
+      .hero-icon {
+        font-size: 2rem;
+      }
+    }
+
+    .main-contact-section {
+      #contact-form {
+        .mat-mdc-card-header {
+          margin: -16px -16px 16px -16px;
+          padding: 16px;
+
+          .mat-mdc-card-title {
+            font-size: 1.25rem;
+          }
+        }
+      }
+    }
+
+    .quick-actions-section {
+      .quick-service-card {
+        margin-bottom: 1rem;
+      }
+    }
+
+    .faq-section {
+      .faq-answer {
+        padding-left: 0;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}
+
+// Styles pour les snackbars
+::ng-deep {
+  .success-snackbar {
+    background: #4caf50 !important;
+    color: white !important;
+  }
+
+  .emergency-snackbar {
+    background: #f44336 !important;
+    color: white !important;
+  }
+}

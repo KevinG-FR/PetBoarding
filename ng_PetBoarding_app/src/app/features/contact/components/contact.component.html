@@ -1,0 +1,318 @@
+<!-- Page Contact - PetBoarding -->
+<div class="contact-page">
+  <!-- Section Hero -->
+  <section class="hero-section">
+    <div class="container-fluid py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-8 mx-auto text-center">
+          <h1 class="display-4 fw-bold text-primary mb-4">
+            <mat-icon class="hero-icon me-3">contact_support</mat-icon>
+            Contactez-Nous
+          </h1>
+          <p class="lead mb-4">
+            Une question ? Un besoin urgent ? Notre équipe est là pour vous accompagner et prendre
+            soin de vos compagnons dans les meilleures conditions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Accès Rapide -->
+  <section class="quick-actions-section py-4 bg-light">
+    <div class="container-fluid">
+      <h2 class="text-center mb-4">
+        <mat-icon class="section-icon me-2">flash_on</mat-icon>
+        Accès Rapide
+      </h2>
+      <div class="row">
+        @for (service of quickServices; track service.title) {
+          <div class="col-md-4 mb-3">
+            <mat-card
+              class="quick-service-card h-100 text-center"
+              (click)="onQuickAction(service.action)">
+              <mat-card-content class="p-4">
+                <mat-icon [class]="'service-icon mb-3 text-' + service.color">{{
+                  service.icon
+                }}</mat-icon>
+                <h5 class="service-title">{{ service.title }}</h5>
+                <p class="service-description">{{ service.description }}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Principale -->
+  <section class="main-contact-section py-5">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Informations de Contact -->
+        <div class="col-lg-4 mb-5">
+          <h3 class="mb-4">
+            <mat-icon class="me-2">info</mat-icon>
+            Nos Coordonnées
+          </h3>
+
+          <!-- Adresse -->
+          <mat-card class="contact-info-card mb-4">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-start">
+                <mat-icon class="contact-icon me-3">location_on</mat-icon>
+                <div>
+                  <h6 class="fw-bold">Adresse</h6>
+                  <p class="mb-0">
+                    {{ contactInfo.address.street }}<br />
+                    {{ contactInfo.address.city }}<br />
+                    {{ contactInfo.address.country }}
+                  </p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Téléphone -->
+          <mat-card class="contact-info-card mb-4">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-start">
+                <mat-icon class="contact-icon me-3">phone</mat-icon>
+                <div>
+                  <h6 class="fw-bold">Téléphone</h6>
+                  <p class="mb-1">
+                    <a [href]="'tel:' + contactInfo.phone" class="text-decoration-none">
+                      {{ contactInfo.phone }}
+                    </a>
+                  </p>
+                  <small class="text-muted">Accueil général</small>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Urgences -->
+          <mat-card class="contact-info-card mb-4 border-warning">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-start">
+                <mat-icon class="contact-icon me-3 text-warning">emergency</mat-icon>
+                <div>
+                  <h6 class="fw-bold text-warning">Urgences 24h/24</h6>
+                  <p class="mb-1">
+                    <a [href]="'tel:' + contactInfo.emergencyPhone" class="text-decoration-none">
+                      {{ contactInfo.emergencyPhone }}
+                    </a>
+                  </p>
+                  <small class="text-muted">Disponible jour et nuit</small>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Email -->
+          <mat-card class="contact-info-card mb-4">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-start">
+                <mat-icon class="contact-icon me-3">email</mat-icon>
+                <div>
+                  <h6 class="fw-bold">Email</h6>
+                  <p class="mb-0">
+                    <a [href]="'mailto:' + contactInfo.email" class="text-decoration-none">
+                      {{ contactInfo.email }}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Horaires -->
+          <mat-card class="contact-info-card">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-start">
+                <mat-icon class="contact-icon me-3">schedule</mat-icon>
+                <div>
+                  <h6 class="fw-bold">Horaires d'ouverture</h6>
+                  <p class="mb-1"><strong>Lun-Ven:</strong> {{ contactInfo.hours.weekdays }}</p>
+                  <p class="mb-1"><strong>Sam-Dim:</strong> {{ contactInfo.hours.weekend }}</p>
+                  <small class="text-muted">{{ contactInfo.hours.holidays }}</small>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Formulaire de Contact -->
+        <div class="col-lg-8">
+          <mat-card id="contact-form">
+            <mat-card-header class="pb-3">
+              <mat-card-title>
+                <mat-icon class="me-2">message</mat-icon>
+                Envoyez-nous un Message
+              </mat-card-title>
+              <mat-card-subtitle>
+                Nous vous répondrons dans les plus brefs délais
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+                <div class="row">
+                  <!-- Prénom -->
+                  <div class="col-md-6 mb-3">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Prénom *</mat-label>
+                      <input matInput formControlName="firstName" required />
+                      <mat-icon matSuffix>person</mat-icon>
+                      @if (
+                        contactForm.get('firstName')?.touched &&
+                        contactForm.get('firstName')?.errors
+                      ) {
+                        <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Nom -->
+                  <div class="col-md-6 mb-3">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Nom *</mat-label>
+                      <input matInput formControlName="lastName" required />
+                      <mat-icon matSuffix>person</mat-icon>
+                      @if (
+                        contactForm.get('lastName')?.touched && contactForm.get('lastName')?.errors
+                      ) {
+                        <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <!-- Email -->
+                  <div class="col-md-6 mb-3">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Email *</mat-label>
+                      <input matInput formControlName="email" type="email" required />
+                      <mat-icon matSuffix>email</mat-icon>
+                      @if (contactForm.get('email')?.touched && contactForm.get('email')?.errors) {
+                        <mat-error>{{ getErrorMessage('email') }}</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Téléphone -->
+                  <div class="col-md-6 mb-3">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Téléphone *</mat-label>
+                      <input matInput formControlName="phone" type="tel" required />
+                      <mat-icon matSuffix>phone</mat-icon>
+                      @if (contactForm.get('phone')?.touched && contactForm.get('phone')?.errors) {
+                        <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Motif -->
+                <div class="mb-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Motif de contact *</mat-label>
+                    <mat-select formControlName="reason" required>
+                      @for (reason of contactReasons; track reason.value) {
+                        <mat-option [value]="reason.value">{{ reason.label }}</mat-option>
+                      }
+                    </mat-select>
+                    @if (contactForm.get('reason')?.touched && contactForm.get('reason')?.errors) {
+                      <mat-error>{{ getErrorMessage('reason') }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <!-- Sujet -->
+                <div class="mb-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Sujet *</mat-label>
+                    <input matInput formControlName="subject" required />
+                    @if (
+                      contactForm.get('subject')?.touched && contactForm.get('subject')?.errors
+                    ) {
+                      <mat-error>{{ getErrorMessage('subject') }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <!-- Message -->
+                <div class="mb-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Message *</mat-label>
+                    <textarea matInput formControlName="message" rows="6" required></textarea>
+                    @if (
+                      contactForm.get('message')?.touched && contactForm.get('message')?.errors
+                    ) {
+                      <mat-error>{{ getErrorMessage('message') }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <!-- Bouton Submit -->
+                <div class="d-flex justify-content-end">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="isSubmitting()"
+                    class="btn-lg">
+                    @if (isSubmitting()) {
+                      <mat-icon class="me-2">hourglass_empty</mat-icon>
+                      Envoi en cours...
+                    } @else {
+                      <mat-icon class="me-2">send</mat-icon>
+                      Envoyer le Message
+                    }
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section FAQ -->
+  <section class="faq-section bg-light py-5">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <h2 class="text-center mb-5">
+            <mat-icon class="section-icon me-2">help</mat-icon>
+            Questions Fréquentes
+          </h2>
+
+          <div class="faq-list">
+            @for (faq of faqItems; track faq.question) {
+              <mat-card class="faq-item mb-3">
+                <mat-card-content class="p-4">
+                  <h5 class="faq-question mb-3">
+                    <mat-icon class="me-2 text-primary">help_outline</mat-icon>
+                    {{ faq.question }}
+                  </h5>
+                  <p class="faq-answer mb-0">{{ faq.answer }}</p>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+
+          <div class="text-center mt-4">
+            <p class="text-muted">Vous ne trouvez pas la réponse à votre question ?</p>
+            <button mat-stroked-button color="primary" (click)="scheduleVisit()">
+              <mat-icon class="me-2">contact_support</mat-icon>
+              Contactez-nous directement
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

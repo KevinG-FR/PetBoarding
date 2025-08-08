@@ -35,7 +35,8 @@ export const routes: Routes = [
   },
   {
     path: 'contact',
-    loadComponent: () => import('./components/home/home.component').then((m) => m.HomeComponent) // Temporaire
+    loadComponent: () =>
+      import('./features/contact/components/contact.component').then((m) => m.ContactComponent)
   },
   {
     path: '**',
