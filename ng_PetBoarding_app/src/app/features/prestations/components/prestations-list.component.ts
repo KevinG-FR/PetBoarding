@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { PrestationFilters } from '../models/prestation.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Prestation, PrestationFilters } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
+import { PrestationDetailComponent } from './prestation-detail.component';
 import { PrestationItemComponent } from './prestation-item.component';
 
 @Component({
@@ -14,6 +17,8 @@ import { PrestationItemComponent } from './prestation-item.component';
 })
 export class PrestationsListComponent {
   private prestationsService = inject(PrestationsService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   // Input pour recevoir les filtres du parent
   filters = input<PrestationFilters>({});
@@ -31,4 +36,36 @@ export class PrestationsListComponent {
   isFiltered = computed(() => this.filteredPrestations().length < this.allPrestations().length);
   resultCount = computed(() => this.filteredPrestations().length);
   totalCount = computed(() => this.allPrestations().length);
+
+  onViewDetails(prestation: Prestation): void {
+    const dialogRef = this.dialog.open(PrestationDetailComponent, {
+      data: { prestation },
+      maxWidth: '90vw',
+      width: '1200px',
+      maxHeight: '85vh',
+      height: 'auto',
+      autoFocus: false,
+      restoreFocus: true,
+      panelClass: 'prestation-detail-dialog'
+    });
+
+    // Gérer la fermeture du modal
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'reserve') {
+        this.onReservePrestation(prestation);
+      }
+    });
+  }
+
+  onReservePrestation(prestation: Prestation): void {
+    // Simuler une réservation
+    this.snackBar.open(
+      `Réservation pour "${prestation.libelle}" ajoutée au panier !`,
+      'Voir le panier',
+      {
+        duration: 5000,
+        panelClass: ['success-snackbar']
+      }
+    );
+  }
 }

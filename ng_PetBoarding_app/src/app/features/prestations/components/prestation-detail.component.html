@@ -1,0 +1,174 @@
+<div class="prestation-detail-modal">
+  @let prestationData = prestation;
+  @let categoryData = categoryInfo();
+  @let details = detailedInfo();
+
+  <!-- Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="prestation-icon">
+          <mat-icon>{{ getPrestationIcon() }}</mat-icon>
+        </div>
+        <div class="header-info">
+          <h2 class="prestation-title">{{ prestationData.libelle }}</h2>
+          <mat-chip-set>
+            <mat-chip [class]="getCategoryChipClass()">
+              <i [class]="categoryData.icon" class="chip-icon"></i>
+              {{ categoryData.label }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+      <button mat-icon-button (click)="onClose()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="modal-content">
+    <!-- Description principale -->
+    <mat-card class="description-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">description</mat-icon>
+          Description
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="description-text">{{ prestationData.description }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Informations pratiques -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">info</mat-icon>
+          Informations pratiques
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon class="info-icon">euro</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Prix</span>
+              <span class="info-value">{{ prestationData.prix }}€</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">schedule</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Durée</span>
+              <span class="info-value">{{ prestationData.duree | duration }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">event</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Horaires</span>
+              <span class="info-value">{{ details.schedule }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">location_on</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Lieu</span>
+              <span class="info-value">{{ details.location }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Services inclus, Prérequis et Garanties en 3 colonnes -->
+    <mat-card class="combined-info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">info</mat-icon>
+          Informations détaillées
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="three-column-grid">
+          <!-- Services inclus -->
+          <div class="info-column">
+            <h5 class="column-title">
+              <mat-icon class="column-icon">check_circle</mat-icon>
+              Services inclus
+            </h5>
+            <ul class="services-list">
+              @for (service of details.included; track service) {
+                <li class="service-item">
+                  <mat-icon class="service-check">check</mat-icon>
+                  {{ service }}
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Prérequis -->
+          <div class="info-column">
+            <h5 class="column-title">
+              <mat-icon class="column-icon">assignment</mat-icon>
+              Prérequis
+            </h5>
+            <ul class="requirements-list">
+              @for (requirement of details.requirements; track requirement) {
+                <li class="requirement-item">
+                  <mat-icon class="requirement-icon">fiber_manual_record</mat-icon>
+                  {{ requirement }}
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Nos garanties -->
+          <div class="info-column">
+            <h5 class="column-title">
+              <mat-icon class="column-icon">shield</mat-icon>
+              Nos garanties
+            </h5>
+            <ul class="additional-info-list">
+              @for (info of details.additionalInfo; track info) {
+                <li class="additional-info-item">
+                  <mat-icon class="additional-info-icon">verified</mat-icon>
+                  {{ info }}
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Actions -->
+  <div class="modal-actions">
+    <div class="actions-content">
+      <div class="price-info">
+        <span class="price-label">Prix total :</span>
+        <span class="price-value">{{ prestationData.prix }}€</span>
+      </div>
+      <div class="action-buttons">
+        <button mat-button (click)="onClose()" class="cancel-button">Fermer</button>
+        @if (prestationData.disponible) {
+          <button mat-raised-button color="primary" (click)="onReserver()" class="reserve-button">
+            <mat-icon class="me-2">add_shopping_cart</mat-icon>
+            Réserver maintenant
+          </button>
+        } @else {
+          <button mat-stroked-button disabled class="unavailable-button">
+            <mat-icon class="me-2">block</mat-icon>
+            Non disponible
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>

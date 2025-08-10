@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -24,6 +24,11 @@ import { PrestationsService } from '../services/prestations.service';
 })
 export class PrestationItemComponent {
   prestation = input.required<Prestation>();
+
+  // Événements émis par le composant
+  viewDetails = output<Prestation>();
+  reservePrestation = output<Prestation>();
+
   private prestationsService = inject(PrestationsService);
 
   // Computed pour optimiser les appels répétés
@@ -51,5 +56,13 @@ export class PrestationItemComponent {
     if (libelle.includes('domicile')) return 'home';
     if (libelle.includes('consultation')) return 'psychology';
     return 'room_service';
+  }
+
+  onViewDetails(): void {
+    this.viewDetails.emit(this.prestation());
+  }
+
+  onReserve(): void {
+    this.reservePrestation.emit(this.prestation());
   }
 }

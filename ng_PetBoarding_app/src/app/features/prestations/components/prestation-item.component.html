@@ -43,11 +43,11 @@
       </mat-chip>
     }
     @if (prestationData.disponible) {
-      <button mat-button color="primary">
+      <button mat-button color="primary" (click)="onViewDetails()">
         <mat-icon>info</mat-icon>
         Plus d'infos
       </button>
-      <button mat-raised-button color="primary">
+      <button mat-raised-button color="primary" (click)="onReserve()">
         <mat-icon>add_shopping_cart</mat-icon>
         Réserver
       </button>

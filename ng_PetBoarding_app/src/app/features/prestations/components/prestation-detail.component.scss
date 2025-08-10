@@ -1,0 +1,549 @@
+// Styles pour le modal de détail de prestation
+.prestation-detail-modal {
+  max-width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px 24px;
+
+  // Header
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary-color, #3f51b5) 0%, #303f9f 100%);
+    color: white;
+    padding: 32px 24px 24px 32px;
+    margin: 0 -24px 24px -24px;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .prestation-icon {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          padding: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          mat-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            color: white;
+          }
+        }
+
+        .header-info {
+          .prestation-title {
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+          }
+
+          mat-chip {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            .chip-icon {
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+
+      .close-button {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        margin-left: 20px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+  }
+
+  // Content
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 4px; // Petit padding pour éviter que les éléments touchent les bords
+
+    mat-card {
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      mat-card-header {
+        margin-bottom: 16px;
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--primary-color, #3f51b5);
+          font-size: 1.2rem;
+          font-weight: 600;
+
+          .section-icon {
+            font-size: 1.3rem;
+            width: 1.3rem;
+            height: 1.3rem;
+          }
+        }
+      }
+    }
+
+    // Description card
+    .description-card {
+      .description-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555;
+        margin: 0;
+      }
+    }
+
+    // Info card
+    .info-card {
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        width: 100%;
+
+        .info-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 20px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          min-width: 0;
+          word-wrap: break-word;
+
+          .info-icon {
+            color: var(--primary-color, #3f51b5);
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          .info-content {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+
+            .info-label {
+              font-size: 0.9rem;
+              color: #666;
+              margin-bottom: 6px;
+              font-weight: 500;
+            }
+
+            .info-value {
+              font-weight: 600;
+              color: #333;
+              font-size: 1rem;
+              word-wrap: break-word;
+              hyphens: auto;
+            }
+          }
+        }
+      }
+    }
+
+    // Combined info card (Services, Prérequis, Garanties)
+    .combined-info-card {
+      .three-column-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 8px;
+
+        .info-column {
+          .column-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color, #3f51b5);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+
+            .column-icon {
+              font-size: 1.1rem;
+            }
+          }
+
+          ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+              display: flex;
+              align-items: flex-start;
+              gap: 8px;
+              padding: 6px 0;
+              font-size: 0.9rem;
+              line-height: 1.4;
+
+              mat-icon {
+                font-size: 1rem;
+                width: 1rem;
+                height: 1rem;
+                margin-top: 2px;
+                flex-shrink: 0;
+              }
+
+              &.service-item .service-check {
+                color: #4caf50;
+              }
+
+              &.requirement-item .requirement-icon {
+                color: #ff9800;
+                font-size: 0.7rem;
+                margin-top: 4px;
+              }
+
+              &.additional-info-item .additional-info-icon {
+                color: #2196f3;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Services card (legacy - peut être supprimé)
+    .services-card {
+      .services-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        .service-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .service-check {
+            color: #4caf50;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+
+    // Requirements card
+    .requirements-card {
+      .requirements-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        .requirement-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .requirement-icon {
+            color: #ff9800;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    // Additional info card
+    .additional-info-card {
+      .additional-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        .additional-info-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .additional-info-icon {
+            color: #2196f3;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Actions
+  .modal-actions {
+    border-top: 1px solid #e0e0e0;
+    padding: 20px 24px 0 24px;
+    margin: 24px -24px 0 -24px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 10;
+
+    .actions-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+
+      .price-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .price-label {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 4px;
+        }
+
+        .price-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--primary-color, #3f51b5);
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+
+        .cancel-button {
+          min-width: 100px;
+        }
+
+        .reserve-button {
+          min-width: 180px;
+          font-weight: 600;
+
+          mat-icon {
+            margin-right: 8px;
+          }
+        }
+
+        .unavailable-button {
+          min-width: 180px;
+          color: #757575;
+
+          mat-icon {
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .prestation-detail-modal {
+    .modal-header {
+      .header-content {
+        .header-left {
+          .header-info {
+            .prestation-title {
+              font-size: 1.3rem;
+            }
+          }
+        }
+      }
+    }
+
+    .modal-content {
+      .info-card {
+        .info-grid {
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+      }
+
+      .combined-info-card {
+        .three-column-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+
+          .info-column:last-child {
+            grid-column: 1 / -1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .prestation-detail-modal {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 16px 16px 16px;
+
+    .modal-header {
+      padding: 20px 16px 16px 20px;
+      margin: 0 -16px 16px -16px;
+
+      .header-content {
+        .header-left {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+
+          .prestation-icon {
+            align-self: center;
+          }
+        }
+
+        .close-button {
+          margin-left: 12px;
+        }
+      }
+    }
+
+    .modal-content {
+      .info-card {
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .combined-info-card {
+        .three-column-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+
+          .info-column:last-child {
+            grid-column: auto;
+          }
+        }
+      }
+    }
+
+    .modal-actions {
+      padding: 16px 16px 0 16px;
+      margin: 16px -16px 0 -16px;
+
+      .actions-content {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+
+        .price-info {
+          align-items: center;
+          text-align: center;
+        }
+
+        .action-buttons {
+          justify-content: center;
+          flex-wrap: wrap;
+
+          .reserve-button,
+          .unavailable-button {
+            min-width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .prestation-detail-modal {
+    padding: 0 12px 12px 12px;
+
+    .modal-header {
+      .header-content {
+        .header-left {
+          .header-info {
+            .prestation-title {
+              font-size: 1.1rem;
+            }
+          }
+        }
+      }
+    }
+
+    .modal-content {
+      .info-card {
+        .info-grid {
+          .info-item {
+            padding: 12px;
+
+            .info-content {
+              .info-value {
+                font-size: 0.9rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Chip styles pour les catégories
+.chip-chien {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #1976d2;
+}
+
+.chip-chat {
+  background-color: rgba(156, 39, 176, 0.2);
+  color: #7b1fa2;
+}
+
+// Styles globaux pour le dialog Angular Material
+::ng-deep .prestation-detail-dialog {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-max-width: 90vw !important;
+    --mdc-dialog-container-max-height: 85vh !important;
+    max-width: 90vw !important;
+    max-height: 85vh !important;
+    width: 1200px !important;
+    height: auto !important;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: none !important;
+  }
+
+  .mat-mdc-dialog-surface {
+    border-radius: 8px !important;
+  }
+}
