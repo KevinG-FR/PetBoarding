@@ -264,11 +264,15 @@
                     [disabled]="isSubmitting()"
                     class="btn-lg">
                     @if (isSubmitting()) {
-                      <mat-icon class="me-2">hourglass_empty</mat-icon>
-                      Envoi en cours...
+                      <ng-container>
+                        <mat-icon class="me-2">hourglass_empty</mat-icon>
+                        Envoi en cours...
+                      </ng-container>
                     } @else {
-                      <mat-icon class="me-2">send</mat-icon>
-                      Envoyer le Message
+                      <ng-container>
+                        <mat-icon class="me-2">send</mat-icon>
+                        Envoyer le Message
+                      </ng-container>
                     }
                   </button>
                 </div>
