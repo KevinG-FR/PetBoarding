@@ -21,10 +21,12 @@
         <mat-icon>room_service</mat-icon>
         Prestations
       </a>
-      <a routerLink="/reservations" routerLinkActive="active" mat-button>
-        <mat-icon>event</mat-icon>
-        Réservations
-      </a>
+      @if (isAuthenticated()) {
+        <a routerLink="/reservations" routerLinkActive="active" mat-button>
+          <mat-icon>event</mat-icon>
+          Mes réservations
+        </a>
+      }
       <a routerLink="/about" routerLinkActive="active" mat-button>
         <mat-icon>info</mat-icon>
         À propos
@@ -114,14 +116,16 @@
           <mat-icon>room_service</mat-icon>
           Prestations
         </a>
-        <a
-          routerLink="/reservations"
-          routerLinkActive="active"
-          mat-button
-          (click)="toggleSidenav()">
-          <mat-icon>event</mat-icon>
-          Réservations
-        </a>
+        @if (isAuthenticated()) {
+          <a
+            routerLink="/reservations"
+            routerLinkActive="active"
+            mat-button
+            (click)="toggleSidenav()">
+            <mat-icon>event</mat-icon>
+            Réservations
+          </a>
+        }
         <a routerLink="/about" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>info</mat-icon>
           À propos

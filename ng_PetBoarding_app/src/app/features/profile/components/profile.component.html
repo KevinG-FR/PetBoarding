@@ -1,9 +1,7 @@
 <div class="profile-container">
   <div class="profile-wrapper">
     <!-- En-tête de page -->
-    @if (currentUser()) {
-      <app-profile-info [user]="currentUser()!" (editProfile)="editProfile()" />
-    }
+    <app-profile-info [user]="currentUser()!" (editProfile)="editProfile()" />
 
     <!-- Statistiques rapides -->
     <div class="stats-section">
