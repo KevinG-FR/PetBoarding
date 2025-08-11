@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+import { AuthService } from '../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -27,21 +29,36 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent {
-  isAuthenticated = signal(false);
+  private readonly authService = inject(AuthService);
+
+  // Signals pour l'état du layout
   sidenavOpened = signal(false);
+
+  // Getters pour l'authentification
+  isAuthenticated = this.authService.isAuthenticated;
+  currentUser = this.authService.currentUser;
+
+  // Année courante pour le footer
   currentYear = signal(new Date().getFullYear());
 
-  toggleSidenav() {
+  /**
+   * Basculer l'état du sidenav
+   */
+  toggleSidenav(): void {
     this.sidenavOpened.update((value) => !value);
   }
 
-  logout() {
-    this.isAuthenticated.set(false);
-    // TODO: Nettoyer la session utilisateur
+  /**
+   * Déconnexion utilisateur
+   */
+  logout(): void {
+    this.authService.logout();
   }
 
-  toggleAuth() {
-    // Pour la démo, on bascule l'état d'authentification
-    this.isAuthenticated.update((value) => !value);
+  /**
+   * Basculer l'authentification (pour tests)
+   */
+  toggleAuth(): void {
+    this.authService.toggleAuthForTesting();
   }
 }

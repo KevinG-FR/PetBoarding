@@ -1,0 +1,229 @@
+<div class="register-container">
+  <div class="register-wrapper">
+    <!-- En-tête -->
+    <div class="register-header">
+      <mat-icon class="register-icon">pets</mat-icon>
+      <h1 class="register-title">Créer un compte</h1>
+      <p class="register-subtitle">
+        Rejoignez PetBoarding pour offrir le meilleur à votre animal de compagnie
+      </p>
+    </div>
+
+    <!-- Formulaire d'inscription -->
+    <mat-card class="register-card">
+      <mat-card-content>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <!-- Informations personnelles -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>person</mat-icon>
+              Informations personnelles
+            </h3>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Prénom</mat-label>
+                <input
+                  matInput
+                  formControlName="firstName"
+                  placeholder="Votre prénom"
+                  autocomplete="given-name" />
+                <mat-icon matSuffix>person</mat-icon>
+                @if (
+                  registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched
+                ) {
+                  <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Nom</mat-label>
+                <input
+                  matInput
+                  formControlName="lastName"
+                  placeholder="Votre nom"
+                  autocomplete="family-name" />
+                <mat-icon matSuffix>person</mat-icon>
+                @if (
+                  registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched
+                ) {
+                  <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Téléphone</mat-label>
+              <input
+                matInput
+                formControlName="phone"
+                placeholder="06 12 34 56 78"
+                autocomplete="tel" />
+              <mat-icon matSuffix>phone</mat-icon>
+              @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+                <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Informations de connexion -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>security</mat-icon>
+              Informations de connexion
+            </h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                formControlName="email"
+                placeholder="votre.email@exemple.com"
+                autocomplete="email" />
+              <mat-icon matSuffix>email</mat-icon>
+              @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mot de passe</mat-label>
+              <input
+                matInput
+                [type]="hidePassword() ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Votre mot de passe"
+                autocomplete="new-password" />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="'Masquer le mot de passe'"
+                [attr.aria-pressed]="!hidePassword()">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+                <mat-error>{{ getErrorMessage('password') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirmer le mot de passe</mat-label>
+              <input
+                matInput
+                [type]="hideConfirmPassword() ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="Confirmez votre mot de passe"
+                autocomplete="new-password" />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="'Masquer la confirmation'"
+                [attr.aria-pressed]="!hideConfirmPassword()">
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (
+                registerForm.get('confirmPassword')?.invalid &&
+                registerForm.get('confirmPassword')?.touched
+              ) {
+                <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error>
+              }
+              @if (hasPasswordMismatchError()) {
+                <mat-error>Les mots de passe ne correspondent pas</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Conditions et newsletter -->
+          <div class="form-section">
+            <div class="checkbox-group">
+              <mat-checkbox formControlName="acceptTerms" class="checkbox-item">
+                <span class="checkbox-text">
+                  J'accepte les
+                  <a routerLink="/terms" target="_blank" class="terms-link"
+                    >conditions d'utilisation</a
+                  >
+                  et la
+                  <a routerLink="/privacy" target="_blank" class="terms-link"
+                    >politique de confidentialité</a
+                  >
+                  <span class="required-asterisk">*</span>
+                </span>
+              </mat-checkbox>
+              @if (
+                registerForm.get('acceptTerms')?.invalid && registerForm.get('acceptTerms')?.touched
+              ) {
+                <div class="checkbox-error">{{ getErrorMessage('acceptTerms') }}</div>
+              }
+
+              <mat-checkbox formControlName="acceptNewsletter" class="checkbox-item">
+                <span class="checkbox-text">
+                  Je souhaite recevoir la newsletter avec les offres et actualités PetBoarding
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="submit-button"
+              [disabled]="registerForm.invalid || isSubmitting()">
+              @if (isSubmitting()) {
+                <ng-container>
+                  <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+                  <span>Inscription en cours...</span>
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <mat-icon>person_add</mat-icon>
+                  <span>Créer mon compte</span>
+                </ng-container>
+              }
+            </button>
+
+            <div class="login-link">
+              <span>Déjà un compte ?</span>
+              <button mat-button color="primary" type="button" (click)="goToLogin()">
+                Se connecter
+              </button>
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Avantages de l'inscription -->
+    <div class="benefits-section">
+      <h3 class="benefits-title">Pourquoi créer un compte ?</h3>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <mat-icon class="benefit-icon">event</mat-icon>
+          <h4>Réservations en ligne</h4>
+          <p>Réservez vos services rapidement et facilement</p>
+        </div>
+        <div class="benefit-item">
+          <mat-icon class="benefit-icon">history</mat-icon>
+          <h4>Historique des services</h4>
+          <p>Consultez l'historique de tous vos services</p>
+        </div>
+        <div class="benefit-item">
+          <mat-icon class="benefit-icon">notifications</mat-icon>
+          <h4>Notifications</h4>
+          <p>Recevez des rappels et mises à jour importantes</p>
+        </div>
+        <div class="benefit-item">
+          <mat-icon class="benefit-icon">local_offer</mat-icon>
+          <h4>Offres exclusives</h4>
+          <p>Accédez à des tarifs préférentiels</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
