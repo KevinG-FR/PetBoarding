@@ -1,0 +1,127 @@
+// Styles pour le composant PetCard
+.pet-card {
+  height: 100%;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &--highlighted {
+    border: 2px solid var(--mat-primary-500);
+  }
+}
+
+.pet-avatar {
+  background: linear-gradient(135deg, var(--mat-primary-100), var(--mat-primary-200));
+
+  .pet-icon {
+    color: var(--mat-primary-600);
+
+    &--dog {
+      color: #8d6e63;
+    }
+    &--cat {
+      color: #ff7043;
+    }
+    &--bird {
+      color: #42a5f5;
+    }
+    &--rabbit {
+      color: #66bb6a;
+    }
+    &--hamster {
+      color: #ab47bc;
+    }
+  }
+}
+
+.pet-details {
+  .pet-detail-row {
+    .detail-icon {
+      color: var(--mat-primary-600);
+    }
+
+    .microchip-number {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      background: var(--mat-grey-100);
+    }
+
+    .status-chip {
+      &--success {
+        background-color: #c8e6c9;
+        color: #2e7d32;
+      }
+
+      &--warning {
+        background-color: #ffe0b2;
+        color: #f57c00;
+      }
+
+      &--neutered {
+        background-color: #e1f5fe;
+        color: #0277bd;
+      }
+    }
+  }
+}
+
+.vaccination-status {
+  background: var(--mat-grey-50);
+
+  .vaccination-header {
+    mat-icon {
+      color: var(--mat-primary-600);
+    }
+  }
+
+  .vaccination-item {
+    background: white;
+    border-left: 4px solid var(--mat-primary-300);
+
+    &--expired {
+      border-left-color: var(--mat-warn-500);
+      background: #ffebee;
+    }
+
+    .vaccination-name {
+      color: var(--mat-grey-800);
+    }
+
+    .vaccination-date {
+      color: var(--mat-grey-600);
+    }
+
+    .vaccination-expiry {
+      color: var(--mat-grey-600);
+
+      &--warning {
+        color: var(--mat-warn-600);
+        font-weight: 500;
+      }
+
+      &--expired {
+        color: var(--mat-error-600);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .no-vaccinations {
+    color: var(--mat-grey-600);
+  }
+}
+
+.special-needs {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+
+  mat-icon {
+    color: #ff9800;
+  }
+}

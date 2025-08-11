@@ -21,7 +21,7 @@ import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../../models/pet.m
     MatTooltipModule
   ],
   templateUrl: './pet-card.component.html',
-  styleUrl: './pet-card.component.css'
+  styleUrl: './pet-card.component.scss'
 })
 export class PetCardComponent {
   // Inputs

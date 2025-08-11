@@ -11,7 +11,7 @@ import { PetsListComponent } from './pets-list.component';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatBadgeModule, PetsListComponent],
   templateUrl: './pets-section.component.html',
-  styleUrl: './pets-section.component.css'
+  styleUrl: './pets-section.component.scss'
 })
 export class PetsSectionComponent {
   // Inputs

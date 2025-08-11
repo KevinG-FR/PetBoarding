@@ -8,7 +8,7 @@ import { PetCardComponent } from './pet-card.component';
   standalone: true,
   imports: [CommonModule, PetCardComponent],
   templateUrl: './pets-list.component.html',
-  styleUrl: './pets-list.component.css'
+  styleUrl: './pets-list.component.scss'
 })
 export class PetsListComponent {
   // Inputs

@@ -1,43 +1,22 @@
 // Styles pour les filtres des réservations
 .filters-container {
-  .filters-row {
-    gap: 1rem;
-  }
+  .filter-badge {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-  .clear-button {
-    white-space: nowrap;
-  }
-
-  .active-filters {
-    .badge {
-      font-size: 0.75rem;
+    &:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
     }
 
-    .filter-badge {
-      position: relative;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
+    .filter-remove-icon {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
 
-      &:hover {
-        opacity: 0.8;
-        transform: scale(1.05);
-      }
-
-      .filter-remove-icon {
-        font-size: 14px !important;
-        width: 14px;
-        height: 14px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        margin-left: 0.25rem;
-      }
-
-      &:hover .filter-remove-icon {
-        opacity: 1;
-      }
+    &:hover .filter-remove-icon {
+      opacity: 1;
     }
   }
 }

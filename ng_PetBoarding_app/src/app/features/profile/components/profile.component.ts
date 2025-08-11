@@ -9,7 +9,7 @@ import { AuthService } from '../../auth/services/auth.service';
 import { Pet } from '../models/pet.model';
 import { PetsSectionComponent } from '../Pet/components/pets-section.component';
 import { ProfileService } from '../services/profile.service';
-import { ProfileInfoComponent } from './profile-info/profile-info.component';
+import { ProfileInfoComponent } from './profile-info.component';
 
 @Component({
   selector: 'app-profile',
