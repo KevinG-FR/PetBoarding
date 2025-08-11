@@ -1,194 +1,33 @@
 <div class="profile-container">
   <div class="profile-wrapper">
     <!-- En-tête de page -->
-    <div class="profile-header">
-      <div class="header-content">
-        <div class="user-info">
-          <div class="avatar">
-            <mat-icon class="avatar-icon">account_circle</mat-icon>
-          </div>
-          <div class="user-details">
-            @if (currentUser(); as user) {
-              <h1 class="user-name">{{ user.firstName }} {{ user.lastName }}</h1>
-              <p class="user-email">{{ user.email }}</p>
-              <p class="user-phone">{{ user.phone }}</p>
-            } @else {
-              <h1 class="user-name">Utilisateur non connecté</h1>
-            }
-          </div>
-        </div>
-        <div class="header-actions">
-          <button mat-raised-button color="primary" (click)="editProfile()">
-            <mat-icon>edit</mat-icon>
-            Modifier le profil
-          </button>
-        </div>
-      </div>
-    </div>
+    @if (currentUser()) {
+      <app-profile-info [user]="currentUser()!" (editProfile)="editProfile()" />
+    }
 
-    <!-- Statistiques des animaux -->
+    <!-- Statistiques rapides -->
     <div class="stats-section">
       <mat-card class="stats-card">
-        <mat-card-content>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-icon">
-                <mat-icon [matBadge]="totalPets()" matBadgeColor="primary">pets</mat-icon>
-              </div>
-              <div class="stat-content">
-                <span class="stat-number">{{ totalPets() }}</span>
-                <span class="stat-label">{{ totalPets() > 1 ? 'Animaux' : 'Animal' }}</span>
-              </div>
+        @if (lastUpdate()) {
+          <mat-divider></mat-divider>
+          <div class="stat-item d-flex align-items-center justify-content-center gap-3">
+            <mat-icon class="stat-icon">update</mat-icon>
+            <div class="stat-content text-center">
+              <span class="stat-number">{{ lastUpdate() }}</span>
+              <span class="stat-label">Dernière mise à jour</span>
             </div>
-
-            @for (typeCount of petsByType(); track typeCount.type) {
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <mat-icon>{{ getPetIcon(typeCount.type) }}</mat-icon>
-                </div>
-                <div class="stat-content">
-                  <span class="stat-number">{{ typeCount.count }}</span>
-                  <span class="stat-label">{{ typeCount.type }}</span>
-                </div>
-              </div>
-            }
           </div>
-        </mat-card-content>
+        }
       </mat-card>
     </div>
 
     <!-- Section des animaux -->
-    <div class="pets-section">
-      <div class="section-header">
-        <div class="section-title">
-          <mat-icon>pets</mat-icon>
-          <h2>Mes animaux</h2>
-        </div>
-        <button mat-raised-button color="accent" (click)="addPet()">
-          <mat-icon>add</mat-icon>
-          Ajouter un animal
-        </button>
-      </div>
-
-      <!-- Chargement -->
-      @if (isLoadingPets()) {
-        <div class="loading-container">
-          <mat-spinner diameter="50"></mat-spinner>
-          <p>Chargement de vos animaux...</p>
-        </div>
-      }
-
-      <!-- Liste des animaux -->
-      @if (!isLoadingPets() && pets().length > 0) {
-        <div class="pets-grid">
-          @for (pet of pets(); track pet.id) {
-            <mat-card class="pet-card" (click)="viewPetDetails(pet)">
-              <mat-card-header>
-                <div mat-card-avatar class="pet-avatar">
-                  <mat-icon>{{ getPetIcon(pet.type) }}</mat-icon>
-                </div>
-                <mat-card-title>{{ pet.name }}</mat-card-title>
-                <mat-card-subtitle>
-                  {{ petTypeLabels[pet.type] }} • {{ pet.breed }}
-                </mat-card-subtitle>
-                <div class="card-actions">
-                  <button
-                    mat-icon-button
-                    (click)="editPet(pet); $event.stopPropagation()"
-                    matTooltip="Modifier">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
-              </mat-card-header>
-
-              <mat-card-content>
-                <div class="pet-info">
-                  <!-- Informations de base -->
-                  <div class="info-row">
-                    <mat-icon class="info-icon">cake</mat-icon>
-                    <span>{{ getAgeText(pet.age) }}</span>
-                  </div>
-
-                  <div class="info-row">
-                    <mat-icon class="info-icon">palette</mat-icon>
-                    <span>{{ pet.color }}</span>
-                  </div>
-
-                  <div class="info-row">
-                    <mat-icon class="info-icon">
-                      {{ pet.gender === 'male' ? 'male' : 'female' }}
-                    </mat-icon>
-                    <span>{{ petGenderLabels[pet.gender] }}</span>
-                    @if (pet.isNeutered) {
-                      <mat-chip class="neutered-chip">Stérilisé(e)</mat-chip>
-                    }
-                  </div>
-
-                  @if (pet.weight) {
-                    <div class="info-row">
-                      <mat-icon class="info-icon">fitness_center</mat-icon>
-                      <span>{{ pet.weight }} kg</span>
-                    </div>
-                  }
-
-                  <!-- Statut des vaccinations -->
-                  <div class="info-row">
-                    <mat-icon class="info-icon" [class]="getVaccinationStatus(pet).class">
-                      {{ getVaccinationStatus(pet).icon }}
-                    </mat-icon>
-                    <span>Vaccins: {{ getVaccinationStatus(pet).status }}</span>
-                  </div>
-
-                  <!-- Micropuce -->
-                  @if (pet.microchipNumber) {
-                    <div class="info-row">
-                      <mat-icon class="info-icon">qr_code</mat-icon>
-                      <span class="microchip">Pucé: {{ pet.microchipNumber }}</span>
-                    </div>
-                  }
-
-                  <!-- Besoins spéciaux -->
-                  @if (pet.specialNeeds) {
-                    <div class="special-needs">
-                      <mat-icon class="warning-icon">info</mat-icon>
-                      <p>{{ pet.specialNeeds }}</p>
-                    </div>
-                  }
-                </div>
-              </mat-card-content>
-
-              <mat-card-actions>
-                <button
-                  mat-button
-                  color="primary"
-                  (click)="viewPetDetails(pet); $event.stopPropagation()">
-                  <mat-icon>visibility</mat-icon>
-                  Voir détails
-                </button>
-                @if (pet.vaccinations.length > 0) {
-                  <button mat-button>
-                    <mat-icon>vaccines</mat-icon>
-                    {{ pet.vaccinations.length }} vaccin{{ pet.vaccinations.length > 1 ? 's' : '' }}
-                  </button>
-                }
-              </mat-card-actions>
-            </mat-card>
-          }
-        </div>
-      }
-
-      <!-- État vide -->
-      @if (!isLoadingPets() && pets().length === 0) {
-        <div class="empty-state">
-          <mat-icon class="empty-icon">pets</mat-icon>
-          <h3>Aucun animal enregistré</h3>
-          <p>Ajoutez votre premier animal pour commencer à utiliser nos services</p>
-          <button mat-raised-button color="primary" (click)="addPet()">
-            <mat-icon>add</mat-icon>
-            Ajouter mon premier animal
-          </button>
-        </div>
-      }
-    </div>
+    <app-pets-section
+      [pets]="pets()"
+      [loading]="isLoading()"
+      (addPet)="onAddPet()"
+      (petEdit)="onEditPet($event)"
+      (petDelete)="onDeletePet($event)"
+      (petViewDetails)="onViewPetDetails($event)" />
   </div>
 </div>

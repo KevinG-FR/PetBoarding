@@ -1,0 +1,26 @@
+<div class="profile-header">
+  <div class="header-content">
+    <div class="user-info">
+      <div class="avatar">
+        <mat-icon class="avatar-icon">person</mat-icon>
+      </div>
+
+      <div class="user-details">
+        <h1 class="user-name">{{ user.firstName }} {{ user.lastName }}</h1>
+        @if (user.email) {
+          <div class="user-email">{{ user.email }}</div>
+        }
+        @if (user.phone) {
+          <div class="user-phone">{{ user.phone }}</div>
+        }
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="onEditProfile()">
+        <mat-icon>edit</mat-icon>
+        Modifier le profil
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<section class="pets-section">
+  <div class="pets-header">
+    <div class="pets-title text-center text-md-start">
+      <h2>Mes animaux</h2>
+      @if (pets().length > 0) {
+        <span class="pets-count" [matBadge]="pets().length" matBadgeColor="primary"> </span>
+      }
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="add-pet-button"
+      (click)="onAddPet()"
+      [disabled]="loading()"
+      matTooltip="Ajouter un animal">
+      <mat-icon>add</mat-icon>
+      <span class="d-none d-md-inline ms-2">Ajouter un animal</span>
+    </button>
+  </div>
+
+  <app-pets-list
+    [pets]="pets()"
+    [loading]="loading()"
+    [highlightedPetId]="highlightedPetId()"
+    (petEdit)="onPetEdit($event)"
+    (petDelete)="onPetDelete($event)"
+    (petViewDetails)="onPetViewDetails($event)" />
+</section>

@@ -1,0 +1,107 @@
+<mat-card class="pet-card mb-3 mb-md-0" [class.pet-card--highlighted]="highlighted()">
+  <mat-card-header>
+    <div mat-card-avatar class="pet-avatar">
+      <mat-icon [class]="'pet-icon pet-icon--' + pet().type">
+        {{ getPetIcon(pet().type) }}
+      </mat-icon>
+    </div>
+    <mat-card-title>{{ pet().name }}</mat-card-title>
+    <mat-card-subtitle>{{ petTypeLabels[pet().type] }} • {{ pet().breed }}</mat-card-subtitle>
+    <div class="pet-actions">
+      <button mat-icon-button matTooltip="Modifier" (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="pet-details">
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
+        <mat-icon class="detail-icon">cake</mat-icon>
+        <span>{{ getAgeDisplay(pet().age) }}</span>
+      </div>
+
+      @if (pet().weight) {
+        <div class="pet-detail-row">
+          <mat-icon class="detail-icon">monitor_weight</mat-icon>
+          <span>{{ pet().weight }} kg</span>
+        </div>
+      }
+
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
+        <mat-icon class="detail-icon">palette</mat-icon>
+        <span>{{ pet().color }}</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
+        <mat-icon class="detail-icon">transgender</mat-icon>
+        <span>{{ petGenderLabels[pet().gender] }}</span>
+        @if (pet().isNeutered) {
+          <mat-chip class="status-chip ms-0 ms-md-2 mt-1 mt-md-0">Stérilisé(e)</mat-chip>
+        }
+      </div>
+
+      @if (pet().microchipNumber) {
+        <div class="pet-detail-row">
+          <mat-icon class="detail-icon">qr_code</mat-icon>
+          <span class="microchip-number">{{ pet().microchipNumber }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Statut des vaccinations -->
+    <div class="vaccination-status">
+      <div class="vaccination-header">
+        <mat-icon>vaccines</mat-icon>
+        <span>Vaccinations</span>
+        <mat-chip [class]="getVaccinationStatusClass()">
+          {{ getVaccinationStatusText() }}
+        </mat-chip>
+      </div>
+
+      @if (pet().vaccinations.length > 0) {
+        <div class="vaccination-list">
+          @for (vaccination of pet().vaccinations; track vaccination.id) {
+            <div
+              class="vaccination-item"
+              [class.vaccination-item--expired]="isVaccinationExpired(vaccination)">
+              <span class="vaccination-name">{{ vaccination.name }}</span>
+              <span class="vaccination-date">{{ formatDate(vaccination.date) }}</span>
+              @if (vaccination.expiryDate) {
+                <span
+                  class="vaccination-expiry"
+                  [class.vaccination-expiry--warning]="isVaccinationExpiringSoon(vaccination)"
+                  [class.vaccination-expiry--expired]="isVaccinationExpired(vaccination)">
+                  Expire le {{ formatDate(vaccination.expiryDate) }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="no-vaccinations">Aucune vaccination enregistrée</p>
+      }
+    </div>
+
+    @if (pet().specialNeeds) {
+      <div class="special-needs">
+        <mat-icon>info</mat-icon>
+        <span>{{ pet().specialNeeds }}</span>
+      </div>
+    }
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-button color="primary" (click)="onViewDetails()">
+      <mat-icon>visibility</mat-icon>
+      Voir détails
+    </button>
+    <button mat-button (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      Modifier
+    </button>
+  </mat-card-actions>
+</mat-card>

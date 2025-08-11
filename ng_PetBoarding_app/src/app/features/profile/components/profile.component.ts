@@ -1,17 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { MatBadgeModule } from '@angular/material/badge';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuthService } from '../../auth/services/auth.service';
-import { Pet, PetGenderLabels, PetTypeLabels } from '../models/pet.model';
+import { Pet } from '../models/pet.model';
+import { PetsSectionComponent } from '../Pet/components/pets-section.component';
 import { ProfileService } from '../services/profile.service';
+import { ProfileInfoComponent } from './profile-info/profile-info.component';
 
 @Component({
   selector: 'app-profile',
@@ -21,11 +19,9 @@ import { ProfileService } from '../services/profile.service';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
     MatDividerModule,
-    MatTooltipModule,
-    MatBadgeModule
+    ProfileInfoComponent,
+    PetsSectionComponent
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
@@ -34,31 +30,22 @@ export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
 
-  // Signals pour l'état du composant
-  isLoadingPets = signal(false);
-
   // Getters pour les données
   currentUser = this.authService.currentUser;
   pets = this.profileService.pets;
   isLoading = this.profileService.isLoading;
 
-  // Labels pour les enums
-  petTypeLabels = PetTypeLabels;
-  petGenderLabels = PetGenderLabels;
-
-  // Computed properties
+  // Computed properties pour les stats
   totalPets = computed(() => this.pets().length);
-
-  petsByType = computed(() => {
+  lastUpdate = computed(() => {
     const pets = this.pets();
-    const types = new Map<string, number>();
+    if (pets.length === 0) return null;
 
-    pets.forEach((pet) => {
-      const typeLabel = this.petTypeLabels[pet.type];
-      types.set(typeLabel, (types.get(typeLabel) || 0) + 1);
-    });
+    const lastUpdated = pets.reduce((latest, pet) => {
+      return pet.updatedAt > latest ? pet.updatedAt : latest;
+    }, pets[0].updatedAt);
 
-    return Array.from(types.entries()).map(([type, count]) => ({ type, count }));
+    return this.formatDate(lastUpdated);
   });
 
   ngOnInit(): void {
@@ -69,16 +56,9 @@ export class ProfileComponent implements OnInit {
    * Charger les animaux de l'utilisateur
    */
   private loadUserPets(): void {
-    this.isLoadingPets.set(true);
-
     this.profileService.loadUserPets().subscribe({
-      next: () => {
-        this.isLoadingPets.set(false);
-      },
-      error: (error) => {
-        // eslint-disable-next-line no-console
-        console.error('Erreur lors du chargement des animaux:', error);
-        this.isLoadingPets.set(false);
+      error: () => {
+        // Gestion d'erreur silencieuse pour l'instant
       }
     });
   }
@@ -88,93 +68,50 @@ export class ProfileComponent implements OnInit {
    */
   editProfile(): void {
     // TODO: Implémenter la navigation vers la page d'édition
-    // eslint-disable-next-line no-console
-    console.log('Navigation vers édition du profil');
   }
 
   /**
    * Ajouter un nouvel animal
    */
-  addPet(): void {
+  onAddPet(): void {
     // TODO: Implémenter la navigation vers l'ajout d'animal
-    // eslint-disable-next-line no-console
-    console.log("Navigation vers ajout d'animal");
   }
 
   /**
    * Modifier un animal
    */
-  editPet(pet: Pet): void {
+  onEditPet(pet: Pet): void {
     // TODO: Implémenter la navigation vers l'édition d'animal
-    // eslint-disable-next-line no-console
-    console.log('Navigation vers édition animal:', pet.name);
+    // Utiliser pet.name pour éviter l'erreur unused
+    void pet.name;
+  }
+
+  /**
+   * Supprimer un animal
+   */
+  onDeletePet(pet: Pet): void {
+    // TODO: Implémenter la suppression avec confirmation
+    // Utiliser pet.name pour éviter l'erreur unused
+    void pet.name;
   }
 
   /**
    * Voir les détails d'un animal
    */
-  viewPetDetails(pet: Pet): void {
+  onViewPetDetails(pet: Pet): void {
     // TODO: Implémenter la vue détails d'animal
-    // eslint-disable-next-line no-console
-    console.log('Voir détails animal:', pet.name);
+    // Utiliser pet.name pour éviter l'erreur unused
+    void pet.name;
   }
 
   /**
-   * Calculer l'âge en texte
+   * Formater une date
    */
-  getAgeText(age: number): string {
-    if (age === 0) return "Moins d'un an";
-    if (age === 1) return '1 an';
-    return `${age} ans`;
-  }
-
-  /**
-   * Obtenir l'icône selon le type d'animal
-   */
-  getPetIcon(type: string): string {
-    const iconMap: Record<string, string> = {
-      dog: 'pets',
-      cat: 'pets',
-      bird: 'flutter_dash',
-      rabbit: 'cruelty_free',
-      hamster: 'pets',
-      fish: 'water',
-      reptile: 'pets',
-      other: 'pets'
-    };
-
-    return iconMap[type] || 'pets';
-  }
-
-  /**
-   * Vérifier si les vaccins sont à jour
-   */
-  areVaccinationsUpToDate(pet: Pet): boolean {
-    const now = new Date();
-    return pet.vaccinations.every((vaccination) => {
-      if (!vaccination.expiryDate) return true;
-      return vaccination.expiryDate > now;
-    });
-  }
-
-  /**
-   * Obtenir le statut des vaccinations
-   */
-  getVaccinationStatus(pet: Pet): { status: string; class: string; icon: string } {
-    const isUpToDate = this.areVaccinationsUpToDate(pet);
-
-    if (isUpToDate) {
-      return {
-        status: 'À jour',
-        class: 'status-success',
-        icon: 'check_circle'
-      };
-    } else {
-      return {
-        status: 'Attention',
-        class: 'status-warning',
-        icon: 'warning'
-      };
-    }
+  private formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(new Date(date));
   }
 }

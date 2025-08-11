@@ -1,0 +1,88 @@
+.pets-section {
+  margin: 32px 0;
+}
+
+.pets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--mat-grey-200);
+}
+
+.pets-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pets-title h2 {
+  margin: 0;
+  color: var(--mat-grey-800);
+  font-weight: 500;
+  font-size: 1.75rem;
+}
+
+.pets-count {
+  background: var(--mat-primary-50);
+  color: var(--mat-primary-700);
+  padding: 6px 3px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--mat-primary-200);
+}
+
+.add-pet-button {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.add-pet-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.add-pet-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pets-section {
+    margin: 24px 0;
+  }
+
+  .pets-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .pets-title {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pets-title h2 {
+    font-size: 1.5rem;
+  }
+
+  .add-pet-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    border-radius: 50%;
+    min-width: 56px;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+  }
+
+  .add-pet-button mat-icon {
+    margin: 0;
+  }
+}
