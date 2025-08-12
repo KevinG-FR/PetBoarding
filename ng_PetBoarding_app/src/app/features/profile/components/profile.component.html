@@ -4,7 +4,10 @@
       <div class="col-12 col-xl-10">
         <!-- En-tête de page -->
         <div class="mb-4">
-          <app-profile-info [user]="currentUser()!" [lastUpdate]="lastUpdate()" (editProfile)="editProfile()" />
+          <app-profile-info
+            [user]="currentUser()!"
+            [lastUpdate]="lastUpdate()"
+            (editProfile)="editProfile()" />
         </div>
 
         <!-- Section des animaux -->

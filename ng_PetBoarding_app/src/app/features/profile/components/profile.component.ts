@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { Pet } from '../models/pet.model';
@@ -29,6 +30,7 @@ import { ProfileInfoComponent } from './profile-info.component';
 export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly router = inject(Router);
 
   // Getters pour les données
   currentUser = this.authService.currentUser;
@@ -74,7 +76,7 @@ export class ProfileComponent implements OnInit {
    * Ajouter un nouvel animal
    */
   onAddPet(): void {
-    // TODO: Implémenter la navigation vers l'ajout d'animal
+    this.router.navigate(['/profile/pets/add']);
   }
 
   /**
