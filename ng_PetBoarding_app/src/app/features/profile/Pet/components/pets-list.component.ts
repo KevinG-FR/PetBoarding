@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { Pet } from '../../models/pet.model';
+import { Pet } from '../../../Pets/models/pet.model';
 import { PetCardComponent } from './pet-card.component';
 
 @Component({

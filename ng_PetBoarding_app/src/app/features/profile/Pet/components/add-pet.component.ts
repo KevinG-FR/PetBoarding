@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { PetFormData } from '../../models/pet-form.model';
+import { PetFormData } from '../../../Pets/models/pet-form.model';
 import { ProfileService } from '../../services/profile.service';
 import { PetFormComponent } from './pet-form.component';
 

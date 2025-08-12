@@ -10,14 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
-import { PetFormData } from '../profile/models/pet-form.model';
-import {
-  Pet,
-  PetGender,
-  PetGenderLabels,
-  PetType,
-  PetTypeLabels
-} from '../profile/models/pet.model';
+import { PetFormData } from '../models/pet-form.model';
+import { Pet, PetGender, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
 
 @Component({
   selector: 'app-pet-form',

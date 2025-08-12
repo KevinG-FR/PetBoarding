@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../auth/services/auth.service';
-import { Pet } from '../models/pet.model';
+import { Pet } from '../../Pets/models/pet.model';
 import { PetsSectionComponent } from '../Pet/components/pets-section.component';
 import { ProfileService } from '../services/profile.service';
 import { ProfileInfoComponent } from './profile-info.component';

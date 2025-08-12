@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, delay, of, tap } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
-import { Pet, PetGender, PetType } from '../models/pet.model';
+import { Pet, PetGender, PetType } from '../../Pets/models/pet.model';
 
 @Injectable({
   providedIn: 'root'
