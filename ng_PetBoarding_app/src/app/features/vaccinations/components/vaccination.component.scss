@@ -1,0 +1,92 @@
+.vaccination-card {
+  border-radius: 12px !important;
+  border-left: 4px solid #3f51b5;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.vaccination-info {
+  h6 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+  }
+}
+
+.vaccination-details {
+  .detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+
+    .detail-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+      color: #6c757d;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      margin-right: 0.5rem;
+      color: #6c757d;
+      min-width: 80px;
+    }
+
+    .detail-value {
+      color: #2c3e50;
+    }
+  }
+}
+
+.vaccination-status {
+  .status-icon {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+
+  button {
+    width: 32px;
+    height: 32px;
+
+    mat-icon {
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Couleurs pour les statuts
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-warning {
+  color: #fd7e14 !important;
+}
+
+@media (max-width: 768px) {
+  .vaccination-card {
+    mat-card-content {
+      padding: 1rem !important;
+    }
+  }
+
+  .vaccination-actions {
+    flex-direction: row !important;
+    align-items: center !important;
+
+    .vaccination-status {
+      margin-bottom: 0 !important;
+      margin-right: 0.5rem;
+    }
+  }
+}

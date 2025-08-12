@@ -9,9 +9,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-
-import { PetFormData } from '../models/pet-form.model';
-import { Pet, PetGender, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
+import { PetFormData } from '../../pets/models/pet-form.model';
+import {
+  Pet,
+  PetGender,
+  PetGenderLabels,
+  PetType,
+  PetTypeLabels
+} from '../../pets/models/pet.model';
+import { VaccinationFormData } from '../../vaccinations';
+import { VaccinationFormComponent } from '../../vaccinations/components/vaccination-form.component';
+import { VaccinationListComponent } from '../../vaccinations/components/vaccination-list.component';
+import { Vaccination } from '../../vaccinations/models/vaccination';
 
 @Component({
   selector: 'app-pet-form',
@@ -26,7 +35,9 @@ import { Pet, PetGender, PetGenderLabels, PetType, PetTypeLabels } from '../mode
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    VaccinationListComponent,
+    VaccinationFormComponent
   ],
   templateUrl: './pet-form.component.html',
   styleUrl: './pet-form.component.scss'
@@ -44,11 +55,17 @@ export class PetFormComponent implements OnInit {
   petGenderLabels = PetGenderLabels;
 
   isEditMode = signal(false);
+  vaccinations = signal<Vaccination[]>([]);
+  showVaccinationForm = signal(false);
+  editingVaccination = signal<Vaccination | undefined>(undefined);
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.isEditMode.set(!!this.pet);
+    if (this.pet?.vaccinations) {
+      this.vaccinations.set([...this.pet.vaccinations]);
+    }
     this.initializeForm();
   }
 
@@ -76,7 +93,10 @@ export class PetFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.petForm.valid) {
-      const formData: PetFormData = this.petForm.value;
+      const formData: PetFormData = {
+        ...this.petForm.value,
+        vaccinations: this.vaccinations()
+      };
       this.formSubmit.emit(formData);
     } else {
       this.markFormGroupTouched();
@@ -123,5 +143,49 @@ export class PetFormComponent implements OnInit {
         return `Minimum ${control.errors['minlength'].requiredLength} caractères`;
     }
     return '';
+  }
+
+  // Méthodes pour gérer les vaccinations
+  onAddVaccination(): void {
+    this.editingVaccination.set(undefined);
+    this.showVaccinationForm.set(true);
+  }
+
+  onEditVaccination(vaccination: Vaccination): void {
+    this.editingVaccination.set(vaccination);
+    this.showVaccinationForm.set(true);
+  }
+
+  onDeleteVaccination(vaccination: Vaccination): void {
+    const updatedVaccinations = this.vaccinations().filter((v) => v.id !== vaccination.id);
+    this.vaccinations.set(updatedVaccinations);
+  }
+
+  onVaccinationFormSubmit(formData: VaccinationFormData): void {
+    const currentVaccinations = this.vaccinations();
+    const editingVacc = this.editingVaccination();
+
+    if (editingVacc) {
+      // Modification
+      const updatedVaccinations = currentVaccinations.map((v) =>
+        v.id === editingVacc.id ? { ...v, ...formData } : v
+      );
+      this.vaccinations.set(updatedVaccinations);
+    } else {
+      // Ajout
+      const newVaccination: Vaccination = {
+        id: Date.now().toString(),
+        ...formData
+      };
+      this.vaccinations.set([...currentVaccinations, newVaccination]);
+    }
+
+    this.showVaccinationForm.set(false);
+    this.editingVaccination.set(undefined);
+  }
+
+  onVaccinationFormCancel(): void {
+    this.showVaccinationForm.set(false);
+    this.editingVaccination.set(undefined);
   }
 }

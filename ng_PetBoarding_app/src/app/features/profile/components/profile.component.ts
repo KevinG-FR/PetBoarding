@@ -5,10 +5,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-
 import { AuthService } from '../../auth/services/auth.service';
-import { Pet } from '../../Pets/models/pet.model';
-import { PetsSectionComponent } from '../Pet/components/pets-section.component';
+import { PetsSectionComponent } from '../../pets/components/pets-section.component';
+import { Pet } from '../../pets/models/pet.model';
 import { ProfileService } from '../services/profile.service';
 import { ProfileInfoComponent } from './profile-info.component';
 

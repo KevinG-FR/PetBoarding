@@ -3,7 +3,7 @@ import { Component, computed, input, output } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Pet } from '../../../Pets/models/pet.model';
+import { Pet } from '../models/pet.model';
 import { PetsListComponent } from './pets-list.component';
 
 @Component({

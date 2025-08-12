@@ -1,3 +1,5 @@
+import { Vaccination } from '../../vaccinations/models/vaccination';
+
 export interface Pet {
   id: string;
   name: string;
@@ -13,24 +15,13 @@ export interface Pet {
   specialNeeds?: string;
   photoUrl?: string;
   vaccinations: Vaccination[];
-  emergencyContact?: EmergencyContact;
+  emergencyContact?: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface Vaccination {
-  id: string;
-  name: string;
-  date: Date;
-  expiryDate?: Date;
-  veterinarian: string;
-  batchNumber?: string;
-}
-
-export interface EmergencyContact {
-  name: string;
-  phone: string;
-  relationship: string;
 }
 
 export enum PetType {

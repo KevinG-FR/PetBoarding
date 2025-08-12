@@ -1,0 +1,51 @@
+.vaccination-form-container {
+  mat-card {
+    border-radius: 12px !important;
+
+    mat-card-header {
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 1rem;
+
+      mat-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+    }
+  }
+}
+
+mat-form-field {
+  &.mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      border-radius: 8px;
+    }
+  }
+}
+
+.gap-3 {
+  gap: 1rem;
+}
+
+button[mat-raised-button] {
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+}
+
+button[mat-stroked-button] {
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .d-flex.justify-content-end {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

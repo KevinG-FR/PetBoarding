@@ -163,6 +163,18 @@
                     }
                   </mat-form-field>
                 </div>
+              </div>              
+
+              <!-- Section Vaccinations -->
+              <div class="vaccinations-section mb-4">
+                <app-vaccination-list
+                  [vaccinations]="vaccinations()"
+                  [canAdd]="true"
+                  [canEdit]="true"
+                  [canDelete]="true"
+                  (addVaccination)="onAddVaccination()"
+                  (editVaccination)="onEditVaccination($event)"
+                  (deleteVaccination)="onDeleteVaccination($event)" />
               </div>
 
               <!-- Actions -->
@@ -190,4 +202,17 @@
       </div>
     </div>
   </div>
+
+  <!-- Overlay pour le formulaire de vaccination -->
+  @if (showVaccinationForm()) {
+    <div class="vaccination-form-overlay" (click)="onVaccinationFormCancel()">
+      <div class="vaccination-form-container" (click)="$event.stopPropagation()">
+        <app-vaccination-form
+          [vaccination]="editingVaccination()"
+          [isLoading]="false"
+          (formSubmit)="onVaccinationFormSubmit($event)"
+          (formCancel)="onVaccinationFormCancel()" />
+      </div>
+    </div>
+  }
 </div>

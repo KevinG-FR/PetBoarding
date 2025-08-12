@@ -1,0 +1,92 @@
+<div class="vaccination-form-container">
+  <mat-card class="shadow-sm border-0">
+    <mat-card-header class="pb-3">
+      <div class="d-flex align-items-center w-100">
+        <mat-icon class="me-3 text-primary">vaccines</mat-icon>
+        <mat-card-title class="mb-0">
+          {{ isEditMode ? 'Modifier la vaccination' : 'Ajouter une vaccination' }}
+        </mat-card-title>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="vaccinationForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="row">
+          <div class="col-12 col-md-6 mb-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Nom du vaccin</mat-label>
+              <input matInput formControlName="name" placeholder="Ex: Vaccin CHPPI" />
+              <mat-icon matSuffix>vaccines</mat-icon>
+              @if (getFieldError('name')) {
+                <mat-error>{{ getFieldError('name') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Date de vaccination</mat-label>
+              <input matInput [matDatepicker]="datePicker" formControlName="date" />
+              <mat-hint>JJ/MM/AAAA</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker></mat-datepicker>
+              @if (getFieldError('date')) {
+                <mat-error>{{ getFieldError('date') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Date d'expiration (optionnel)</mat-label>
+              <input matInput [matDatepicker]="expiryDatePicker" formControlName="expiryDate" />
+              <mat-hint>JJ/MM/AAAA</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="expiryDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #expiryDatePicker></mat-datepicker>
+              @if (getFieldError('expiryDate')) {
+                <mat-error>{{ getFieldError('expiryDate') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-6 mb-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Vétérinaire</mat-label>
+              <input
+                matInput
+                formControlName="veterinarian"
+                placeholder="Ex: Dr. Martin - Clinique Vétérinaire" />
+              <mat-icon matSuffix>local_hospital</mat-icon>
+              @if (getFieldError('veterinarian')) {
+                <mat-error>{{ getFieldError('veterinarian') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mb-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Numéro de lot (optionnel)</mat-label>
+              <input matInput formControlName="batchNumber" placeholder="Ex: LOT123456" />
+              <mat-icon matSuffix>inventory</mat-icon>
+              @if (getFieldError('batchNumber')) {
+                <mat-error>{{ getFieldError('batchNumber') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-end gap-3 mt-4">
+          <button type="button" mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+            <mat-icon class="me-2">close</mat-icon>
+            Annuler
+          </button>
+          <button type="submit" mat-raised-button color="primary" [disabled]="isLoading">
+            <mat-icon class="me-2">save</mat-icon>
+            {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

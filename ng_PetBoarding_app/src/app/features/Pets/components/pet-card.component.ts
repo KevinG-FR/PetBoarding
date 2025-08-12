@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../../../Pets/models/pet.model';
+import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
 
 @Component({
   selector: 'app-pet-card',

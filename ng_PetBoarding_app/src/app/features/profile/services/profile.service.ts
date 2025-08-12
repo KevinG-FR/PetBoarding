@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, delay, of, tap } from 'rxjs';
 import { AuthService } from '../../auth/services/auth.service';
-import { Pet, PetGender, PetType } from '../../Pets/models/pet.model';
+import { Pet, PetGender, PetType } from '../../pets/models/pet.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,11 +55,6 @@ export class ProfileService {
             veterinarian: 'Dr. Martin - Clinique Vétérinaire du Parc'
           }
         ],
-        emergencyContact: {
-          name: 'Marie Dupont',
-          phone: '+33 6 98 76 54 32',
-          relationship: 'Voisine'
-        },
         createdAt: new Date('2022-01-15'),
         updatedAt: new Date('2024-03-15')
       },
@@ -93,11 +88,6 @@ export class ProfileService {
             veterinarian: 'Dr. Leroy - Cabinet Vétérinaire des Tilleuls'
           }
         ],
-        emergencyContact: {
-          name: 'Paul Martin',
-          phone: '+33 6 12 34 56 78',
-          relationship: 'Frère'
-        },
         createdAt: new Date('2023-06-20'),
         updatedAt: new Date('2024-02-10')
       },

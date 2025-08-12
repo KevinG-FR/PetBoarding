@@ -1,0 +1,68 @@
+<mat-card class="vaccination-card shadow-sm">
+  <mat-card-content class="p-3">
+    <div class="d-flex justify-content-between align-items-start">
+      <div class="vaccination-info flex-grow-1">
+        <div class="d-flex align-items-center mb-2">
+          <mat-icon class="me-2 text-primary">vaccines</mat-icon>
+          <h6 class="mb-0 fw-bold">{{ vaccination.name }}</h6>
+        </div>
+
+        <div class="vaccination-details">
+          <div class="detail-item mb-1">
+            <mat-icon class="detail-icon">event</mat-icon>
+            <span class="detail-label">Vacciné le :</span>
+            <span class="detail-value">{{ formatDate(vaccination.date) }}</span>
+          </div>
+
+          @if (vaccination.expiryDate) {
+            <div
+              class="detail-item mb-1"
+              [class]="isExpired() ? 'text-danger' : isExpiringSoon() ? 'text-warning' : ''">
+              <mat-icon class="detail-icon">event_available</mat-icon>
+              <span class="detail-label">Expire le :</span>
+              <span class="detail-value">{{ formatDate(vaccination.expiryDate) }}</span>
+            </div>
+          }
+
+          <div class="detail-item mb-1">
+            <mat-icon class="detail-icon">local_hospital</mat-icon>
+            <span class="detail-label">Vétérinaire :</span>
+            <span class="detail-value">{{ vaccination.veterinarian }}</span>
+          </div>
+
+          @if (vaccination.batchNumber) {
+            <div class="detail-item">
+              <mat-icon class="detail-icon">inventory</mat-icon>
+              <span class="detail-label">Lot :</span>
+              <span class="detail-value">{{ vaccination.batchNumber }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="vaccination-actions d-flex flex-column align-items-end">
+        <!-- Statut -->
+        <div class="vaccination-status mb-2">
+          <mat-icon [color]="getStatusColor()" [matTooltip]="getStatusText()" class="status-icon">
+            {{ getStatusIcon() }}
+          </mat-icon>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+          @if (canEdit) {
+            <button mat-icon-button color="primary" (click)="onEdit()" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (canDelete) {
+            <button mat-icon-button color="warn" (click)="onDelete()" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
