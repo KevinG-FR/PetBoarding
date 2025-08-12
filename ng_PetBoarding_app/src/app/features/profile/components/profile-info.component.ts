@@ -13,6 +13,7 @@ import { User } from '../../auth/models/user.model';
 })
 export class ProfileInfoComponent {
   @Input({ required: true }) user!: User;
+  @Input() lastUpdate: string | null = null;
   @Output() editProfile = new EventEmitter<void>();
 
   onEditProfile(): void {

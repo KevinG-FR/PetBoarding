@@ -2,57 +2,43 @@
 .profile-header {
   background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
   color: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
-  .user-info {
-    .avatar {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  .avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 
-      .avatar-icon {
-        color: white;
-      }
-    }
-
-    .user-details {
-      .user-name {
-        color: white;
-        line-height: 1.2;
-      }
-
-      .user-email,
-      .user-phone {
-        color: rgba(255, 255, 255, 0.9);
-
-        &::before {
-          font-size: 0.9rem;
-        }
-      }
-
-      .user-email::before {
-        content: '📧';
-      }
-
-      .user-phone::before {
-        content: '📱';
-      }
+    .avatar-icon {
+      font-size: 2.5rem;
+      color: white;
     }
   }
 
-  .header-actions {
-    button {
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      transition: all 0.2s ease-in-out;
+  .user-name {
+    color: white;
+    font-weight: 600;
+    line-height: 1.2;
+  }
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
+  .user-email,
+  .user-phone {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+  }
+
+  .edit-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
   }
 }
@@ -60,39 +46,17 @@
 // Responsive design
 @media (max-width: 768px) {
   .profile-header {
-    .header-content {
-      flex-direction: column;
-      text-align: center;
-    }
+    .avatar {
+      width: 64px;
+      height: 64px;
 
-    .user-info {
-      flex-direction: column;
-      text-align: center;
-
-      .avatar {
-        width: 64px;
-        height: 64px;
-
-        .avatar-icon {
-          font-size: 36px;
-          width: 36px;
-          height: 36px;
-        }
-      }
-
-      .user-details .user-name {
-        font-size: 1.5rem;
+      .avatar-icon {
+        font-size: 2rem;
       }
     }
 
-    .header-actions {
-      margin-left: 0;
-      width: 100%;
-
-      button {
-        width: 100%;
-        max-width: 280px;
-      }
+    .user-name {
+      font-size: 1.5rem;
     }
   }
 }

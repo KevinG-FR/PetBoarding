@@ -1,22 +1,31 @@
 <section class="pets-section">
-  <div class="pets-header">
-    <div class="pets-title text-center text-md-start">
-      <h2>Mes animaux</h2>
-      @if (pets().length > 0) {
-        <span class="pets-count" [matBadge]="pets().length" matBadgeColor="primary"> </span>
-      }
-    </div>
+  <div class="pets-header bg-white rounded-3 p-4 shadow-sm border mb-4">
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+      <div class="pets-title d-flex align-items-center mb-3 mb-md-0">
+        <mat-icon class="text-primary me-3" style="font-size: 2rem">pets</mat-icon>
+        <div>
+          <h2 class="h3 mb-1 text-dark fw-semibold">Mes animaux</h2>
+          @if (pets().length > 0) {
+            <span class="badge bg-primary-subtle text-primary px-3 py-2">
+              {{ pets().length }} {{ pets().length > 1 ? 'animaux' : 'animal' }}
+            </span>
+          }
+        </div>
+      </div>
 
-    <button
-      mat-raised-button
-      color="primary"
-      class="add-pet-button"
-      (click)="onAddPet()"
-      [disabled]="loading()"
-      matTooltip="Ajouter un animal">
-      <mat-icon>add</mat-icon>
-      <span class="d-none d-md-inline ms-2">Ajouter un animal</span>
-    </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="add-pet-button d-flex align-items-center"
+        (click)="onAddPet()"
+        [disabled]="loading()"
+        matTooltip="Ajouter un animal">
+        <mat-icon class="me-2">add</mat-icon>
+        <span class="d-none d-sm-inline">Ajouter un animal</span>
+        <span class="d-inline d-sm-none">Ajouter</span>
+      </button>
+    </div>
   </div>
 
   <app-pets-list

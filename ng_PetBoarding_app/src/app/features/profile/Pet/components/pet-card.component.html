@@ -1,106 +1,134 @@
-<mat-card class="pet-card mb-3 mb-md-0" [class.pet-card--highlighted]="highlighted()">
-  <mat-card-header>
+<mat-card class="pet-card h-100 border-0 shadow-sm" [class.pet-card--highlighted]="highlighted()">
+  <mat-card-header class="pb-3">
     <div mat-card-avatar class="pet-avatar">
       <mat-icon [class]="'pet-icon pet-icon--' + pet().type">
         {{ getPetIcon(pet().type) }}
       </mat-icon>
     </div>
-    <mat-card-title>{{ pet().name }}</mat-card-title>
-    <mat-card-subtitle>{{ petTypeLabels[pet().type] }} • {{ pet().breed }}</mat-card-subtitle>
-    <div class="pet-actions">
-      <button mat-icon-button matTooltip="Modifier" (click)="onEdit()">
+    <mat-card-title class="h5 mb-1">{{ pet().name }}</mat-card-title>
+    <mat-card-subtitle class="text-muted"
+      >{{ petTypeLabels[pet().type] }} • {{ pet().breed }}</mat-card-subtitle
+    >
+    <div class="pet-actions ms-auto">
+      <button mat-icon-button matTooltip="Modifier" class="text-primary" (click)="onEdit()">
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Supprimer" color="warn" (click)="onDelete()">
+      <button mat-icon-button matTooltip="Supprimer" class="text-danger" (click)="onDelete()">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
   </mat-card-header>
 
-  <mat-card-content>
-    <div class="pet-details">
-      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
-        <mat-icon class="detail-icon">cake</mat-icon>
-        <span>{{ getAgeDisplay(pet().age) }}</span>
-      </div>
-
-      @if (pet().weight) {
-        <div class="pet-detail-row">
-          <mat-icon class="detail-icon">monitor_weight</mat-icon>
-          <span>{{ pet().weight }} kg</span>
+  <mat-card-content class="pt-0">
+    <div class="pet-details mb-3">
+      <div class="row g-2">
+        <div class="col-6">
+          <div class="d-flex align-items-center">
+            <mat-icon class="detail-icon me-2 text-muted" style="font-size: 1rem">cake</mat-icon>
+            <small>{{ getAgeDisplay(pet().age) }}</small>
+          </div>
         </div>
-      }
-
-      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
-        <mat-icon class="detail-icon">palette</mat-icon>
-        <span>{{ pet().color }}</span>
-      </div>
-
-      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap flex-md-nowrap">
-        <mat-icon class="detail-icon">transgender</mat-icon>
-        <span>{{ petGenderLabels[pet().gender] }}</span>
+        @if (pet().weight) {
+          <div class="col-6">
+            <div class="d-flex align-items-center">
+              <mat-icon class="detail-icon me-2 text-muted" style="font-size: 1rem"
+                >monitor_weight</mat-icon
+              >
+              <small>{{ pet().weight }} kg</small>
+            </div>
+          </div>
+        }
+        <div class="col-6">
+          <div class="d-flex align-items-center">
+            <mat-icon class="detail-icon me-2 text-muted" style="font-size: 1rem">palette</mat-icon>
+            <small>{{ pet().color }}</small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="d-flex align-items-center">
+            <mat-icon class="detail-icon me-2 text-muted" style="font-size: 1rem"
+              >transgender</mat-icon
+            >
+            <small>{{ petGenderLabels[pet().gender] }}</small>
+          </div>
+        </div>
         @if (pet().isNeutered) {
-          <mat-chip class="status-chip ms-0 ms-md-2 mt-1 mt-md-0">Stérilisé(e)</mat-chip>
+          <div class="col-12">
+            <span class="badge bg-info-subtle text-info mt-1">Stérilisé(e)</span>
+          </div>
+        }
+        @if (pet().microchipNumber) {
+          <div class="col-12">
+            <div class="d-flex align-items-center">
+              <mat-icon class="detail-icon me-2 text-muted" style="font-size: 1rem"
+                >qr_code</mat-icon
+              >
+              <small class="microchip-number font-monospace bg-light px-2 py-1 rounded">{{
+                pet().microchipNumber
+              }}</small>
+            </div>
+          </div>
         }
       </div>
-
-      @if (pet().microchipNumber) {
-        <div class="pet-detail-row">
-          <mat-icon class="detail-icon">qr_code</mat-icon>
-          <span class="microchip-number">{{ pet().microchipNumber }}</span>
-        </div>
-      }
     </div>
 
     <!-- Statut des vaccinations -->
-    <div class="vaccination-status">
-      <div class="vaccination-header">
-        <mat-icon>vaccines</mat-icon>
-        <span>Vaccinations</span>
-        <mat-chip [class]="getVaccinationStatusClass()">
+    <div class="vaccination-status bg-light rounded p-3 mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center">
+          <mat-icon class="me-2 text-primary">vaccines</mat-icon>
+          <span class="fw-semibold">Vaccinations</span>
+        </div>
+        <span class="badge" [class]="getVaccinationStatusClass()">
           {{ getVaccinationStatusText() }}
-        </mat-chip>
+        </span>
       </div>
 
       @if (pet().vaccinations.length > 0) {
         <div class="vaccination-list">
           @for (vaccination of pet().vaccinations; track vaccination.id) {
             <div
-              class="vaccination-item"
-              [class.vaccination-item--expired]="isVaccinationExpired(vaccination)">
-              <span class="vaccination-name">{{ vaccination.name }}</span>
-              <span class="vaccination-date">{{ formatDate(vaccination.date) }}</span>
+              class="vaccination-item bg-white rounded p-2 mb-2 border-start border-3"
+              [class.border-danger]="isVaccinationExpired(vaccination)"
+              [class.border-primary]="!isVaccinationExpired(vaccination)">
+              <div class="fw-medium small">{{ vaccination.name }}</div>
+              <div class="text-muted small">{{ formatDate(vaccination.date) }}</div>
               @if (vaccination.expiryDate) {
-                <span
-                  class="vaccination-expiry"
-                  [class.vaccination-expiry--warning]="isVaccinationExpiringSoon(vaccination)"
-                  [class.vaccination-expiry--expired]="isVaccinationExpired(vaccination)">
+                <div
+                  class="small"
+                  [class.text-warning]="isVaccinationExpiringSoon(vaccination)"
+                  [class.text-danger]="isVaccinationExpired(vaccination)"
+                  [class.text-muted]="
+                    !isVaccinationExpiringSoon(vaccination) && !isVaccinationExpired(vaccination)
+                  ">
                   Expire le {{ formatDate(vaccination.expiryDate) }}
-                </span>
+                </div>
               }
             </div>
           }
         </div>
       } @else {
-        <p class="no-vaccinations">Aucune vaccination enregistrée</p>
+        <p class="text-muted small text-center mb-0">Aucune vaccination enregistrée</p>
       }
     </div>
 
     @if (pet().specialNeeds) {
-      <div class="special-needs">
-        <mat-icon>info</mat-icon>
-        <span>{{ pet().specialNeeds }}</span>
+      <div class="special-needs bg-warning-subtle border border-warning rounded p-2">
+        <div class="d-flex align-items-start">
+          <mat-icon class="text-warning me-2 mt-1" style="font-size: 1rem">info</mat-icon>
+          <small class="text-warning-emphasis">{{ pet().specialNeeds }}</small>
+        </div>
       </div>
     }
   </mat-card-content>
 
-  <mat-card-actions>
-    <button mat-button color="primary" (click)="onViewDetails()">
-      <mat-icon>visibility</mat-icon>
-      Voir détails
+  <mat-card-actions class="justify-content-center border-top pt-3">
+    <button mat-stroked-button color="primary" class="me-2" (click)="onViewDetails()">
+      <mat-icon class="me-1" style="font-size: 1rem">visibility</mat-icon>
+      Détails
     </button>
-    <button mat-button (click)="onEdit()">
-      <mat-icon>edit</mat-icon>
+    <button mat-stroked-button (click)="onEdit()">
+      <mat-icon class="me-1" style="font-size: 1rem">edit</mat-icon>
       Modifier
     </button>
   </mat-card-actions>

@@ -1,31 +1,21 @@
-<div class="profile-container">
-  <div class="profile-wrapper">
-    <!-- En-tête de page -->
-    <app-profile-info [user]="currentUser()!" (editProfile)="editProfile()" />
+<div class="profile-container bg-light min-vh-100">
+  <div class="container-fluid py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-10">
+        <!-- En-tête de page -->
+        <div class="mb-4">
+          <app-profile-info [user]="currentUser()!" [lastUpdate]="lastUpdate()" (editProfile)="editProfile()" />
+        </div>
 
-    <!-- Statistiques rapides -->
-    <div class="stats-section">
-      <mat-card class="stats-card">
-        @if (lastUpdate()) {
-          <mat-divider></mat-divider>
-          <div class="stat-item d-flex align-items-center justify-content-center gap-3">
-            <mat-icon class="stat-icon">update</mat-icon>
-            <div class="stat-content text-center">
-              <span class="stat-number">{{ lastUpdate() }}</span>
-              <span class="stat-label">Dernière mise à jour</span>
-            </div>
-          </div>
-        }
-      </mat-card>
+        <!-- Section des animaux -->
+        <app-pets-section
+          [pets]="pets()"
+          [loading]="isLoading()"
+          (addPet)="onAddPet()"
+          (petEdit)="onEditPet($event)"
+          (petDelete)="onDeletePet($event)"
+          (petViewDetails)="onViewPetDetails($event)" />
+      </div>
     </div>
-
-    <!-- Section des animaux -->
-    <app-pets-section
-      [pets]="pets()"
-      [loading]="isLoading()"
-      (addPet)="onAddPet()"
-      (petEdit)="onEditPet($event)"
-      (petDelete)="onDeletePet($event)"
-      (petViewDetails)="onViewPetDetails($event)" />
   </div>
 </div>

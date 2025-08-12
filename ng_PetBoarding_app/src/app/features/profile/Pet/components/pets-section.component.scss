@@ -1,27 +1,21 @@
 // Styles pour le composant PetsSection
-.pets-header {
-  border-bottom: 2px solid var(--mat-grey-200);
+.pets-section {
+  .pets-header {
+    transition: all 0.2s ease-in-out;
 
-  .pets-title {
-    h2 {
-      margin: 0;
-      color: var(--mat-grey-800);
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
     }
   }
 
-  .pets-count {
-    background: var(--mat-primary-50);
-    color: var(--mat-primary-700);
-    border: 1px solid var(--mat-primary-200);
-  }
-
   .add-pet-button {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
     &:hover:not([disabled]) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
     &[disabled] {
@@ -31,33 +25,25 @@
   }
 }
 
-@media (max-width: 768px) {
-  .pets-header {
-    flex-direction: column;
-    align-items: flex-start;
-
-    .pets-title {
-      flex-direction: row;
-      align-items: center;
-
-      h2 {
-        font-size: 1.5rem;
-      }
-    }
-
+@media (max-width: 576px) {
+  .pets-section {
     .add-pet-button {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 20px;
+      right: 20px;
       z-index: 1000;
-      border-radius: 50%;
-      min-width: 56px;
-      width: 56px;
-      height: 56px;
-      padding: 0;
+      border-radius: 50% !important;
+      min-width: 56px !important;
+      width: 56px !important;
+      height: 56px !important;
+      padding: 0 !important;
+
+      span {
+        display: none !important;
+      }
 
       mat-icon {
-        margin: 0;
+        margin: 0 !important;
       }
     }
   }

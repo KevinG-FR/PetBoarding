@@ -1,26 +1,44 @@
-<div class="profile-header">
-  <div class="header-content">
-    <div class="user-info">
-      <div class="avatar">
-        <mat-icon class="avatar-icon">person</mat-icon>
-      </div>
+<div class="profile-header rounded-4 p-4 mb-4 shadow-sm">
+  <div class="row align-items-center">
+    <div class="col-12 col-md-8">
+      <div class="d-flex align-items-center">
+        <div class="avatar d-flex align-items-center justify-content-center rounded-circle me-4">
+          <mat-icon class="avatar-icon">person</mat-icon>
+        </div>
 
-      <div class="user-details">
-        <h1 class="user-name">{{ user.firstName }} {{ user.lastName }}</h1>
-        @if (user.email) {
-          <div class="user-email">{{ user.email }}</div>
-        }
-        @if (user.phone) {
-          <div class="user-phone">{{ user.phone }}</div>
-        }
+        <div class="user-details">
+          <h1 class="user-name h2 mb-2">{{ user.firstName }} {{ user.lastName }}</h1>
+          @if (user.email) {
+            <div class="user-email d-flex align-items-center mb-1">
+              <mat-icon class="me-2 text-white-50" style="font-size: 1rem">email</mat-icon>
+              {{ user.email }}
+            </div>
+          }
+          @if (user.phone) {
+            <div class="user-phone d-flex align-items-center">
+              <mat-icon class="me-2 text-white-50" style="font-size: 1rem">phone</mat-icon>
+              {{ user.phone }}
+            </div>
+          }
+        </div>
       </div>
     </div>
 
-    <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="onEditProfile()">
-        <mat-icon>edit</mat-icon>
-        Modifier le profil
-      </button>
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
+      <div class="d-grid d-md-flex justify-content-md-end">
+        <button mat-raised-button class="edit-button btn-lg" (click)="onEditProfile()">
+          <mat-icon class="me-2">edit</mat-icon>
+          Modifier le profil
+        </button>
+      </div>
+      @if (lastUpdate) {
+        <div class="mt-2 text-center text-md-end">
+          <small class="text-white-50 d-flex align-items-center justify-content-center justify-content-md-end">
+            <mat-icon class="me-1" style="font-size: 0.875rem; width: 0.875rem; height: 0.875rem;">update</mat-icon>
+            Dernière mise à jour : {{ lastUpdate }}
+          </small>
+        </div>
+      }
     </div>
   </div>
 </div>

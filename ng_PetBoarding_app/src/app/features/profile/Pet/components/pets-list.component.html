@@ -1,7 +1,7 @@
 @if (pets().length > 0) {
-  <div class="row g-3 g-md-4 my-3 my-md-4" [class.pets-grid--loading]="loading()">
+  <div class="row g-3 g-lg-4" [class.pets-grid--loading]="loading()">
     @for (pet of pets(); track pet.id) {
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-lg-6">
         <app-pet-card
           [pet]="pet"
           [highlighted]="highlightedPetId() === pet.id"
@@ -12,17 +12,17 @@
     }
   </div>
 } @else {
-  <div class="empty-state">
+  <div class="empty-state d-flex align-items-center justify-content-center py-5">
     @if (loading()) {
-      <div class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Chargement des animaux...</p>
+      <div class="loading-state text-center">
+        <div class="loading-spinner mx-auto mb-3"></div>
+        <p class="text-muted mb-0">Chargement des animaux...</p>
       </div>
     } @else {
-      <div class="text-center py-5 py-md-3 px-3 px-md-4">
-        <div class="no-pets-icon mb-3 mb-md-4">🐾</div>
-        <h3>Aucun animal enregistré</h3>
-        <p>Commencez par ajouter votre premier compagnon !</p>
+      <div class="text-center py-5">
+        <div class="no-pets-icon mb-4 text-muted">🐾</div>
+        <h3 class="h4 text-dark mb-3">Aucun animal enregistré</h3>
+        <p class="text-muted mb-0">Commencez par ajouter votre premier compagnon !</p>
       </div>
     }
   </div>
