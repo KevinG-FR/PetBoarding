@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,10 +11,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../../auth/services/auth.service';
 import { User } from '../../auth/models/user.model';
-import { ProfileApiService } from '../services/profile-api.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { UpdateProfileRequestDto } from '../contracts/update-profile.dto';
+import { ProfileApiService } from '../services/profile-api.service';
 import { ChangePasswordDialogComponent } from './change-password-dialog.component';
 
 @Component({

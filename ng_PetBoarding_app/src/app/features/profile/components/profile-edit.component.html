@@ -12,7 +12,11 @@
     <!-- Formulaire -->
     <mat-card class="profile-edit-card">
       <mat-card-content>
-        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" novalidate class="profile-edit-form">
+        <form
+          [formGroup]="profileForm"
+          (ngSubmit)="onSubmit()"
+          novalidate
+          class="profile-edit-form">
           <!-- Section informations personnelles -->
           <div class="form-section">
             <h3 class="section-title">
@@ -135,8 +139,14 @@
       </h4>
       <ul>
         <li>Votre adresse email est utilisée pour la connexion et les notifications importantes</li>
-        <li>Votre numéro de téléphone nous permet de vous contacter en cas d'urgence concernant vos animaux</li>
-        <li>Toutes vos informations personnelles sont sécurisées et ne seront jamais partagées avec des tiers</li>
+        <li>
+          Votre numéro de téléphone nous permet de vous contacter en cas d'urgence concernant vos
+          animaux
+        </li>
+        <li>
+          Toutes vos informations personnelles sont sécurisées et ne seront jamais partagées avec
+          des tiers
+        </li>
         <li>Les modifications prendront effet immédiatement après validation</li>
       </ul>
     </div>
