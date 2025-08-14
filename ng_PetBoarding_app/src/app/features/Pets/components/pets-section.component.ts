@@ -21,26 +21,11 @@ export class PetsSectionComponent {
 
   // Outputs
   addPet = output<void>();
-  petEdit = output<Pet>();
-  petDelete = output<Pet>();
-  petViewDetails = output<Pet>();
 
   // Computed properties
   petsCount = computed(() => this.pets().length);
 
   onAddPet(): void {
     this.addPet.emit();
-  }
-
-  onPetEdit(pet: Pet): void {
-    this.petEdit.emit(pet);
-  }
-
-  onPetDelete(pet: Pet): void {
-    this.petDelete.emit(pet);
-  }
-
-  onPetViewDetails(pet: Pet): void {
-    this.petViewDetails.emit(pet);
   }
 }

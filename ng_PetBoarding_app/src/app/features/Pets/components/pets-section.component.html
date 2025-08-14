@@ -28,11 +28,5 @@
     </div>
   </div>
 
-  <app-pets-list
-    [pets]="pets()"
-    [loading]="loading()"
-    [highlightedPetId]="highlightedPetId()"
-    (petEdit)="onPetEdit($event)"
-    (petDelete)="onPetDelete($event)"
-    (petViewDetails)="onPetViewDetails($event)" />
+  <app-pets-list [pets]="pets()" [loading]="loading()" [highlightedPetId]="highlightedPetId()" />
 </section>

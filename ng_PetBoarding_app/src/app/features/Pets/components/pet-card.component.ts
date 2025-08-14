@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
 
 @Component({
@@ -24,29 +25,26 @@ import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.mode
   styleUrl: './pet-card.component.scss'
 })
 export class PetCardComponent {
+  private router = inject(Router);
+
   // Inputs
   pet = input.required<Pet>();
   highlighted = input<boolean>(false);
-
-  // Outputs
-  edit = output<Pet>();
-  delete = output<Pet>();
-  viewDetails = output<Pet>();
 
   // Labels publics
   petTypeLabels = PetTypeLabels;
   petGenderLabels = PetGenderLabels;
 
   onEdit(): void {
-    this.edit.emit(this.pet());
+    this.router.navigate(['/profile/pets', this.pet().id, 'edit']);
   }
 
   onDelete(): void {
-    this.delete.emit(this.pet());
+    // TODO: Implémenter la suppression avec confirmation
   }
 
   onViewDetails(): void {
-    this.viewDetails.emit(this.pet());
+    this.router.navigate(['/profile/pets', this.pet().id]);
   }
 
   getPetIcon(type: PetType): string {

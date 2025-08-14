@@ -2,12 +2,7 @@
   <div class="row g-3 g-lg-4" [class.pets-grid--loading]="loading()">
     @for (pet of pets(); track pet.id) {
       <div class="col-12 col-lg-6">
-        <app-pet-card
-          [pet]="pet"
-          [highlighted]="highlightedPetId() === pet.id"
-          (edit)="onPetEdit($event)"
-          (delete)="onPetDelete($event)"
-          (viewDetails)="onPetViewDetails($event)" />
+        <app-pet-card [pet]="pet" [highlighted]="highlightedPetId() === pet.id" />
       </div>
     }
   </div>

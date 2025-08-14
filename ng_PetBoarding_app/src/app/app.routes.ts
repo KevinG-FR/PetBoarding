@@ -42,6 +42,18 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'profile/pets/:id',
+    loadComponent: () =>
+      import('./features/pets/components/pet-details.component').then((m) => m.PetDetailsComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'profile/pets/:id/edit',
+    loadComponent: () =>
+      import('./features/pets/components/pet-details.component').then((m) => m.PetDetailsComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'prestations',
     loadComponent: () =>
       import('./features/prestations/components/prestations.component').then(

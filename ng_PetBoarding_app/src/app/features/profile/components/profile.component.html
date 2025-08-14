@@ -11,13 +11,7 @@
         </div>
 
         <!-- Section des animaux -->
-        <app-pets-section
-          [pets]="pets()"
-          [loading]="isLoading()"
-          (addPet)="onAddPet()"
-          (petEdit)="onEditPet($event)"
-          (petDelete)="onDeletePet($event)"
-          (petViewDetails)="onViewPetDetails($event)" />
+        <app-pets-section [pets]="pets()" [loading]="isLoading()" (addPet)="onAddPet()" />
       </div>
     </div>
   </div>

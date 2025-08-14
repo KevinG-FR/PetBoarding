@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { PetsSectionComponent } from '../../pets/components/pets-section.component';
-import { Pet } from '../../pets/models/pet.model';
 import { ProfileService } from '../services/profile.service';
 import { ProfileInfoComponent } from './profile-info.component';
 
@@ -76,33 +75,6 @@ export class ProfileComponent implements OnInit {
    */
   onAddPet(): void {
     this.router.navigate(['/profile/pets/add']);
-  }
-
-  /**
-   * Modifier un animal
-   */
-  onEditPet(pet: Pet): void {
-    // TODO: Implémenter la navigation vers l'édition d'animal
-    // Utiliser pet.name pour éviter l'erreur unused
-    void pet.name;
-  }
-
-  /**
-   * Supprimer un animal
-   */
-  onDeletePet(pet: Pet): void {
-    // TODO: Implémenter la suppression avec confirmation
-    // Utiliser pet.name pour éviter l'erreur unused
-    void pet.name;
-  }
-
-  /**
-   * Voir les détails d'un animal
-   */
-  onViewPetDetails(pet: Pet): void {
-    // TODO: Implémenter la vue détails d'animal
-    // Utiliser pet.name pour éviter l'erreur unused
-    void pet.name;
   }
 
   /**

@@ -1,0 +1,435 @@
+<div class="container-fluid py-4">
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 400px">
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-3 text-muted">Chargement des informations...</p>
+      </div>
+    </div>
+  } @else if (pet()) {
+    <!-- Header avec navigation -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <button mat-icon-button (click)="onBack()" class="me-3" matTooltip="Retour">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+              <h1 class="h3 mb-1">{{ pet()!.name }}</h1>
+              <p class="text-muted mb-0">{{ petTypeLabels[pet()!.type] }} • {{ pet()!.breed }}</p>
+            </div>
+          </div>
+
+          <!-- Actions selon le mode -->
+          <div class="d-flex gap-2">
+            @if (!isEditing()) {
+              <button mat-raised-button color="primary" (click)="onEditMode()">
+                <mat-icon class="me-1">edit</mat-icon>
+                Modifier
+              </button>
+            } @else {
+              <button mat-stroked-button (click)="onCancelEdit()" [disabled]="petForm.invalid">
+                <mat-icon class="me-1">close</mat-icon>
+                Annuler
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="onSave()"
+                [disabled]="petForm.invalid || !hasUnsavedChanges()">
+                <mat-icon class="me-1">save</mat-icon>
+                Sauvegarder
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="petForm">
+      <div class="row">
+        <!-- Informations principales -->
+        <div class="col-lg-8">
+          <mat-card class="mb-4">
+            <mat-card-header>
+              <div mat-card-avatar class="pet-avatar">
+                <mat-icon [class]="'pet-icon pet-icon--' + pet()!.type">
+                  {{ getPetIcon(pet()!.type) }}
+                </mat-icon>
+              </div>
+              <mat-card-title>Informations générales</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="pet-form">
+                <div class="row g-3">
+                  <!-- Nom -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Nom</label>
+                        <p class="fw-medium">{{ pet()!.name }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Nom</mat-label>
+                        <input matInput formControlName="name" required />
+                        @if (petForm.get('name')?.hasError('required')) {
+                          <mat-error>Le nom est requis</mat-error>
+                        }
+                        @if (petForm.get('name')?.hasError('minlength')) {
+                          <mat-error>Le nom doit contenir au moins 2 caractères</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Type -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Type</label>
+                        <p class="fw-medium">{{ petTypeLabels[pet()!.type] }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Type</mat-label>
+                        <mat-select formControlName="type" required>
+                          @for (type of petTypes; track type) {
+                            <mat-option [value]="type">{{ petTypeLabels[type] }}</mat-option>
+                          }
+                        </mat-select>
+                        @if (petForm.get('type')?.hasError('required')) {
+                          <mat-error>Le type est requis</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Race -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Race</label>
+                        <p class="fw-medium">{{ pet()!.breed }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Race</mat-label>
+                        <input matInput formControlName="breed" required />
+                        @if (petForm.get('breed')?.hasError('required')) {
+                          <mat-error>La race est requise</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Âge -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Âge</label>
+                        <p class="fw-medium">{{ getAgeDisplay(pet()!.age) }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Âge (années)</mat-label>
+                        <input
+                          matInput
+                          type="number"
+                          formControlName="age"
+                          min="0"
+                          max="30"
+                          required />
+                        @if (petForm.get('age')?.hasError('required')) {
+                          <mat-error>L'âge est requis</mat-error>
+                        }
+                        @if (
+                          petForm.get('age')?.hasError('min') || petForm.get('age')?.hasError('max')
+                        ) {
+                          <mat-error>L'âge doit être entre 0 et 30 ans</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Poids -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Poids</label>
+                        <p class="fw-medium">
+                          @if (pet()!.weight) {
+                            {{ pet()!.weight }} kg
+                          } @else {
+                            <span class="text-muted">Non renseigné</span>
+                          }
+                        </p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Poids (kg)</mat-label>
+                        <input
+                          matInput
+                          type="number"
+                          formControlName="weight"
+                          min="0.1"
+                          max="100"
+                          step="0.1" />
+                        @if (
+                          petForm.get('weight')?.hasError('min') ||
+                          petForm.get('weight')?.hasError('max')
+                        ) {
+                          <mat-error>Le poids doit être entre 0.1 et 100 kg</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Couleur -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Couleur</label>
+                        <p class="fw-medium">{{ pet()!.color }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Couleur</mat-label>
+                        <input matInput formControlName="color" required />
+                        @if (petForm.get('color')?.hasError('required')) {
+                          <mat-error>La couleur est requise</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Sexe -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Sexe</label>
+                        <p class="fw-medium">{{ petGenderLabels[pet()!.gender] }}</p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Sexe</mat-label>
+                        <mat-select formControlName="gender" required>
+                          @for (gender of petGenders; track gender) {
+                            <mat-option [value]="gender">{{ petGenderLabels[gender] }}</mat-option>
+                          }
+                        </mat-select>
+                        @if (petForm.get('gender')?.hasError('required')) {
+                          <mat-error>Le sexe est requis</mat-error>
+                        }
+                      </mat-form-field>
+                    }
+                  </div>
+
+                  <!-- Stérilisé -->
+                  <div class="col-md-6">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small">Stérilisation</label>
+                        <p class="fw-medium">
+                          @if (pet()!.isNeutered) {
+                            <span class="badge bg-info-subtle text-info">Stérilisé(e)</span>
+                          } @else {
+                            <span class="badge bg-light text-muted">Non stérilisé(e)</span>
+                          }
+                        </p>
+                      </div>
+                    } @else {
+                      <div class="mt-3">
+                        <mat-checkbox formControlName="isNeutered">
+                          Animal stérilisé(e)
+                        </mat-checkbox>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Numéro de puce -->
+                  <div class="col-12">
+                    @if (!isEditing()) {
+                      <div class="form-display">
+                        <label class="form-label text-muted small"
+                          >Numéro de puce électronique</label
+                        >
+                        <p class="fw-medium">
+                          @if (pet()!.microchipNumber) {
+                            <span class="font-monospace bg-light px-2 py-1 rounded">{{
+                              pet()!.microchipNumber
+                            }}</span>
+                          } @else {
+                            <span class="text-muted">Non renseigné</span>
+                          }
+                        </p>
+                      </div>
+                    } @else {
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Numéro de puce électronique</mat-label>
+                        <input matInput formControlName="microchipNumber" />
+                      </mat-form-field>
+                    }
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Notes médicales -->
+          <mat-card class="mb-4">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="me-2">medical_services</mat-icon>
+                Notes médicales
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (!isEditing()) {
+                @if (pet()!.medicalNotes) {
+                  <p class="mb-0">{{ pet()!.medicalNotes }}</p>
+                } @else {
+                  <p class="text-muted mb-0">Aucune note médicale</p>
+                }
+              } @else {
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Notes médicales</mat-label>
+                  <textarea matInput formControlName="medicalNotes" rows="4"></textarea>
+                </mat-form-field>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Besoins spéciaux -->
+          <mat-card class="mb-4">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="me-2">info</mat-icon>
+                Besoins spéciaux
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (!isEditing()) {
+                @if (pet()!.specialNeeds) {
+                  <div class="alert alert-warning">
+                    <mat-icon class="me-2">warning</mat-icon>
+                    {{ pet()!.specialNeeds }}
+                  </div>
+                } @else {
+                  <p class="text-muted mb-0">Aucun besoin spécial</p>
+                }
+              } @else {
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Besoins spéciaux</mat-label>
+                  <textarea matInput formControlName="specialNeeds" rows="3"></textarea>
+                </mat-form-field>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <!-- Contact d'urgence -->
+          <mat-card class="mb-4">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="me-2">emergency</mat-icon>
+                Contact d'urgence
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (!isEditing()) {
+                @if (pet()!.emergencyContact) {
+                  <div class="emergency-contact">
+                    <div class="mb-2">
+                      <strong>{{ pet()!.emergencyContact!.name }}</strong>
+                    </div>
+                    <div class="mb-2">
+                      <mat-icon class="me-1" style="font-size: 1rem">phone</mat-icon>
+                      {{ pet()!.emergencyContact!.phone }}
+                    </div>
+                    <div class="text-muted small">
+                      {{ pet()!.emergencyContact!.relationship }}
+                    </div>
+                  </div>
+                } @else {
+                  <p class="text-muted mb-0">Aucun contact d'urgence</p>
+                }
+              } @else {
+                <div formGroupName="emergencyContact" class="d-flex flex-column gap-3">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nom du contact</mat-label>
+                    <input matInput formControlName="name" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Téléphone</mat-label>
+                    <input matInput formControlName="phone" type="tel" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Relation</mat-label>
+                    <input
+                      matInput
+                      formControlName="relationship"
+                      placeholder="ex: Vétérinaire, Famille..." />
+                  </mat-form-field>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Vaccinations -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="me-2">vaccines</mat-icon>
+                Vaccinations
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (pet()!.vaccinations.length > 0) {
+                <div class="vaccination-list">
+                  @for (vaccination of pet()!.vaccinations; track vaccination.id) {
+                    <div class="vaccination-item border rounded p-3 mb-2">
+                      <div class="fw-medium">{{ vaccination.name }}</div>
+                      <div class="text-muted small">{{ formatDate(vaccination.date) }}</div>
+                      @if (vaccination.expiryDate) {
+                        <div class="small text-warning">
+                          Expire le {{ formatDate(vaccination.expiryDate) }}
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-muted mb-0">Aucune vaccination enregistrée</p>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </form>
+
+    <!-- Indicateur de modifications non sauvegardées -->
+    @if (hasUnsavedChanges()) {
+      <div class="position-fixed bottom-0 start-50 translate-middle-x mb-3">
+        <div class="alert alert-warning d-flex align-items-center shadow">
+          <mat-icon class="me-2">warning</mat-icon>
+          Vous avez des modifications non sauvegardées
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 400px">
+      <div class="text-center">
+        <mat-icon style="font-size: 4rem; color: #ccc">pets</mat-icon>
+        <p class="mt-3 text-muted">Animal non trouvé</p>
+        <button mat-stroked-button (click)="onBack()">Retour</button>
+      </div>
+    </div>
+  }
+</div>
