@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 import { PetsSectionComponent } from '../../pets/components/pets-section.component';
+import { PetService } from '../../pets/services/pet.service';
 import { ProfileService } from '../services/profile.service';
 import { ProfileInfoComponent } from './profile-info.component';
 
@@ -28,12 +29,13 @@ import { ProfileInfoComponent } from './profile-info.component';
 export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly petService = inject(PetService);
   private readonly router = inject(Router);
 
   // Getters pour les données
   currentUser = this.authService.currentUser;
-  pets = this.profileService.pets;
-  isLoading = this.profileService.isLoading;
+  pets = this.petService.pets;
+  isLoading = this.petService.isLoading;
 
   // Computed properties pour les stats
   totalPets = computed(() => this.pets().length);
@@ -56,7 +58,7 @@ export class ProfileComponent implements OnInit {
    * Charger les animaux de l'utilisateur
    */
   private loadUserPets(): void {
-    this.profileService.loadUserPets().subscribe({
+    this.petService.loadUserPets().subscribe({
       error: () => {
         // Gestion d'erreur silencieuse pour l'instant
       }

@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ProfileService } from '../../profile/services/profile.service';
 import { Pet, PetGender, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
+import { PetService } from '../services/pet.service';
 
 interface ViewMode {
   isEditing: boolean;
@@ -44,7 +44,7 @@ export class PetDetailsComponent {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
-  private profileService = inject(ProfileService);
+  private petService = inject(PetService);
 
   // Signals
   pet = signal<Pet | null>(null);
@@ -77,8 +77,8 @@ export class PetDetailsComponent {
         this.loading.set(true);
 
         // S'assurer que les animaux sont chargés d'abord
-        if (this.profileService.pets().length === 0) {
-          this.profileService.loadUserPets().subscribe({
+        if (this.petService.pets().length === 0) {
+          this.petService.loadUserPets().subscribe({
             next: () => {
               this.loadPetDetails(petId, isEditRoute);
             },
@@ -124,7 +124,7 @@ export class PetDetailsComponent {
   }
 
   private loadPetDetails(petId: string, isEditRoute: boolean): void {
-    this.profileService.getPetById(petId).subscribe({
+    this.petService.getPetById(petId).subscribe({
       next: (pet) => {
         if (pet) {
           this.pet.set(pet);
@@ -215,7 +215,7 @@ export class PetDetailsComponent {
       const petId = this.pet()!.id;
       const formValue = this.petForm.value;
 
-      this.profileService.updatePet(petId, formValue).subscribe({
+      this.petService.updatePet(petId, formValue).subscribe({
         next: (updatedPet) => {
           this.pet.set(updatedPet);
           this.originalFormValue.set(this.petForm.value);
