@@ -5,7 +5,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/services/auth.service';
 import { PetsSectionComponent } from '../../pets/components/pets-section.component';
 import { PetService } from '../../pets/services/pet.service';
 import { ProfileService } from '../services/profile.service';
@@ -27,13 +26,12 @@ import { ProfileInfoComponent } from './profile-info.component';
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
   private readonly petService = inject(PetService);
   private readonly router = inject(Router);
 
   // Getters pour les données
-  currentUser = this.authService.currentUser;
+  currentUser = this.profileService.currentUser;
   pets = this.petService.pets;
   isLoading = this.petService.isLoading;
 

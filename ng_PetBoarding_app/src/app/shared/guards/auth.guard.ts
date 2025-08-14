@@ -11,10 +11,10 @@ export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Vérifier si l'utilisateur est connecté
-  const currentUser = authService.currentUser();
+  // Vérifier si l'utilisateur est connecté (via le token)
+  const isAuthenticated = authService.isAuthenticated();
 
-  if (currentUser) {
+  if (isAuthenticated) {
     return true;
   }
 

@@ -9,6 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../features/auth/services/auth.service';
+import { ProfileService } from '../../features/profile/services/profile.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -30,13 +31,14 @@ import { AuthService } from '../../features/auth/services/auth.service';
 })
 export class MainLayoutComponent {
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
 
   // Signals pour l'état du layout
   sidenavOpened = signal(false);
 
   // Getters pour l'authentification
   isAuthenticated = this.authService.isAuthenticated;
-  currentUser = this.authService.currentUser;
+  currentUser = this.profileService.currentUser;
 
   // Année courante pour le footer
   currentYear = signal(new Date().getFullYear());

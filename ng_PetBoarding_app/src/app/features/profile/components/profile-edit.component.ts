@@ -12,9 +12,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { User } from '../../auth/models/user.model';
-import { AuthService } from '../../auth/services/auth.service';
 import { UpdateProfileRequestDto } from '../contracts/update-profile.dto';
-import { ProfileApiService } from '../services/profile-api.service';
+import { ProfileService } from '../services/profile.service';
 import { ChangePasswordDialogComponent } from './change-password-dialog.component';
 
 @Component({
@@ -36,8 +35,7 @@ import { ChangePasswordDialogComponent } from './change-password-dialog.componen
 })
 export class ProfileEditComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly profileApiService = inject(ProfileApiService);
+  private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
@@ -49,7 +47,7 @@ export class ProfileEditComponent implements OnInit {
   // Propriétés calculées
   readonly isSubmitting = this._isSubmitting.asReadonly();
   readonly hasChanges = this._hasChanges.asReadonly();
-  readonly currentUser = this.authService.currentUser;
+  readonly currentUser = this.profileService.currentUser;
 
   // Formulaire
   profileForm!: FormGroup;
@@ -113,11 +111,8 @@ export class ProfileEditComponent implements OnInit {
    * Mettre à jour le profil via l'API
    */
   private updateProfile(profileData: UpdateProfileRequestDto): void {
-    this.profileApiService.updateProfile(profileData).subscribe({
-      next: (updatedUser: User) => {
-        // Mettre à jour l'utilisateur dans le service d'authentification
-        this.authService.updateCurrentUser(updatedUser);
-
+    this.profileService.updateUserProfile(profileData).subscribe({
+      next: (_updatedUser: User) => {
         this.snackBar.open('Profil mis à jour avec succès !', 'Fermer', {
           duration: 3000,
           horizontalPosition: 'center',
