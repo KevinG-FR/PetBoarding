@@ -1,0 +1,385 @@
+.profile-edit-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #4caf50 0%, #388e3c 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  padding-top: 40px;
+
+  @media (min-width: 769px) {
+    padding-top: 60px;
+  }
+}
+
+.profile-edit-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+// En-tête
+.profile-edit-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: white;
+
+  @media (min-width: 769px) {
+    margin-bottom: 2rem;
+  }
+
+  .profile-edit-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-edit-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .profile-edit-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+// Carte principale
+.profile-edit-card {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+
+  mat-card-content {
+    padding: 2rem;
+  }
+}
+
+// Formulaire
+.profile-edit-form {
+  .form-section {
+    margin-bottom: 2rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin: 0 0 1.5rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f0f0f0;
+
+      mat-icon {
+        color: #4caf50;
+      }
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+
+  .half-width {
+    flex: 1;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  // Champs de formulaire
+  mat-form-field {
+    margin-bottom: 1rem;
+
+    .mat-mdc-form-field-outline {
+      border-radius: 8px;
+    }
+
+    &.mat-focused {
+      .mat-mdc-form-field-outline-thick {
+        border-color: #4caf50;
+      }
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      color: #4caf50;
+    }
+
+    &.mat-form-field-invalid {
+      .mat-mdc-form-field-outline-thick {
+        border-color: #e53e3e;
+      }
+
+      .mat-mdc-form-field-icon-suffix {
+        color: #e53e3e;
+      }
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// Actions du formulaire
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    gap: 0.75rem;
+  }
+
+  .action-button {
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    min-width: 120px;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      min-width: 100px;
+      font-size: 0.9rem;
+    }
+
+    .inline-spinner {
+      margin-right: 0.5rem;
+    }
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .cancel-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: #2e7d32;
+    font-weight: 500;
+
+    &:hover:not([disabled]) {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .password-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: #2e7d32;
+    font-weight: 500;
+
+    &:hover:not([disabled]) {
+      background: white;
+      border-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.5);
+      color: rgba(46, 125, 50, 0.5);
+    }
+  }
+
+  .submit-button {
+    background: rgba(255, 255, 255, 0.9);
+    color: #2e7d32;
+    font-weight: 600;
+
+    &:hover:not([disabled]) {
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.5);
+      color: rgba(46, 125, 50, 0.5);
+      box-shadow: none;
+    }
+  }
+}
+
+// Alertes
+.alert {
+  border-radius: 8px;
+  border: 1px solid;
+  margin-bottom: 1rem;
+
+  &.alert-info {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #2e7d32;
+
+    mat-icon {
+      color: #4caf50;
+    }
+  }
+
+  &.alert-light {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #2e7d32;
+
+    mat-icon {
+      color: #388e3c;
+    }
+  }
+}
+
+// Section d'informations
+.info-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  .info-title {
+    display: flex;
+    align-items: center;
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+
+    mat-icon {
+      margin-right: 0.5rem;
+      color: #4caf50;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #555;
+
+    li {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Styles pour le spinner
+mat-spinner {
+  ::ng-deep svg circle {
+    stroke: currentColor;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .profile-edit-container {
+    padding: 10px;
+  }
+
+  .profile-edit-header {
+    margin-bottom: 1.5rem;
+
+    .profile-edit-title {
+      font-size: 2rem;
+    }
+
+    .profile-edit-subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .profile-edit-card mat-card-content {
+    padding: 1.5rem;
+  }
+
+  .info-section {
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-edit-container {
+    padding: 5px;
+  }
+
+  .profile-edit-header {
+    .profile-edit-icon {
+      font-size: 2.5rem;
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+
+    .profile-edit-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .profile-edit-card mat-card-content {
+    padding: 1rem;
+  }
+
+  .info-section {
+    padding: 1rem;
+  }
+}
+
+// Styles pour les snackbars
+:host ::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .error-snackbar {
+    background-color: #f44336;
+    color: white;
+  }
+}

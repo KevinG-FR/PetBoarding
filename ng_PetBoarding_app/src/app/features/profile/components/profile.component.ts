@@ -68,7 +68,7 @@ export class ProfileComponent implements OnInit {
    * Naviguer vers la modification du profil
    */
   editProfile(): void {
-    // TODO: Implémenter la navigation vers la page d'édition
+    this.router.navigate(['/profile/edit']);
   }
 
   /**

@@ -109,6 +109,13 @@ export class AuthService {
   }
 
   /**
+   * Mettre à jour les données de l'utilisateur actuel
+   */
+  updateCurrentUser(user: User): void {
+    this._currentUser.set(user);
+  }
+
+  /**
    * Simulation pour basculer l'état d'authentification (développement)
    */
   toggleAuthForTesting(): void {

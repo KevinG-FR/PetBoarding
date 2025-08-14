@@ -1,0 +1,144 @@
+<div class="profile-edit-container">
+  <div class="profile-edit-wrapper">
+    <!-- En-tête -->
+    <div class="profile-edit-header">
+      <mat-icon class="profile-edit-icon">person_outline</mat-icon>
+      <h1 class="profile-edit-title">Modifier le profil</h1>
+      <p class="profile-edit-subtitle">
+        Mettez à jour vos informations personnelles en toute sécurité
+      </p>
+    </div>
+
+    <!-- Formulaire -->
+    <mat-card class="profile-edit-card">
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" novalidate class="profile-edit-form">
+          <!-- Section informations personnelles -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>person</mat-icon>
+              Informations personnelles
+            </h3>
+
+            <!-- Prénom et Nom -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Prénom *</mat-label>
+                <input
+                  matInput
+                  formControlName="firstName"
+                  placeholder="Votre prénom"
+                  autocomplete="given-name" />
+                <mat-icon matSuffix>person</mat-icon>
+                @if (hasError('firstName')) {
+                  <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Nom *</mat-label>
+                <input
+                  matInput
+                  formControlName="lastName"
+                  placeholder="Votre nom de famille"
+                  autocomplete="family-name" />
+                <mat-icon matSuffix>person</mat-icon>
+                @if (hasError('lastName')) {
+                  <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <!-- Email -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Adresse email *</mat-label>
+              <input
+                matInput
+                formControlName="email"
+                type="email"
+                placeholder="votre.email@exemple.com"
+                autocomplete="email" />
+              <mat-icon matSuffix>email</mat-icon>
+              @if (hasError('email')) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Téléphone -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Numéro de téléphone *</mat-label>
+              <input
+                matInput
+                formControlName="phone"
+                type="tel"
+                placeholder="06 12 34 56 78"
+                autocomplete="tel" />
+              <mat-icon matSuffix>phone</mat-icon>
+              @if (hasError('phone')) {
+                <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Indicateur de modifications -->
+          @if (hasChanges()) {
+            <div class="alert alert-info">
+              <mat-icon>info</mat-icon>
+              <span>Vous avez des modifications non sauvegardées</span>
+            </div>
+          }
+
+          <!-- Boutons d'action -->
+          <div class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              class="action-button cancel-button"
+              (click)="onCancel()"
+              [disabled]="isSubmitting()">
+              <mat-icon>arrow_back</mat-icon>
+              Retour au profil
+            </button>
+
+            <button
+              mat-stroked-button
+              type="button"
+              class="action-button password-button"
+              (click)="openChangePasswordDialog()"
+              [disabled]="isSubmitting()">
+              <mat-icon>lock</mat-icon>
+              Changer le mot de passe
+            </button>
+
+            <button
+              mat-raised-button
+              type="submit"
+              class="action-button submit-button"
+              [disabled]="!profileForm.valid || !hasChanges() || isSubmitting()">
+              @if (isSubmitting()) {
+                <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+              } @else {
+                <mat-icon>save</mat-icon>
+              }
+              {{ isSubmitting() ? 'Sauvegarde...' : 'Sauvegarder les modifications' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Informations additionnelles -->
+    <div class="info-section">
+      <h4 class="info-title">
+        <mat-icon>info</mat-icon>
+        Informations importantes
+      </h4>
+      <ul>
+        <li>Votre adresse email est utilisée pour la connexion et les notifications importantes</li>
+        <li>Votre numéro de téléphone nous permet de vous contacter en cas d'urgence concernant vos animaux</li>
+        <li>Toutes vos informations personnelles sont sécurisées et ne seront jamais partagées avec des tiers</li>
+        <li>Les modifications prendront effet immédiatement après validation</li>
+      </ul>
+    </div>
+  </div>
+</div>

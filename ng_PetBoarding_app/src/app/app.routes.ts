@@ -28,9 +28,17 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'profile/edit',
+    loadComponent: () =>
+      import('./features/profile/components/profile-edit.component').then(
+        (m) => m.ProfileEditComponent
+      ),
+    canActivate: [authGuard]
+  },
+  {
     path: 'profile/pets/add',
     loadComponent: () =>
-      import('./features/Pets/components/pet-form.component').then((m) => m.PetFormComponent),
+      import('./features/pets/components/pet-form.component').then((m) => m.PetFormComponent),
     canActivate: [authGuard]
   },
   {
