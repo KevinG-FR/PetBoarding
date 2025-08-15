@@ -1,0 +1,69 @@
+<div class="basket-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>shopping_cart</mat-icon>
+        Mon Panier
+      </mat-card-title>
+      <mat-card-subtitle>
+        @if (!basketService.isEmpty()) {
+          {{ basketService.summary().totalItems }} prestation(s) sélectionnée(s)
+        }
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (basketService.isEmpty()) {
+        <div class="empty-basket">
+          <mat-icon>shopping_cart</mat-icon>
+          <h3>Votre panier est vide</h3>
+          <p>Ajoutez des prestations depuis notre catalogue pour commencer votre réservation.</p>
+          <button mat-raised-button color="primary" routerLink="/prestations">
+            <mat-icon>room_service</mat-icon>
+            Voir les prestations
+          </button>
+        </div>
+      } @else {
+        <div class="basket-items">
+          @for (item of basketService.items(); track item.id) {
+            <app-basket-item
+              [item]="item"
+              (quantityChange)="onQuantityChange($event)"
+              (remove)="onRemoveItem($event)"
+              (prestationClick)="onPrestationClick($event)">
+            </app-basket-item>
+          }
+        </div>
+
+        <div class="basket-summary">
+          <div class="summary-row">
+            <span>Nombre d'articles :</span>
+            <span>{{ basketService.summary().totalItems }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Durée totale :</span>
+            <span>{{ formatDuration(basketService.summary().totalDuration) }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total à payer :</span>
+            <span class="total-amount">
+              {{ basketService.summary().totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="basket-actions">
+          <button mat-button color="warn" (click)="onClearBasket()" class="clear-btn">
+            <mat-icon>clear_all</mat-icon>
+            Vider le panier
+          </button>
+
+          <button mat-raised-button color="primary" (click)="onProceedToCheckout()">
+            <mat-icon>payment</mat-icon>
+            Procéder au paiement
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

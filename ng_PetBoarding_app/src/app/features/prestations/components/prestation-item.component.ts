@@ -4,7 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
+import { BasketService } from '../../basket/services/basket.service';
 import { CategorieAnimal, Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 
@@ -30,6 +33,9 @@ export class PrestationItemComponent {
   reservePrestation = output<Prestation>();
 
   private prestationsService = inject(PrestationsService);
+  private basketService = inject(BasketService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
   // Computed pour optimiser les appels répétés
   categoryInfo = computed(() =>
@@ -63,6 +69,21 @@ export class PrestationItemComponent {
   }
 
   onReserve(): void {
-    this.reservePrestation.emit(this.prestation());
+    const prestation = this.prestation();
+    this.basketService.addItem(prestation);
+
+    const snackBarRef = this.snackBar.open(
+      `${prestation.libelle} ajouté au panier`,
+      'Voir le panier',
+      {
+        duration: 5000
+      }
+    );
+
+    snackBarRef.onAction().subscribe(() => {
+      this.router.navigate(['/basket']);
+    });
+
+    this.reservePrestation.emit(prestation);
   }
 }

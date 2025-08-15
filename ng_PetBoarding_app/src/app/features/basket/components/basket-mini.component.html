@@ -1,0 +1,52 @@
+<button
+  mat-icon-button
+  [matMenuTriggerFor]="basketMenu"
+  [matBadge]="basketService.summary().totalItems"
+  [matBadgeHidden]="basketService.isEmpty()"
+  matBadgeColor="accent">
+  <mat-icon>shopping_cart</mat-icon>
+</button>
+
+<mat-menu #basketMenu="matMenu" class="basket-menu">
+  @if (basketService.isEmpty()) {
+    <div class="empty-basket-mini">
+      <mat-icon>shopping_cart</mat-icon>
+      <p>Panier vide</p>
+    </div>
+  } @else {
+    <div class="basket-items-preview">
+      @for (item of basketService.items() | slice: 0 : 3; track item.id) {
+        <div class="basket-item-mini" (click)="goToBasket()">
+          <div class="item-info">
+            <span class="item-name">{{ item.prestation.libelle }}</span>
+            <span class="item-quantity">x{{ item.quantity }}</span>
+          </div>
+          <span class="item-price">
+            {{ item.prestation.prix * item.quantity | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+      }
+
+      @if (basketService.items().length > 3) {
+        <div class="more-items">
+          Et {{ basketService.items().length - 3 }} autre(s) prestation(s)...
+        </div>
+      }
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="basket-summary-mini">
+      <div class="total-row">
+        <span>Total :</span>
+        <span class="total-amount">
+          {{ basketService.summary().totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="basket-actions-mini">
+      <button mat-button (click)="goToBasket()" class="view-basket-btn">Voir le panier</button>
+    </div>
+  }
+</mat-menu>

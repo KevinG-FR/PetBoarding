@@ -1,0 +1,58 @@
+<mat-card class="basket-item">
+  <div class="item-content">
+    <div class="item-info" (click)="onPrestationClick()">
+      <h4 class="item-title">{{ item().prestation.libelle }}</h4>
+      <p class="item-description">{{ item().prestation.description }}</p>
+      <div class="item-details">
+        <span class="category">{{ getCategoryLabel(item().prestation.categorieAnimal) }}</span>
+        <span class="duration">{{ formatDuration(item().prestation.duree) }}</span>
+      </div>
+      <div class="item-price">
+        {{ item().prestation.prix | currency: 'EUR' : 'symbol' : '1.2-2' }} / unité
+      </div>
+    </div>
+
+    <div class="item-actions">
+      <div class="quantity-controls">
+        <button mat-icon-button (click)="decreaseQuantity()" [disabled]="item().quantity <= 1">
+          <mat-icon>remove</mat-icon>
+        </button>
+
+        <mat-form-field appearance="outline" class="quantity-input">
+          <input
+            matInput
+            type="number"
+            min="1"
+            [value]="item().quantity"
+            (change)="onQuantityChange($event)" />
+        </mat-form-field>
+
+        <button mat-icon-button (click)="increaseQuantity()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="total-price">
+        <strong>{{ getTotalPrice() | currency: 'EUR' : 'symbol' : '1.2-2' }}</strong>
+      </div>
+
+      <button mat-icon-button color="warn" (click)="onRemove()" class="remove-btn">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (item().dateReservation) {
+    <div class="reservation-date">
+      <mat-icon>event</mat-icon>
+      <span>Réservé pour le {{ formatDate(item().dateReservation!) }}</span>
+    </div>
+  }
+
+  @if (item().notes) {
+    <div class="notes">
+      <mat-icon>note</mat-icon>
+      <span>{{ item().notes }}</span>
+    </div>
+  }
+</mat-card>

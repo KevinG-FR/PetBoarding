@@ -61,6 +61,11 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'basket',
+    loadComponent: () =>
+      import('./features/basket/components/basket.component').then((m) => m.BasketComponent)
+  },
+  {
     path: 'reservations',
     loadComponent: () =>
       import('./features/reservations/components/reservations.component').then(

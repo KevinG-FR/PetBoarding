@@ -9,6 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../features/auth/services/auth.service';
+import { BasketMiniComponent } from '../../features/basket/components/basket-mini.component';
 import { ProfileService } from '../../features/profile/services/profile.service';
 
 @Component({
@@ -24,7 +25,8 @@ import { ProfileService } from '../../features/profile/services/profile.service'
     MatIconModule,
     MatMenuModule,
     MatSidenavModule,
-    MatDividerModule
+    MatDividerModule,
+    BasketMiniComponent
   ],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.scss']

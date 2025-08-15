@@ -42,6 +42,9 @@
 
     <!-- Actions utilisateur -->
     <div class="user-actions">
+      <!-- Mini panier -->
+      <app-basket-mini></app-basket-mini>
+
       <!-- Non connecté (masquer boutons sur mobile/tablette) -->
       @if (!isAuthenticated()) {
         <div class="auth-buttons d-none d-xl-flex">
@@ -115,6 +118,10 @@
         <a routerLink="/prestations" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>room_service</mat-icon>
           Prestations
+        </a>
+        <a routerLink="/basket" routerLinkActive="active" mat-button (click)="toggleSidenav()">
+          <mat-icon>shopping_cart</mat-icon>
+          Mon panier
         </a>
         @if (isAuthenticated()) {
           <a
