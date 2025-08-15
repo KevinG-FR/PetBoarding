@@ -13,10 +13,7 @@
     <div class="row g-4">
       @for (prestation of prestations; track prestation.id) {
         <div class="col-lg-4 col-md-6 col-sm-12">
-          <app-prestation-item
-            [prestation]="prestation"
-            (viewDetails)="onViewDetails($event)"
-            (reservePrestation)="onReservePrestation($event)" />
+          <app-prestation-item [prestation]="prestation" (viewDetails)="onViewDetails($event)" />
         </div>
       }
     </div>

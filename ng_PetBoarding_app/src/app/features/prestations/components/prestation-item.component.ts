@@ -30,7 +30,6 @@ export class PrestationItemComponent {
 
   // Événements émis par le composant
   viewDetails = output<Prestation>();
-  reservePrestation = output<Prestation>();
 
   private prestationsService = inject(PrestationsService);
   private basketService = inject(BasketService);
@@ -83,7 +82,5 @@ export class PrestationItemComponent {
     snackBarRef.onAction().subscribe(() => {
       this.router.navigate(['/basket']);
     });
-
-    this.reservePrestation.emit(prestation);
   }
 }
