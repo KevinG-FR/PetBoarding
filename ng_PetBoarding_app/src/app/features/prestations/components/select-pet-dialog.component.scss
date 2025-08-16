@@ -1,0 +1,118 @@
+.select-pet-title {
+  font-size: 1.25rem;
+  margin: 0 0 8px 0;
+}
+
+.select-pet-content {
+  min-width: 320px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 12px 20px;
+}
+
+.mat-dialog-container {
+  border-radius: 14px !important;
+}
+
+.select-pet-list {
+  padding: 0;
+}
+
+.select-pet-item,
+button[mat-list-item] {
+  cursor: pointer;
+  padding: 10px 8px;
+  border-radius: 8px;
+}
+
+button[mat-list-item]:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.pet-icon {
+  font-size: 22px;
+  color: #6b6b6b;
+  margin-right: 8px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 6px 4px;
+}
+
+.pet-card {
+  cursor: pointer;
+}
+
+.pet-card mat-card-header {
+  align-items: center;
+}
+
+// Réutilisation des styles de chip des prestations
+.chip-chien {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #1976d2;
+    font-size: 18px;
+  }
+}
+
+.chip-chat {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #7b1fa2;
+    font-size: 18px;
+  }
+}
+
+.chip-default {
+  background: #eee;
+  color: #666;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: #666;
+    font-size: 18px;
+  }
+}
+
+.pet-name {
+  font-weight: 600;
+}
+
+.pet-sub {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+}
+
+.empty-line {
+  margin: 6px 0;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.spinner-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+mat-dialog-actions button + button {
+  margin-left: 12px;
+}

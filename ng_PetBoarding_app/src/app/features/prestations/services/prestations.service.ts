@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { CategorieAnimal, Prestation, PrestationFilters } from '../models/prestation.model';
+import { PetType } from '../../pets/models/pet.model';
+import { Prestation, PrestationFilters } from '../models/prestation.model';
 
 export interface CategoryInfo {
   label: string;
@@ -16,7 +17,7 @@ export class PrestationsService {
       id: '1',
       libelle: 'Pension complète',
       description: 'Garde de jour et nuit avec promenades et soins',
-      categorieAnimal: CategorieAnimal.CHIEN,
+      categorieAnimal: PetType.DOG,
       prix: 35,
       duree: 1440, // 24h en minutes
       disponible: true
@@ -25,7 +26,7 @@ export class PrestationsService {
       id: '2',
       libelle: 'Garderie journée',
       description: 'Garde en journée avec activités et socialisation',
-      categorieAnimal: CategorieAnimal.CHIEN,
+      categorieAnimal: PetType.DOG,
       prix: 25,
       duree: 480, // 8h en minutes
       disponible: true
@@ -34,7 +35,7 @@ export class PrestationsService {
       id: '3',
       libelle: 'Toilettage complet',
       description: 'Bain, coupe, griffes et soins esthétiques',
-      categorieAnimal: CategorieAnimal.CHIEN,
+      categorieAnimal: PetType.DOG,
       prix: 45,
       duree: 120, // 2h en minutes
       disponible: true
@@ -43,7 +44,7 @@ export class PrestationsService {
       id: '4',
       libelle: 'Promenade',
       description: 'Sortie individuelle ou en groupe',
-      categorieAnimal: CategorieAnimal.CHIEN,
+      categorieAnimal: PetType.DOG,
       prix: 15,
       duree: 60, // 1h en minutes
       disponible: true
@@ -52,7 +53,7 @@ export class PrestationsService {
       id: '5',
       libelle: 'Garde à domicile',
       description: 'Visite et soins au domicile du propriétaire',
-      categorieAnimal: CategorieAnimal.CHAT,
+      categorieAnimal: PetType.CAT,
       prix: 20,
       duree: 30, // 30min en minutes
       disponible: true
@@ -61,7 +62,7 @@ export class PrestationsService {
       id: '6',
       libelle: 'Pension chat',
       description: 'Hébergement en chatterie avec soins personnalisés',
-      categorieAnimal: CategorieAnimal.CHAT,
+      categorieAnimal: PetType.CAT,
       prix: 25,
       duree: 1440, // 24h en minutes
       disponible: true
@@ -70,7 +71,7 @@ export class PrestationsService {
       id: '7',
       libelle: 'Toilettage chat',
       description: 'Brossage, bain et coupe de griffes',
-      categorieAnimal: CategorieAnimal.CHAT,
+      categorieAnimal: PetType.CAT,
       prix: 35,
       duree: 90, // 1h30 en minutes
       disponible: true
@@ -79,7 +80,7 @@ export class PrestationsService {
       id: '8',
       libelle: 'Consultation comportementale',
       description: 'Séance avec un spécialiste du comportement animal',
-      categorieAnimal: CategorieAnimal.CHIEN,
+      categorieAnimal: PetType.DOG,
       prix: 60,
       duree: 60, // 1h en minutes
       disponible: false
@@ -120,20 +121,20 @@ export class PrestationsService {
     return this.prestations().find((p) => p.id === id);
   }
 
-  getCategoriesAnimaux(): CategorieAnimal[] {
-    return Object.values(CategorieAnimal);
+  getCategoriesAnimaux(): PetType[] {
+    return Object.values(PetType);
   }
 
   // Méthodes utilitaires pour l'affichage
-  getCategoryInfo(category: CategorieAnimal): CategoryInfo {
+  getCategoryInfo(category: PetType): CategoryInfo {
     switch (category) {
-      case CategorieAnimal.CHIEN:
+      case PetType.DOG:
         return {
           label: 'Chien',
           icon: 'fas fa-dog',
           color: '#1976d2'
         };
-      case CategorieAnimal.CHAT:
+      case PetType.CAT:
         return {
           label: 'Chat',
           icon: 'fas fa-cat',
@@ -149,15 +150,15 @@ export class PrestationsService {
   }
 
   // Méthodes de compatibilité (délèguent à getCategoryInfo)
-  getCategoryIcon(category: CategorieAnimal): string {
+  getCategoryIcon(category: PetType): string {
     return this.getCategoryInfo(category).icon;
   }
 
-  getCategoryLabel(category: CategorieAnimal): string {
+  getCategoryLabel(category: PetType): string {
     return this.getCategoryInfo(category).label;
   }
 
-  getCategoryColor(category: CategorieAnimal): string {
+  getCategoryColor(category: PetType): string {
     return this.getCategoryInfo(category).color;
   }
 }

@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BasketService } from '../../basket/services/basket.service';
+import { Pet } from '../../pets/models/pet.model';
 import { Prestation, PrestationFilters } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 import { PrestationDetailComponent } from './prestation-detail.component';
@@ -57,6 +58,29 @@ export class PrestationsListComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'reserve') {
         this.onReservePrestation(prestation);
+      } else if (result && typeof result === 'object' && result.action === 'reserve') {
+        // result.pet may be present
+        const pet = result.pet as Pet | undefined;
+        this.basketService.addItem(
+          prestation,
+          1,
+          undefined,
+          undefined,
+          pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined
+        );
+
+        const snackBarRef = this.snackBar.open(
+          `Réservation pour "${prestation.libelle}" ajoutée au panier !`,
+          'Voir le panier',
+          {
+            duration: 5000,
+            panelClass: ['success-snackbar']
+          }
+        );
+
+        snackBarRef.onAction().subscribe(() => {
+          this.router.navigate(['/basket']);
+        });
       }
     });
   }

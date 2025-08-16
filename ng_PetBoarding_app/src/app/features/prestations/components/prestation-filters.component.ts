@@ -6,7 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { CategorieAnimal, PrestationFilters } from '../models/prestation.model';
+import { PetType } from '../../pets/models/pet.model';
+import { PrestationFilters } from '../models/prestation.model';
 import { CategoryInfo, PrestationsService } from '../services/prestations.service';
 
 @Component({
@@ -31,19 +32,19 @@ export class PrestationFiltersComponent {
   filtersChanged = output<PrestationFilters>();
 
   categories = this.prestationsService.getCategoriesAnimaux();
-  selectedCategory = signal<CategorieAnimal | null>(null);
+  selectedCategory = signal<PetType | null>(null);
   searchText = signal<string>('');
 
   // Signal computed pour les informations de catégorie
   categoriesInfo = computed(() => {
-    const infos = new Map<CategorieAnimal, CategoryInfo>();
+    const infos = new Map<PetType, CategoryInfo>();
     this.categories.forEach((category) => {
       infos.set(category, this.prestationsService.getCategoryInfo(category));
     });
     return infos;
   });
 
-  onCategoryChange(category: CategorieAnimal | null) {
+  onCategoryChange(category: PetType | null) {
     this.selectedCategory.set(category);
     this.emitFilters(); // Pas de debounce pour la catégorie
   }
@@ -80,15 +81,15 @@ export class PrestationFiltersComponent {
     return !!this.selectedCategory() || searchText.length >= 3;
   }
 
-  getCategoryLabel(category: CategorieAnimal): string {
+  getCategoryLabel(category: PetType): string {
     return this.categoriesInfo().get(category)?.label || category;
   }
 
-  getCategoryIcon(category: CategorieAnimal): string {
+  getCategoryIcon(category: PetType): string {
     return this.categoriesInfo().get(category)?.icon || 'fas fa-paw';
   }
 
-  getCategoryColor(category: CategorieAnimal): string {
+  getCategoryColor(category: PetType): string {
     return this.categoriesInfo().get(category)?.color || '#666666';
   }
 

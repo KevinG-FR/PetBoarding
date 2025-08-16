@@ -1,19 +1,16 @@
+import { PetType } from '../../pets/models/pet.model';
+
 export interface Prestation {
   id: string;
   libelle: string;
   description: string;
-  categorieAnimal: CategorieAnimal;
+  categorieAnimal: PetType;
   prix: number;
   duree: number; // en minutes
   disponible: boolean;
 }
 
-export enum CategorieAnimal {
-  CHIEN = 'chien',
-  CHAT = 'chat'
-}
-
 export interface PrestationFilters {
-  categorieAnimal?: CategorieAnimal;
+  categorieAnimal?: PetType;
   searchText?: string;
 }

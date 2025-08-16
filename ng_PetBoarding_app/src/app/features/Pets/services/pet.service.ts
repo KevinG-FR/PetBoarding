@@ -155,6 +155,11 @@ export class PetService {
     return of(pet);
   }
 
+  getPetsByType(type: PetType): Observable<Pet[]> {
+    const pets = this._pets().filter((p) => p.type === type);
+    return of(pets);
+  }
+
   /**
    * Mettre à jour les informations d'un animal
    */

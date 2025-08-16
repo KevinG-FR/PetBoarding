@@ -3,13 +3,16 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
 import { BasketService } from '../../basket/services/basket.service';
-import { CategorieAnimal, Prestation } from '../models/prestation.model';
+import { PetType } from '../../pets/models/pet.model';
+import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
+import { SelectPetDialogComponent } from './select-pet-dialog.component';
 
 @Component({
   selector: 'app-prestation-item',
@@ -18,6 +21,7 @@ import { PrestationsService } from '../services/prestations.service';
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatDialogModule,
     MatIconModule,
     MatChipsModule,
     DurationPipe
@@ -35,6 +39,7 @@ export class PrestationItemComponent {
   private basketService = inject(BasketService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   // Computed pour optimiser les appels répétés
   categoryInfo = computed(() =>
@@ -43,9 +48,9 @@ export class PrestationItemComponent {
 
   getCategoryChipClass(): string {
     switch (this.prestation().categorieAnimal) {
-      case CategorieAnimal.CHIEN:
+      case PetType.DOG:
         return 'chip-chien';
-      case CategorieAnimal.CHAT:
+      case PetType.CAT:
         return 'chip-chat';
       default:
         return '';
@@ -69,18 +74,28 @@ export class PrestationItemComponent {
 
   onReserve(): void {
     const prestation = this.prestation();
-    this.basketService.addItem(prestation);
+    const dialogRef = this.dialog.open(SelectPetDialogComponent, {
+      data: { prestation },
+      width: '600px'
+    });
 
-    const snackBarRef = this.snackBar.open(
-      `${prestation.libelle} ajouté au panier`,
-      'Voir le panier',
-      {
-        duration: 5000
-      }
-    );
+    dialogRef.afterClosed().subscribe((result: any) => {
+      // If the dialog closed with a selected pet (result), add to basket with pet
+      const pet = result;
+      const petPayload = pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined;
+      this.basketService.addItem(prestation, 1, undefined, undefined, petPayload);
 
-    snackBarRef.onAction().subscribe(() => {
-      this.router.navigate(['/basket']);
+      const snackBarRef = this.snackBar.open(
+        `${prestation.libelle} ajouté au panier`,
+        'Voir le panier',
+        {
+          duration: 5000
+        }
+      );
+
+      snackBarRef.onAction().subscribe(() => {
+        this.router.navigate(['/basket']);
+      });
     });
   }
 }

@@ -26,7 +26,8 @@ export class BasketService {
     prestation: Prestation,
     quantity: number = 1,
     dateReservation?: Date,
-    notes?: string
+    notes?: string,
+    pet?: { id: string; name: string; type: string }
   ): void {
     const currentItems = this._items();
     const existingItemIndex = currentItems.findIndex(
@@ -41,6 +42,7 @@ export class BasketService {
         quantity: updatedItems[existingItemIndex].quantity + quantity,
         dateReservation: dateReservation || updatedItems[existingItemIndex].dateReservation,
         notes: notes || updatedItems[existingItemIndex].notes
+        // ne remplace pas le pet existant si déjà présent
       };
       this._items.set(updatedItems);
     } else {
@@ -48,6 +50,7 @@ export class BasketService {
       const newItem: BasketItem = {
         id: this.generateId(),
         prestation,
+        pet,
         quantity,
         dateReservation,
         notes

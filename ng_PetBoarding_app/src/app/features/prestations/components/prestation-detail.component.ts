@@ -3,12 +3,19 @@ import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef
+} from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
-import { CategorieAnimal } from '../models/prestation.model';
+import { Pet, PetType } from '../../pets/models/pet.model';
+import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
+import { SelectPetDialogComponent } from './select-pet-dialog.component';
 
 @Component({
   selector: 'app-prestation-detail',
@@ -30,9 +37,10 @@ export class PrestationDetailComponent {
   private prestationsService = inject(PrestationsService);
   private dialogRef = inject(MatDialogRef<PrestationDetailComponent>);
   private data = inject(MAT_DIALOG_DATA);
+  private dialog = inject(MatDialog);
 
   // Récupérer la prestation depuis les données du modal
-  prestation = this.data.prestation;
+  prestation: Prestation = this.data.prestation;
 
   // Computed pour optimiser les appels répétés
   categoryInfo = computed(() =>
@@ -158,9 +166,9 @@ export class PrestationDetailComponent {
 
   getCategoryChipClass(): string {
     switch (this.prestation.categorieAnimal) {
-      case CategorieAnimal.CHIEN:
+      case PetType.DOG:
         return 'chip-chien';
-      case CategorieAnimal.CHAT:
+      case PetType.CAT:
         return 'chip-chat';
       default:
         return '';
@@ -183,7 +191,15 @@ export class PrestationDetailComponent {
   }
 
   onReserver(): void {
-    // Fermer le modal et émettre un événement de réservation
-    this.dialogRef.close('reserve');
+    const prestation = this.prestation;
+    const dialogRef = this.dialog.open(SelectPetDialogComponent, {
+      data: { prestation },
+      width: '600px'
+    });
+
+    dialogRef.afterClosed().subscribe((pet: Pet | undefined) => {
+      // Close the detail dialog and pass reservation signal along with pet
+      this.dialogRef.close({ action: 'reserve', pet });
+    });
   }
 }
