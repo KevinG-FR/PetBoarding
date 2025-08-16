@@ -140,6 +140,24 @@ export class PrestationsService {
           icon: 'fas fa-cat',
           color: '#7b1fa2'
         };
+      case PetType.BIRD:
+        return {
+          label: 'Oiseau',
+          icon: 'fas fa-dove',
+          color: '#ff9800'
+        };
+      case PetType.RABBIT:
+        return {
+          label: 'Lapin',
+          icon: 'fas fa-carrot',
+          color: '#4caf50'
+        };
+      case PetType.HAMSTER:
+        return {
+          label: 'Hamster',
+          icon: 'fas fa-paw',
+          color: '#9c27b0'
+        };
       default:
         return {
           label: category,

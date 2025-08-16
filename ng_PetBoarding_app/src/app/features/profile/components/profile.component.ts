@@ -30,12 +30,10 @@ export class ProfileComponent implements OnInit {
   private readonly petService = inject(PetService);
   private readonly router = inject(Router);
 
-  // Getters pour les données
   currentUser = this.profileService.currentUser;
   pets = this.petService.pets;
   isLoading = this.petService.isLoading;
 
-  // Computed properties pour les stats
   totalPets = computed(() => this.pets().length);
   lastUpdate = computed(() => {
     const pets = this.pets();
@@ -52,34 +50,17 @@ export class ProfileComponent implements OnInit {
     this.loadUserPets();
   }
 
-  /**
-   * Charger les animaux de l'utilisateur
-   */
   private loadUserPets(): void {
-    this.petService.loadUserPets().subscribe({
-      error: () => {
-        // Gestion d'erreur silencieuse pour l'instant
-      }
-    });
+    this.petService.loadUserPets();
   }
-
-  /**
-   * Naviguer vers la modification du profil
-   */
   editProfile(): void {
     this.router.navigate(['/profile/edit']);
   }
 
-  /**
-   * Ajouter un nouvel animal
-   */
   onAddPet(): void {
     this.router.navigate(['/profile/pets/add']);
   }
 
-  /**
-   * Formater une date
-   */
   private formatDate(date: Date): string {
     return new Intl.DateTimeFormat('fr-FR', {
       day: '2-digit',

@@ -44,24 +44,17 @@ export class SelectPetDialogComponent {
 
   get filteredPets() {
     if (!this.pets) return [];
-    const cat = this.prestation?.categorieAnimal;
-    if (!cat) return this.pets;
-    // Map prestation categorie to PetType
-    const wantedType =
-      cat === PetType.DOG ? PetType.DOG : cat === PetType.CAT ? PetType.CAT : undefined;
-    if (!wantedType) return [];
-    return this.pets.filter((p) => p.type === wantedType);
+    const category = this.prestation?.categorieAnimal;
+    if (!category) return this.pets;
+
+    return this.pets.filter((p) => p.type === category);
   }
 
   private loadPets(): void {
     this.isLoading = true;
-    this.petService.loadUserPets().subscribe({
-      next: (pets) => {
-        this.pets = pets;
-        this.isLoading = false;
-      },
-      error: () => (this.isLoading = false)
-    });
+    this.petService.loadUserPets();
+    this.pets = this.petService.pets();
+    this.isLoading = false;
   }
 
   selectPet(pet: Pet) {
@@ -97,13 +90,8 @@ export class SelectPetDialogComponent {
     }
   }
 
-  getPetIcon(type: string): string {
-    // Map pet type string to PetType enum for prestationsService
-    const petType = type === 'dog' ? PetType.DOG : type === 'cat' ? PetType.CAT : null;
-
-    if (!petType) return 'pets';
-
-    const categoryInfo = this.prestationsService.getCategoryInfo(petType);
+  getPetIcon(type: PetType): string {
+    const categoryInfo = this.prestationsService.getCategoryInfo(type);
     return categoryInfo.icon || 'pets';
   }
 }

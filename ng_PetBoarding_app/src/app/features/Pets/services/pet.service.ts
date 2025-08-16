@@ -1,26 +1,19 @@
 import { Injectable, signal } from '@angular/core';
-import { delay, Observable, of, tap } from 'rxjs';
 import { Pet, PetGender, PetType } from '../models/pet.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PetService {
-  // Signals pour l'état des animaux
   private readonly _pets = signal<Pet[]>([]);
   private readonly _isLoading = signal(false);
 
-  // Getters publics
   pets = this._pets.asReadonly();
   isLoading = this._isLoading.asReadonly();
 
-  /**
-   * Charger les animaux de l'utilisateur connecté
-   */
-  loadUserPets(): Observable<Pet[]> {
+  loadUserPets(): void {
     this._isLoading.set(true);
 
-    // Simulation d'un appel API avec des données factices
     const mockPets: Pet[] = [
       {
         id: '1',
@@ -130,40 +123,26 @@ export class PetService {
       }
     ];
 
-    return of(mockPets).pipe(
-      delay(800),
-      tap((pets) => {
-        this._pets.set(pets);
-        this._isLoading.set(false);
-      })
-    );
+    this._pets.set(mockPets);
+    this._isLoading.set(false);
   }
 
-  getPets(): Observable<Pet[]> {
-    // Si les animaux ne sont pas encore chargés, les charger
+  getPets(): Pet[] {
     if (this._pets().length === 0) {
-      return this.loadUserPets();
+      this.loadUserPets();
     }
-    return of(this._pets());
+    return this._pets();
   }
 
-  /**
-   * Obtenir un animal par son ID
-   */
-  getPetById(id: string): Observable<Pet | null> {
-    const pet = this._pets().find((p) => p.id === id) || null;
-    return of(pet);
+  getPetById(id: string): Pet | null {
+    return this._pets().find((p) => p.id === id) || null;
   }
 
-  getPetsByType(type: PetType): Observable<Pet[]> {
-    const pets = this._pets().filter((p) => p.type === type);
-    return of(pets);
+  getPetsByType(type: PetType): Pet[] {
+    return this._pets().filter((p) => p.type === type);
   }
 
-  /**
-   * Mettre à jour les informations d'un animal
-   */
-  updatePet(petId: string, updates: Partial<Pet>): Observable<Pet> {
+  updatePet(petId: string, updates: Partial<Pet>): Pet {
     const pets = this._pets();
     const petIndex = pets.findIndex((p) => p.id === petId);
 
@@ -182,13 +161,10 @@ export class PetService {
 
     this._pets.set(updatedPets);
 
-    return of(updatedPet).pipe(delay(500));
+    return updatedPet;
   }
 
-  /**
-   * Ajouter un nouvel animal
-   */
-  addPet(petData: Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>): Observable<Pet> {
+  addPet(petData: Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>): Pet {
     const newPet: Pet = {
       ...petData,
       id: Date.now().toString(),
@@ -199,16 +175,13 @@ export class PetService {
     const pets = [...this._pets(), newPet];
     this._pets.set(pets);
 
-    return of(newPet).pipe(delay(500));
+    return newPet;
   }
 
-  /**
-   * Supprimer un animal
-   */
-  deletePet(petId: string): Observable<boolean> {
+  deletePet(petId: string): boolean {
     const pets = this._pets().filter((p) => p.id !== petId);
     this._pets.set(pets);
 
-    return of(true).pipe(delay(300));
+    return true;
   }
 }

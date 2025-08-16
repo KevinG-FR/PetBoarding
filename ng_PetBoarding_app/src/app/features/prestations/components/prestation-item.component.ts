@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
 import { BasketService } from '../../basket/services/basket.service';
-import { PetType } from '../../pets/models/pet.model';
+import { Pet, PetType } from '../../pets/models/pet.model';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 import { SelectPetDialogComponent } from './select-pet-dialog.component';
@@ -79,23 +79,25 @@ export class PrestationItemComponent {
       width: '600px'
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe((result: Pet) => {
       // If the dialog closed with a selected pet (result), add to basket with pet
       const pet = result;
-      const petPayload = pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined;
-      this.basketService.addItem(prestation, 1, undefined, undefined, petPayload);
 
-      const snackBarRef = this.snackBar.open(
-        `${prestation.libelle} ajouté au panier`,
-        'Voir le panier',
-        {
-          duration: 5000
-        }
-      );
+      if (pet) {
+        this.basketService.addItem(prestation, 1, undefined, undefined, pet);
 
-      snackBarRef.onAction().subscribe(() => {
-        this.router.navigate(['/basket']);
-      });
+        const snackBarRef = this.snackBar.open(
+          `${prestation.libelle} ajouté au panier`,
+          'Voir le panier',
+          {
+            duration: 5000
+          }
+        );
+
+        snackBarRef.onAction().subscribe(() => {
+          this.router.navigate(['/basket']);
+        });
+      }
     });
   }
 }
