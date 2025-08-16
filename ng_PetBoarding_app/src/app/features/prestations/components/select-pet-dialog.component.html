@@ -1,27 +1,29 @@
 <h2 mat-dialog-title class="select-pet-title">Sélectionner un animal</h2>
 <mat-dialog-content class="select-pet-content">
-  <ng-container *ngIf="isLoading; else cardsTpl">
+  @if (isLoading) {
     <div class="spinner-wrap"><mat-spinner diameter="40"></mat-spinner></div>
-  </ng-container>
-  <ng-template #cardsTpl>
-    <div class="cards-grid" *ngIf="filteredPets.length > 0; else emptyTpl">
-      <mat-card class="pet-card" *ngFor="let p of filteredPets" (click)="selectPet(p)">
-        <mat-card-header>
-          <div mat-card-avatar [ngClass]="getPetAvatarClass(p.type)">
-            <i [class]="getPetIcon(p.type)"></i>
-          </div>
-          <mat-card-title>{{ p.name }}</mat-card-title>
-          <mat-card-subtitle>{{ p.breed }} · {{ p.age }} ans</mat-card-subtitle>
-        </mat-card-header>
-      </mat-card>
-    </div>
-    <ng-template #emptyTpl>
+  } @else {
+    @if (filteredPets.length > 0) {
+      <div class="cards-grid">
+        @for (p of filteredPets; track p.id) {
+          <mat-card class="pet-card" (click)="selectPet(p)">
+            <mat-card-header>
+              <div mat-card-avatar [ngClass]="getPetAvatarClass(p.type)">
+                <i [class]="getPetIcon(p.type)"></i>
+              </div>
+              <mat-card-title>{{ p.name }}</mat-card-title>
+              <mat-card-subtitle>{{ p.breed }} · {{ p.age }} ans</mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+        }
+      </div>
+    } @else {
       <div class="empty-wrap">
         <p class="empty-line">Aucun animal correspondant au type de cette prestation.</p>
         <p class="empty-line">Veuillez ajouter un animal avant de réserver.</p>
       </div>
-    </ng-template>
-  </ng-template>
+    }
+  }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Annuler</button>

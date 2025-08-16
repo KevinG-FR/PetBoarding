@@ -1,8 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,15 +33,18 @@ import { PrestationsService } from '../services/prestations.service';
   styleUrl: './select-pet-dialog.component.scss'
 })
 export class SelectPetDialogComponent {
-  @Input() prestation!: Prestation;
-
   private petService = inject(PetService);
   private dialog = inject(MatDialog);
   private dialogRef = inject(MatDialogRef<SelectPetDialogComponent>);
   private prestationsService = inject(PrestationsService);
+  private data = inject(MAT_DIALOG_DATA) as { prestation: Prestation };
 
   pets: Pet[] = [];
   isLoading = false;
+
+  get prestation(): Prestation {
+    return this.data.prestation;
+  }
 
   constructor() {
     this.loadPets();
@@ -44,7 +52,7 @@ export class SelectPetDialogComponent {
 
   get filteredPets() {
     if (!this.pets) return [];
-    const category = this.prestation?.categorieAnimal;
+    const category = this.prestation.categorieAnimal;
     if (!category) return this.pets;
 
     return this.pets.filter((p) => p.type === category);
@@ -53,7 +61,7 @@ export class SelectPetDialogComponent {
   private loadPets(): void {
     this.isLoading = true;
     this.petService.loadUserPets();
-    this.pets = this.petService.pets();
+    this.pets = this.petService.getPetsByType(this.prestation.categorieAnimal);
     this.isLoading = false;
   }
 

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { PrestationsService } from '../../prestations/services/prestations.service';
 import { BasketItem } from '../models/basket-item.model';
 
 @Component({
@@ -29,6 +30,14 @@ export class BasketItemComponent {
   quantityChange = output<{ itemId: string; quantity: number }>();
   remove = output<string>();
   prestationClick = output<string>();
+
+  private prestationsService = inject(PrestationsService);
+
+  // Computed signal pour optimiser les performances
+  petCategoryInfo = computed(() => {
+    const pet = this.item().pet;
+    return pet ? this.prestationsService.getCategoryInfo(pet.type) : null;
+  });
 
   onQuantityChange(event: Event): void {
     const target = event.target as HTMLInputElement;

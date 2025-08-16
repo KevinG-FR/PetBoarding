@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Prestation } from '../../../shared/models/prestation.model';
+import { PetType } from '../../pets/models/pet.model';
 import { BasketItem, BasketSummary } from '../models/basket-item.model';
 
 @Injectable({
@@ -27,7 +28,7 @@ export class BasketService {
     quantity: number = 1,
     dateReservation?: Date,
     notes?: string,
-    pet?: { id: string; name: string; type: string }
+    pet?: { id: string; name: string; type: PetType }
   ): void {
     const currentItems = this._items();
     const existingItemIndex = currentItems.findIndex(

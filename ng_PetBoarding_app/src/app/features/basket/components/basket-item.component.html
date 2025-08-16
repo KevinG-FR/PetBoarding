@@ -3,6 +3,14 @@
     <div class="item-info" (click)="onPrestationClick()">
       <h4 class="item-title">{{ item().prestation.libelle }}</h4>
       <p class="item-description">{{ item().prestation.description }}</p>
+
+      @if (item().pet && petCategoryInfo()) {
+        <div class="pet-info">
+          <i [class]="petCategoryInfo()!.icon" [style.color]="petCategoryInfo()!.color"></i>
+          <span>{{ item().pet!.name }}</span>
+        </div>
+      }
+
       <div class="item-details">
         <span class="category">{{ getCategoryLabel(item().prestation.categorieAnimal) }}</span>
         <span class="duration">{{ formatDuration(item().prestation.duree) }}</span>

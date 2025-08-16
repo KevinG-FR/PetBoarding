@@ -177,26 +177,6 @@ export class PetDetailsComponent {
     this.viewMode.update((mode) => ({ ...mode, isEditing: true }));
   }
 
-  onCancelEdit(): void {
-    if (this.hasUnsavedChanges()) {
-      // Ouvrir une dialog de confirmation
-      const confirmDialog = this.dialog.open(ConfirmCancelDialog);
-
-      confirmDialog.afterClosed().subscribe((result) => {
-        if (result) {
-          this.cancelEdit();
-        }
-      });
-    } else {
-      this.cancelEdit();
-    }
-  }
-
-  private cancelEdit(): void {
-    this.petForm.patchValue(this.originalFormValue());
-    this.viewMode.set({ isEditing: false, hasUnsavedChanges: false });
-  }
-
   onSave(): void {
     if (this.petForm.valid && this.pet()) {
       const petId = this.pet()!.id;
@@ -226,7 +206,7 @@ export class PetDetailsComponent {
       });
 
       confirmDialog.afterClosed().subscribe((result) => {
-        if (result) {
+        if (result == 'true') {
           this.router.navigate(['/profile']);
         }
       });
@@ -258,6 +238,21 @@ export class PetDetailsComponent {
       month: '2-digit',
       year: 'numeric'
     }).format(new Date(date));
+  }
+
+  getVaccinationStatus(expiryDate: Date): string {
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return 'expired';
+    } else if (diffDays <= 30) {
+      return 'expiring-soon';
+    } else {
+      return 'valid';
+    }
   }
 }
 
