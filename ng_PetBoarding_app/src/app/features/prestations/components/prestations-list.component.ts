@@ -59,18 +59,28 @@ export class PrestationsListComponent {
       if (result === 'reserve') {
         this.onReservePrestation(prestation);
       } else if (result && typeof result === 'object' && result.action === 'reserve') {
-        // result.pet may be present
+        // result.pet et result.dates peuvent être présents
         const pet = result.pet as Pet | undefined;
+        const dateDebut = result.dateDebut as Date | undefined;
+        const dateFin = result.dateFin as Date | undefined;
+
         this.basketService.addItem(
           prestation,
           1,
           undefined,
           undefined,
-          pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined
+          pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined,
+          dateDebut,
+          dateFin
         );
 
+        const datesText =
+          dateDebut && dateFin
+            ? ` du ${dateDebut.toLocaleDateString()} au ${dateFin.toLocaleDateString()}`
+            : '';
+
         const snackBarRef = this.snackBar.open(
-          `Réservation pour "${prestation.libelle}" ajoutée au panier !`,
+          `Réservation pour "${prestation.libelle}"${datesText} ajoutée au panier !`,
           'Voir le panier',
           {
             duration: 5000,

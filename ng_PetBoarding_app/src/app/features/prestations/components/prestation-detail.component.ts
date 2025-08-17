@@ -15,7 +15,16 @@ import { DurationPipe } from '../../../shared/pipes/duration.pipe';
 import { Pet, PetType } from '../../pets/models/pet.model';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
-import { SelectPetDialogComponent } from './select-pet-dialog.component';
+import { ReservationCompleteDialogComponent } from './reservation-complete-dialog.component';
+
+interface ReservationResult {
+  action?: string;
+  pet?: Pet;
+  dates?: {
+    dateDebut: Date;
+    dateFin: Date;
+  };
+}
 
 @Component({
   selector: 'app-prestation-detail',
@@ -192,14 +201,24 @@ export class PrestationDetailComponent {
 
   onReserver(): void {
     const prestation = this.prestation;
-    const dialogRef = this.dialog.open(SelectPetDialogComponent, {
+    const dialogRef = this.dialog.open(ReservationCompleteDialogComponent, {
       data: { prestation },
-      width: '600px'
+      width: '1000px',
+      maxWidth: '95vw',
+      height: 'auto',
+      maxHeight: '90vh'
     });
 
-    dialogRef.afterClosed().subscribe((pet: Pet | undefined) => {
-      // Close the detail dialog and pass reservation signal along with pet
-      this.dialogRef.close({ action: 'reserve', pet });
+    dialogRef.afterClosed().subscribe((result: ReservationResult) => {
+      if (result?.action === 'reserve' && result.pet && result.dates) {
+        // Close the detail dialog and pass complete reservation data
+        this.dialogRef.close({
+          action: 'reserve',
+          pet: result.pet,
+          dateDebut: result.dates.dateDebut,
+          dateFin: result.dates.dateFin
+        });
+      }
     });
   }
 }

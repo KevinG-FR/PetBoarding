@@ -1,5 +1,13 @@
-import { Injectable, signal } from '@angular/core';
-import { Reservation, ReservationFilters, StatutReservation } from '../models/reservation.model';
+import { inject, Injectable, signal } from '@angular/core';
+import { map, Observable, of, switchMap } from 'rxjs';
+import { PlanningService } from '../../prestations/services/planning.service';
+import { PrestationsService } from '../../prestations/services/prestations.service';
+import {
+  CreerReservationRequest,
+  Reservation,
+  ReservationFilters,
+  StatutReservation
+} from '../models/reservation.model';
 
 export interface StatutInfo {
   label: string;
@@ -12,6 +20,8 @@ export interface StatutInfo {
   providedIn: 'root'
 })
 export class ReservationsService {
+  private planningService = inject(PlanningService);
+  private prestationsService = inject(PrestationsService);
   private reservations = signal<Reservation[]>([
     {
       id: '1',
@@ -333,5 +343,106 @@ export class ReservationsService {
     return this.reservations()
       .filter((r) => r.statut === StatutReservation.TERMINEE)
       .reduce((total, r) => total + r.prix, 0);
+  }
+
+  /**
+   * Crée une nouvelle réservation avec gestion du planning
+   */
+  creerReservationAvecPlanning(request: CreerReservationRequest): Observable<boolean> {
+    return this.prestationsService.getPrestationById(request.prestationId)
+      ? this.planningService
+          .verifierDisponibilite({
+            prestationId: request.prestationId,
+            dateDebut: request.dateDebut,
+            dateFin: request.dateFin || undefined
+          })
+          .pipe(
+            switchMap((disponibilite) => {
+              if (!disponibilite.estDisponible) {
+                return of(false);
+              }
+
+              // Réserver les créneaux
+              return this.planningService
+                .reserverCreneaux(request.prestationId, request.dateDebut, request.dateFin || null)
+                .pipe(
+                  map((reservationReussie) => {
+                    if (reservationReussie) {
+                      // Ajouter la réservation
+                      const nouvelleReservation = this.creerNouvelleReservation(request);
+                      const reservationsActuelles = this.reservations();
+                      this.reservations.set([...reservationsActuelles, nouvelleReservation]);
+                    }
+                    return reservationReussie;
+                  })
+                );
+            })
+          )
+      : of(false);
+  }
+
+  /**
+   * Annule une réservation et libère les créneaux
+   */
+  annulerReservationAvecPlanning(reservationId: string): Observable<boolean> {
+    const reservationsActuelles = this.reservations();
+    const reservation = reservationsActuelles.find((r) => r.id === reservationId);
+
+    if (!reservation || reservation.statut === StatutReservation.TERMINEE) {
+      return of(false);
+    }
+
+    return this.planningService
+      .annulerReservations(reservation.prestationId, reservation.dateDebut, reservation.dateFin)
+      .pipe(
+        map((annulationReussie) => {
+          if (annulationReussie) {
+            // Mettre à jour le statut de la réservation
+            const reservationIndex = reservationsActuelles.findIndex((r) => r.id === reservationId);
+            if (reservationIndex !== -1) {
+              reservationsActuelles[reservationIndex] = {
+                ...reservationsActuelles[reservationIndex],
+                statut: StatutReservation.ANNULEE
+              };
+              this.reservations.set([...reservationsActuelles]);
+            }
+          }
+          return annulationReussie;
+        })
+      );
+  }
+
+  private creerNouvelleReservation(request: CreerReservationRequest): Reservation {
+    const prestation = this.prestationsService.getPrestationById(request.prestationId);
+    if (!prestation) {
+      throw new Error('Prestation non trouvée');
+    }
+
+    const nombreJours = request.dateFin
+      ? Math.ceil(
+          (request.dateFin.getTime() - request.dateDebut.getTime()) / (1000 * 60 * 60 * 24)
+        ) + 1
+      : 1;
+
+    return {
+      id: this.genererIdUnique(),
+      animalNom: 'Animal', // À remplacer par les vraies données de l'animal
+      animalType: 'CHIEN', // À remplacer par le vrai type
+      prestationId: request.prestationId,
+      prestationLibelle: prestation.libelle,
+      dateDebut: request.dateDebut,
+      dateFin: request.dateFin || request.dateDebut,
+      prix: nombreJours * prestation.prix,
+      statut: StatutReservation.EN_ATTENTE,
+      commentaires: request.commentaires,
+      dateCreation: new Date(),
+      dateReservation: new Date()
+    };
+  }
+
+  private genererIdUnique(): string {
+    const reservations = this.reservations();
+    const maxId = Math.max(...reservations.map((r) => parseInt(r.id, 10)), 0);
+    return (maxId + 1).toString();
   }
 }

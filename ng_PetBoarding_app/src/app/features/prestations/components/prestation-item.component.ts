@@ -12,7 +12,7 @@ import { BasketService } from '../../basket/services/basket.service';
 import { Pet, PetType } from '../../pets/models/pet.model';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
-import { SelectPetDialogComponent } from './select-pet-dialog.component';
+import { ReservationCompleteDialogComponent } from './reservation-complete-dialog.component';
 
 @Component({
   selector: 'app-prestation-item',
@@ -74,9 +74,12 @@ export class PrestationItemComponent {
 
   onReserve(): void {
     const prestation = this.prestation();
-    const dialogRef = this.dialog.open(SelectPetDialogComponent, {
+    const dialogRef = this.dialog.open(ReservationCompleteDialogComponent, {
       data: { prestation },
-      width: '600px'
+      width: '1000px',
+      maxWidth: '95vw',
+      height: 'auto',
+      maxHeight: '90vh'
     });
 
     dialogRef.afterClosed().subscribe((result: Pet) => {

@@ -113,6 +113,7 @@
   }
 
   .reservation-date,
+  .reservation-period,
   .notes {
     display: flex;
     align-items: center;
@@ -133,6 +134,20 @@
 
   .reservation-date {
     border-left: 3px solid #4caf50;
+  }
+
+  .reservation-period {
+    border-left: 3px solid #2196f3;
+
+    .duration-badge {
+      background-color: #2196f3;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-left: 8px;
+    }
   }
 
   .notes {

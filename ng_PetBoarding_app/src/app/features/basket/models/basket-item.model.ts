@@ -11,6 +11,11 @@ export interface BasketItem {
     type: PetType;
   };
   quantity: number;
+  // Nouveau système de dates avec période
+  dateDebut?: Date;
+  dateFin?: Date;
+  nombreJours?: number;
+  // Ancienne propriété conservée pour rétrocompatibilité
   dateReservation?: Date;
   notes?: string;
 }

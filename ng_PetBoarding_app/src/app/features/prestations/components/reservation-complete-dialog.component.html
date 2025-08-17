@@ -1,0 +1,150 @@
+<div class="reservation-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>book_online</mat-icon>
+      Réserver "{{ prestation.libelle }}"
+    </h2>
+    <div class="prestation-info">
+      <span class="price">{{ prestation.prix }}€</span>
+      <span class="category">{{ getCategoryInfo().label }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Étape 1: Sélection de l'animal -->
+    @if (currentStep() === 0) {
+      <div class="step-content">
+        <div class="step-header">
+          <mat-icon>pets</mat-icon>
+          <h3>Choisissez votre {{ getCategoryInfo().label.toLowerCase() }}</h3>
+          <p>Sélectionnez l'animal pour lequel vous souhaitez réserver cette prestation</p>
+        </div>
+
+        @if (isLoading()) {
+          <div class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Chargement de vos animaux...</p>
+          </div>
+        } @else {
+          @if (pets().length > 0) {
+            <div class="pets-grid">
+              @for (pet of pets(); track pet.id) {
+                <mat-card
+                  class="pet-card"
+                  [class.selected]="selectedPet()?.id === pet.id"
+                  (click)="onPetSelected(pet)">
+                  <mat-card-header>
+                    <div mat-card-avatar class="pet-avatar">
+                      <mat-icon [innerHTML]="getPetIcon(pet.type)"></mat-icon>
+                    </div>
+                    <mat-card-title>{{ pet.name }}</mat-card-title>
+                    <mat-card-subtitle>{{ pet.breed }}</mat-card-subtitle>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="pet-details">
+                      <span class="age">{{ pet.age }} ans</span>
+                      <span class="weight">{{ pet.weight }} kg</span>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+          } @else {
+            <div class="no-pets">
+              <mat-icon>pets</mat-icon>
+              <h4>Aucun {{ getCategoryInfo().label.toLowerCase() }} trouvé</h4>
+              <p>Vous n'avez pas encore d'animal compatible avec cette prestation.</p>
+            </div>
+          }
+
+          <div class="add-pet-section">
+            <button mat-stroked-button color="primary" (click)="onCreateNewPet()">
+              <mat-icon>add</mat-icon>
+              Ajouter un nouveau {{ getCategoryInfo().label.toLowerCase() }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Étape 2: Sélection des dates -->
+    @if (currentStep() === 1) {
+      <div class="step-content">
+        <div class="step-header">
+          <mat-icon>event</mat-icon>
+          <h3>Choisissez vos dates</h3>
+          <p>Sélectionnez les dates pour la prestation de {{ selectedPet()?.name }}</p>
+        </div>
+
+        <!-- Résumé de l'animal sélectionné -->
+        @if (selectedPet(); as pet) {
+          <mat-card class="selected-pet-summary">
+            <mat-card-content>
+              <div class="pet-summary">
+                <div class="pet-info">
+                  <mat-icon [innerHTML]="getPetIcon(pet.type)"></mat-icon>
+                  <div>
+                    <h4>{{ pet.name }}</h4>
+                    <span>{{ pet.breed }} • {{ pet.age }} ans</span>
+                  </div>
+                </div>
+                <button mat-icon-button (click)="previousStep()" title="Changer d'animal">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <!-- Composant de sélection de dates -->
+        <app-selection-dates
+          [prestation]="prestation"
+          (selectionChange)="onDateSelectionChange($event)">
+        </app-selection-dates>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <!-- Actions pour étape 1 -->
+    @if (currentStep() === 0) {
+      <button mat-button (click)="onCancel()">Annuler</button>
+      <div class="spacer"></div>
+      @if (selectedPet()) {
+        <button mat-raised-button color="primary" (click)="nextStep()">
+          Continuer
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
+    }
+
+    <!-- Actions pour étape 2 -->
+    @if (currentStep() === 1) {
+      <button mat-button (click)="previousStep()">
+        <mat-icon>arrow_back</mat-icon>
+        Retour
+      </button>
+      <div class="spacer"></div>
+
+      <!-- Résumé et confirmation -->
+      @if (dateSelection(); as selection) {
+        <div class="reservation-summary">
+          <div class="summary-details">
+            <span class="dates">
+              {{ selection.dateDebut | date: 'dd/MM' }}
+              @if (selection.dateFin) {
+                - {{ selection.dateFin | date: 'dd/MM' }}
+              }
+            </span>
+            <span class="total">{{ selection.prixTotal }}€</span>
+          </div>
+        </div>
+      }
+
+      <button mat-raised-button color="primary" [disabled]="!canConfirm()" (click)="onConfirm()">
+        <mat-icon>shopping_cart</mat-icon>
+        Ajouter au panier
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

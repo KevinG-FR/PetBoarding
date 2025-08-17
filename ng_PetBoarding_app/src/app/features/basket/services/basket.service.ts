@@ -28,12 +28,19 @@ export class BasketService {
     quantity: number = 1,
     dateReservation?: Date,
     notes?: string,
-    pet?: { id: string; name: string; type: PetType }
+    pet?: { id: string; name: string; type: PetType },
+    dateDebut?: Date,
+    dateFin?: Date
   ): void {
     const currentItems = this._items();
     const existingItemIndex = currentItems.findIndex(
       (item) => item.prestation.id === prestation.id
     );
+
+    const nombreJours =
+      dateDebut && dateFin
+        ? Math.ceil((dateFin.getTime() - dateDebut.getTime()) / (1000 * 60 * 60 * 24)) + 1
+        : undefined;
 
     if (existingItemIndex >= 0) {
       // Mise à jour de la quantité si l'item existe déjà
@@ -42,6 +49,9 @@ export class BasketService {
         ...updatedItems[existingItemIndex],
         quantity: updatedItems[existingItemIndex].quantity + quantity,
         dateReservation: dateReservation || updatedItems[existingItemIndex].dateReservation,
+        dateDebut: dateDebut || updatedItems[existingItemIndex].dateDebut,
+        dateFin: dateFin || updatedItems[existingItemIndex].dateFin,
+        nombreJours: nombreJours || updatedItems[existingItemIndex].nombreJours,
         notes: notes || updatedItems[existingItemIndex].notes
         // ne remplace pas le pet existant si déjà présent
       };
@@ -54,6 +64,9 @@ export class BasketService {
         pet,
         quantity,
         dateReservation,
+        dateDebut,
+        dateFin,
+        nombreJours,
         notes
       };
       this._items.set([...currentItems, newItem]);

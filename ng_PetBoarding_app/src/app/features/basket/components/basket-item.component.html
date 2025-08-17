@@ -50,7 +50,19 @@
     </div>
   </div>
 
-  @if (item().dateReservation) {
+  @if (item().dateDebut && item().dateFin) {
+    <div class="reservation-period">
+      <mat-icon>date_range</mat-icon>
+      <span>
+        Du {{ formatDate(item().dateDebut!) }} au {{ formatDate(item().dateFin!) }}
+        @if (item().nombreJours) {
+          <span class="duration-badge"
+            >{{ item().nombreJours }} jour{{ item().nombreJours! > 1 ? 's' : '' }}</span
+          >
+        }
+      </span>
+    </div>
+  } @else if (item().dateReservation) {
     <div class="reservation-date">
       <mat-icon>event</mat-icon>
       <span>Réservé pour le {{ formatDate(item().dateReservation!) }}</span>

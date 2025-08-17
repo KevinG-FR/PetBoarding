@@ -1,6 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { PetType } from '../../pets/models/pet.model';
 import { Prestation, PrestationFilters } from '../models/prestation.model';
+import { PlanningService } from './planning.service';
 
 export interface CategoryInfo {
   label: string;
@@ -12,6 +14,8 @@ export interface CategoryInfo {
   providedIn: 'root'
 })
 export class PrestationsService {
+  private planningService = inject(PlanningService);
+
   private prestations = signal<Prestation[]>([
     {
       id: '1',
@@ -90,6 +94,40 @@ export class PrestationsService {
   // Getters pour exposer les signals
   getAllPrestations() {
     return this.prestations.asReadonly();
+  }
+
+  /**
+   * Obtient toutes les prestations avec leur planning associé
+   */
+  getAllPrestationsAvecPlanning(): Observable<Prestation[]> {
+    return this.planningService.getTousLesPlannings().pipe(
+      map((plannings) => {
+        return this.prestations().map((prestation) => {
+          const planning = plannings.find((p) => p.prestationId === prestation.id);
+          return {
+            ...prestation,
+            planning: planning || undefined
+          };
+        });
+      })
+    );
+  }
+
+  /**
+   * Obtient une prestation avec son planning
+   */
+  getPrestationAvecPlanning(prestationId: string): Observable<Prestation | null> {
+    return this.planningService.getPlanningParPrestation(prestationId).pipe(
+      map((planning) => {
+        const prestation = this.getPrestationById(prestationId);
+        if (!prestation) return null;
+
+        return {
+          ...prestation,
+          planning: planning || undefined
+        };
+      })
+    );
   }
 
   // Nouvelle méthode pour créer des filtres locaux par composant

@@ -1,0 +1,163 @@
+<mat-card class="selection-dates-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>event</mat-icon>
+      Sélection des dates
+    </mat-card-title>
+    <mat-card-subtitle>
+      {{ prestation().libelle }} - {{ prestation().prix }}€ par jour
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Mode de sélection -->
+    <div class="mode-selection">
+      <div class="mode-options">
+        <button mat-button [class.active]="!estPeriode()" (click)="onModeChange(false)">
+          <mat-icon>today</mat-icon>
+          Date unique
+        </button>
+        <button mat-button [class.active]="estPeriode()" (click)="onModeChange(true)">
+          <mat-icon>date_range</mat-icon>
+          Période
+        </button>
+      </div>
+
+      <!-- Debug button -->
+      <div class="debug-section">
+        <button mat-stroked-button color="accent" (click)="debugCreneaux()" type="button">
+          🐛 Debug Créneaux
+        </button>
+      </div>
+    </div>
+
+    <!-- Sélection des dates -->
+    <div class="dates-selection">
+      <!-- Date de début -->
+      <mat-form-field class="date-field">
+        <mat-label>{{ estPeriode() ? 'Date de début' : 'Date' }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerDebut"
+          [(ngModel)]="dateDebutValue"
+          [min]="minDate"
+          [matDatepickerFilter]="dateFilter" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDebut [dateClass]="dateClass"></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Date de fin (si mode période) -->
+      @if (estPeriode()) {
+        <mat-form-field class="date-field">
+          <mat-label>Date de fin</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerFin"
+            [(ngModel)]="dateFinValue"
+            [min]="dateDebut() || minDate"
+            [matDatepickerFilter]="dateFilter" />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin [dateClass]="dateClass"></mat-datepicker>
+        </mat-form-field>
+      }
+    </div>
+
+    <!-- Résumé de la sélection -->
+    @if (selection(); as sel) {
+      <div class="selection-summary" [class.valid]="sel.estValide" [class.invalid]="!sel.estValide">
+        <div class="summary-header">
+          <mat-icon [color]="sel.estValide ? 'primary' : 'warn'">
+            {{ sel.estValide ? 'check_circle' : 'error' }}
+          </mat-icon>
+          <h4>Résumé de votre sélection</h4>
+        </div>
+
+        <div class="summary-details">
+          <div class="detail-item">
+            <span class="label">Dates :</span>
+            <span class="value">
+              {{ sel.dateDebut | date: 'dd/MM/yyyy' }}
+              @if (sel.dateFin) {
+                - {{ sel.dateFin | date: 'dd/MM/yyyy' }}
+              }
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Nombre de jours :</span>
+            <span class="value">{{ sel.nombreJours }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="label">Prix total :</span>
+            <span class="value price">{{ sel.prixTotal }}€</span>
+          </div>
+
+          @if (!sel.estValide) {
+            <div class="error-message">
+              <mat-icon color="warn">warning</mat-icon>
+              Certaines dates sélectionnées ne sont pas disponibles ou sont complètes.
+            </div>
+          }
+        </div>
+
+        <!-- Détail des créneaux -->
+        @if (sel.creneauxSelectionnes.length > 0) {
+          <div class="creneaux-details">
+            <h5>Disponibilité des créneaux :</h5>
+            <div class="creneaux-list">
+              @for (creneau of sel.creneauxSelectionnes; track creneau.date) {
+                <mat-chip
+                  [class.disponible]="creneau.capaciteDisponible > 0"
+                  [class.complet]="creneau.capaciteDisponible === 0">
+                  <mat-icon>
+                    {{ creneau.capaciteDisponible > 0 ? 'check' : 'close' }}
+                  </mat-icon>
+                  {{ creneau.date | date: 'dd/MM' }}
+                  <span matChipTrailingIcon>
+                    {{ creneau.capaciteDisponible }}/{{ creneau.capaciteMax }}
+                  </span>
+                </mat-chip>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- État de chargement -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <mat-icon>hourglass_empty</mat-icon>
+        Chargement des disponibilités...
+      </div>
+    }
+
+    <!-- Calendrier des disponibilités (optionnel - pour information) -->
+    @if (creneauxDisponibles().length > 0 && !isLoading()) {
+      <div class="disponibilites-info">
+        <h5>
+          <mat-icon>info</mat-icon>
+          Prochaines disponibilités
+        </h5>
+        <div class="disponibilites-grid">
+          @for (creneau of creneauxDisponibles().slice(0, 10); track creneau.date) {
+            <div
+              class="disponibilite-item"
+              [class.selected]="estDateSelectionnee(creneau.date)"
+              [class.disponible]="creneau.capaciteDisponible > 0"
+              [class.clickable]="creneau.capaciteDisponible > 0"
+              (click)="onDateClick(creneau.date)">
+              <div class="date">{{ creneau.date | date: 'dd/MM' }}</div>
+              <div class="capacite">
+                <mat-icon [matBadge]="creneau.capaciteDisponible" matBadgeColor="primary">
+                  people
+                </mat-icon>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
