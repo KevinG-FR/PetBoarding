@@ -97,10 +97,10 @@
         }
 
         <!-- Composant de sélection de dates -->
-        <app-selection-dates
+        <app-date-selection
           [prestation]="prestation"
           (selectionChange)="onDateSelectionChange($event)">
-        </app-selection-dates>
+        </app-date-selection>
       </div>
     }
   </mat-dialog-content>
@@ -131,12 +131,12 @@
         <div class="reservation-summary">
           <div class="summary-details">
             <span class="dates">
-              {{ selection.dateDebut | date: 'dd/MM' }}
-              @if (selection.dateFin) {
-                - {{ selection.dateFin | date: 'dd/MM' }}
+              {{ selection.startDate | date: 'dd/MM' }}
+              @if (selection.endDate) {
+                - {{ selection.endDate | date: 'dd/MM' }}
               }
             </span>
-            <span class="total">{{ selection.prixTotal }}€</span>
+            <span class="total">{{ selection.totalPrice }}€</span>
           </div>
         </div>
       }

@@ -1,4 +1,4 @@
-<mat-card class="selection-dates-card">
+<mat-card class="date-selection-card">
   <mat-card-header>
     <mat-card-title>
       <mat-icon>event</mat-icon>
@@ -10,121 +10,114 @@
   </mat-card-header>
 
   <mat-card-content>
-    <!-- Mode de sélection -->
+    <!-- Selection mode -->
     <div class="mode-selection">
       <div class="mode-options">
-        <button mat-button [class.active]="!estPeriode()" (click)="onModeChange(false)">
+        <button mat-button [class.active]="!isPeriodMode()" (click)="onModeChange(false)">
           <mat-icon>today</mat-icon>
           Date unique
         </button>
-        <button mat-button [class.active]="estPeriode()" (click)="onModeChange(true)">
+        <button mat-button [class.active]="isPeriodMode()" (click)="onModeChange(true)">
           <mat-icon>date_range</mat-icon>
           Période
         </button>
       </div>
-
-      <!-- Debug button -->
-      <div class="debug-section">
-        <button mat-stroked-button color="accent" (click)="debugCreneaux()" type="button">
-          🐛 Debug Créneaux
-        </button>
-      </div>
     </div>
 
-    <!-- Sélection des dates -->
+    <!-- Date selection -->
     <div class="dates-selection">
-      <!-- Date de début -->
+      <!-- Start date -->
       <mat-form-field class="date-field">
-        <mat-label>{{ estPeriode() ? 'Date de début' : 'Date' }}</mat-label>
+        <mat-label>{{ isPeriodMode() ? 'Date de début' : 'Date' }}</mat-label>
         <input
           matInput
-          [matDatepicker]="pickerDebut"
-          [(ngModel)]="dateDebutValue"
+          [matDatepicker]="startPicker"
+          [(ngModel)]="startDateValue"
           [min]="minDate"
           [matDatepickerFilter]="dateFilter" />
-        <mat-datepicker-toggle matIconSuffix [for]="pickerDebut"></mat-datepicker-toggle>
-        <mat-datepicker #pickerDebut [dateClass]="dateClass"></mat-datepicker>
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker [dateClass]="dateClass"></mat-datepicker>
       </mat-form-field>
 
-      <!-- Date de fin (si mode période) -->
-      @if (estPeriode()) {
+      <!-- End date (if period mode) -->
+      @if (isPeriodMode()) {
         <mat-form-field class="date-field">
           <mat-label>Date de fin</mat-label>
           <input
             matInput
-            [matDatepicker]="pickerFin"
-            [(ngModel)]="dateFinValue"
-            [min]="dateDebut() || minDate"
-            [disabled]="!dateDebut()"
-            [matDatepickerFilter]="dateFilterFin" />
+            [matDatepicker]="endPicker"
+            [(ngModel)]="endDateValue"
+            [min]="startDate() || minDate"
+            [disabled]="!startDate()"
+            [matDatepickerFilter]="endDateFilter" />
           <mat-datepicker-toggle
             matIconSuffix
-            [for]="pickerFin"
-            [disabled]="!dateDebut()"></mat-datepicker-toggle>
+            [for]="endPicker"
+            [disabled]="!startDate()"></mat-datepicker-toggle>
           <mat-datepicker
-            #pickerFin
+            #endPicker
             [dateClass]="dateClass"
-            [disabled]="!dateDebut()"></mat-datepicker>
+            [disabled]="!startDate()"></mat-datepicker>
         </mat-form-field>
       }
     </div>
 
-    <!-- Résumé de la sélection -->
+    <!-- Selection summary -->
     @if (selection(); as sel) {
       <div
         class="selection-summary"
-        [class.valid]="sel.statut === 'valide'"
-        [class.incomplete]="sel.statut === 'incomplete'"
-        [class.invalid]="sel.statut === 'erreur'">
+        [class.valid]="sel.status === 'valid'"
+        [class.incomplete]="sel.status === 'incomplete'"
+        [class.invalid]="sel.status === 'error'">
         <div class="summary-header">
           <mat-icon
             [color]="
-              sel.statut === 'valide' ? 'primary' : sel.statut === 'incomplete' ? 'accent' : 'warn'
+              sel.status === 'valid' ? 'primary' : sel.status === 'incomplete' ? 'accent' : 'warn'
             ">
-            @if (sel.statut === 'valide') {
+            @if (sel.status === 'valid') {
               check_circle
-            } @else if (sel.statut === 'incomplete') {
+            } @else if (sel.status === 'incomplete') {
               info
             } @else {
               error
             }
           </mat-icon>
-          <h4>Résumé de votre sélection</h4>
+          <h4>Selection Summary</h4>
         </div>
 
         <div class="summary-details">
           <div class="detail-item">
-            <span class="label">Dates :</span>
+            <span class="label">Dates:</span>
             <span class="value">
-              {{ sel.dateDebut | date: 'dd/MM/yyyy' }}
-              @if (sel.dateFin) {
-                - {{ sel.dateFin | date: 'dd/MM/yyyy' }}
+              {{ sel.startDate | date: 'MM/dd/yyyy' }}
+              @if (sel.endDate) {
+                - {{ sel.endDate | date: 'MM/dd/yyyy' }}
               }
             </span>
           </div>
 
           <div class="detail-item">
             <span class="label">Nombre de jours :</span>
-            <span class="value">{{ sel.nombreJours }}</span>
+            <span class="value">{{ sel.numberOfDays }}</span>
           </div>
 
           <div class="detail-item">
             <span class="label">Prix total :</span>
-            <span class="value price">{{ sel.prixTotal }}€</span>
+            <span class="value price">{{ sel.totalPrice }}€</span>
           </div>
 
-          @if (sel.statut === 'incomplete') {
-            <div class="info-message">
+          @if (sel.status === 'incomplete') {
+            <div class="message info">
               <mat-icon color="accent">info</mat-icon>
-              {{ sel.erreurs?.message }}
+              {{ sel.errors?.message }}
             </div>
           }
 
-          @if (sel.statut === 'erreur') {
-            <div class="error-message">
+          @if (sel.status === 'error') {
+            <div class="message error">
               <mat-icon color="warn">warning</mat-icon>
-              @if (sel.erreurs?.type === 'dates_indisponibles') {
-                {{ sel.erreurs?.message }}
+              @if (sel.errors?.type === 'unavailable_dates') {
+                {{ sel.errors?.message }}
               } @else {
                 Certaines dates sélectionnées ne sont pas disponibles ou sont complètes.
               }
@@ -132,19 +125,19 @@
           }
         </div>
 
-        <!-- Détail des créneaux -->
-        @if (sel.creneauxSelectionnes.length > 0) {
-          <div class="creneaux-details">
+        <!-- Slot details -->
+        @if (sel.selectedSlots.length > 0) {
+          <div class="slot-details">
             <h5>Disponibilité des créneaux :</h5>
-            <div class="creneaux-list">
-              @for (creneau of sel.creneauxSelectionnes; track creneau.date) {
+            <div class="slots-list">
+              @for (slot of sel.selectedSlots; track slot.date) {
                 <mat-chip
-                  [class.disponible]="creneau.capaciteDisponible > 0"
-                  [class.complet]="creneau.capaciteDisponible === 0">
+                  [class.available]="slot.capaciteDisponible > 0"
+                  [class.full]="slot.capaciteDisponible === 0">
                   <mat-icon>
-                    {{ creneau.capaciteDisponible > 0 ? 'check' : 'close' }}
+                    {{ slot.capaciteDisponible > 0 ? 'check' : 'close' }}
                   </mat-icon>
-                  {{ creneau.date | date: 'dd/MM' }}
+                  {{ slot.date | date: 'MM/dd' }}
                 </mat-chip>
               }
             </div>
@@ -153,7 +146,7 @@
       </div>
     }
 
-    <!-- État de chargement -->
+    <!-- Loading state -->
     @if (isLoading()) {
       <div class="loading-state">
         <mat-icon>hourglass_empty</mat-icon>
@@ -161,26 +154,26 @@
       </div>
     }
 
-    <!-- Calendrier des disponibilités (optionnel - pour information) -->
-    @if (creneauxDisponiblesFiltres().length > 0 && !isLoading()) {
-      <div class="disponibilites-info">
+    <!-- Availability calendar (optional - for information) -->
+    @if (filteredAvailableSlots().length > 0 && !isLoading()) {
+      <div class="availability-info">
         <h5>
           <mat-icon>info</mat-icon>
-          Prochaines disponibilités
+          Prochaines dates disponibles
         </h5>
-        <div class="disponibilites-grid">
-          @for (creneau of creneauxDisponiblesFiltres().slice(0, 18); track creneau.date) {
+        <div class="availability-grid">
+          @for (slot of filteredAvailableSlots().slice(0, 18); track slot.date) {
             <div
-              class="disponibilite-item"
-              [class.selected]="estDateSelectionnee(creneau.date)"
-              [class.disponible]="creneau.capaciteDisponible > 0"
-              [class.limited]="creneau.capaciteDisponible > 0 && creneau.capaciteDisponible <= 2"
-              [class.clickable]="creneau.capaciteDisponible > 0"
-              (click)="onDateClick(creneau.date)">
-              <div class="date">{{ creneau.date | date: 'dd/MM' }}</div>
-              @if (creneau.capaciteDisponible <= 2) {
-                <div class="capacite">
-                  <mat-icon [matBadge]="creneau.capaciteDisponible" matBadgeColor="primary">
+              class="availability-item"
+              [class.selected]="isDateSelected(slot.date)"
+              [class.available]="slot.capaciteDisponible > 0"
+              [class.limited]="slot.capaciteDisponible > 0 && slot.capaciteDisponible <= 2"
+              [class.clickable]="slot.capaciteDisponible > 0"
+              (click)="onDateClick(slot.date)">
+              <div class="date">{{ slot.date | date: 'MM/dd' }}</div>
+              @if (slot.capaciteDisponible <= 2) {
+                <div class="capacity">
+                  <mat-icon [matBadge]="slot.capaciteDisponible" matBadgeColor="primary">
                   </mat-icon>
                 </div>
               }

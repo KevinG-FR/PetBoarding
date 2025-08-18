@@ -24,9 +24,18 @@ $black: #000000;
 
 // Couleurs d'état
 $success-color: #4caf50; // Messages de succès (même que primaire)
+$success-light: #f1f8e9; // Fond clair pour succès
+$success-lighter: #e8f5e8; // Fond très clair pour succès
+
 $warning-color: #ff9800; // Messages d'avertissement (même que secondaire)
+$warning-light: #fff3e0; // Fond clair pour avertissements
+$warning-lighter: #ffe0b2; // Fond très clair pour avertissements
+
 $error-color: #f44336; // Messages d'erreur
+$error-light: #ffebee; // Fond clair pour erreurs
+
 $info-color: #2196f3; // Messages d'information (même que tertiaire)
+$info-light: #e3f2fd; // Fond clair pour informations
 
 // Espacements
 $spacing-xs: 0.25rem;

@@ -19,8 +19,8 @@ import { PetService } from '../../pets/services/pet.service';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 import {
-  SelectionDatesComponent,
-  SelectionDatesResult
+  DateSelectionComponent,
+  DateSelectionResult
 } from './selection-dates/selection-dates.component';
 
 export interface ReservationCompleteResult {
@@ -44,7 +44,7 @@ export interface ReservationCompleteResult {
     MatCardModule,
     MatStepperModule,
     MatTabsModule,
-    SelectionDatesComponent
+    DateSelectionComponent
   ],
   templateUrl: './reservation-complete-dialog.component.html',
   styleUrl: './reservation-complete-dialog.component.scss'
@@ -60,7 +60,7 @@ export class ReservationCompleteDialogComponent {
   pets = signal<Pet[]>([]);
   isLoading = signal(false);
   selectedPet = signal<Pet | null>(null);
-  dateSelection = signal<SelectionDatesResult | null>(null);
+  dateSelection = signal<DateSelectionResult | null>(null);
   currentStep = signal(0);
 
   get prestation(): Prestation {
@@ -71,7 +71,7 @@ export class ReservationCompleteDialogComponent {
   canConfirm = computed(() => {
     const pet = this.selectedPet();
     const dates = this.dateSelection();
-    return pet && dates && dates.estValide;
+    return pet && dates && dates.isValid;
   });
 
   // Computed pour le résumé
@@ -83,10 +83,10 @@ export class ReservationCompleteDialogComponent {
 
     return {
       pet,
-      dateDebut: dates.dateDebut,
-      dateFin: dates.dateFin,
-      nombreJours: dates.nombreJours,
-      prixTotal: dates.prixTotal
+      dateDebut: dates.startDate,
+      dateFin: dates.endDate,
+      nombreJours: dates.numberOfDays,
+      prixTotal: dates.totalPrice
     };
   });
 
@@ -110,7 +110,7 @@ export class ReservationCompleteDialogComponent {
     this.nextStep();
   }
 
-  onDateSelectionChange(selection: SelectionDatesResult): void {
+  onDateSelectionChange(selection: DateSelectionResult): void {
     this.dateSelection.set(selection);
   }
 
@@ -155,8 +155,8 @@ export class ReservationCompleteDialogComponent {
         action: 'reserve',
         pet: pet,
         dates: {
-          dateDebut: dates.dateDebut,
-          dateFin: dates.dateFin
+          dateDebut: dates.startDate,
+          dateFin: dates.endDate
         }
       });
     }
