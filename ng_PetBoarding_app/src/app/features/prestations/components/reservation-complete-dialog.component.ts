@@ -142,6 +142,7 @@ export class ReservationCompleteDialogComponent {
   previousStep(): void {
     if (this.currentStep() > 0) {
       this.currentStep.set(this.currentStep() - 1);
+      this.dateSelection.set(null);
     }
   }
 

@@ -27,9 +27,15 @@ export interface SelectionDatesResult {
   dateDebut: Date;
   dateFin?: Date;
   estValide: boolean;
+  statut: 'valide' | 'incomplete' | 'erreur';
   creneauxSelectionnes: CreneauDisponible[];
   nombreJours: number;
   prixTotal: number;
+  erreurs?: {
+    type: 'periode_incomplete' | 'dates_indisponibles';
+    message: string;
+    datesProblematiques?: Date[];
+  };
 }
 
 @Component({
@@ -68,6 +74,7 @@ export class SelectionDatesComponent implements OnInit {
   dateFin = signal<Date | null>(null);
   estPeriode = signal(false);
   creneauxDisponibles = signal<CreneauDisponible[]>([]);
+  tousLesCreneaux = signal<CreneauDisponible[]>([]); // Tous les créneaux programmés (même complets)
   isLoading = signal(false);
 
   // Propriétés pour ngModel (nécessaires pour le datepicker)
@@ -79,7 +86,9 @@ export class SelectionDatesComponent implements OnInit {
   }
   set dateDebutValue(value: Date | null) {
     if (value && !this.estDateDisponible(value)) {
-      // Date non disponible - ignorer la sélection
+      // Date non disponible - ignorer la sélection et afficher un message
+      console.warn('Date non disponible sélectionnée:', value);
+      // Optionnel: Afficher un snackbar ou une notification à l'utilisateur
       return;
     }
 
@@ -101,7 +110,9 @@ export class SelectionDatesComponent implements OnInit {
   }
   set dateFinValue(value: Date | null) {
     if (value && !this.estDateDisponible(value)) {
-      // Date non disponible - ignorer la sélection
+      // Date non disponible - ignorer la sélection et afficher un message
+      console.warn('Date non disponible sélectionnée:', value);
+      // Optionnel: Afficher un snackbar ou une notification à l'utilisateur
       return;
     }
 
@@ -112,6 +123,67 @@ export class SelectionDatesComponent implements OnInit {
 
   // Date minimum (aujourd'hui)
   minDate = new Date();
+
+  // Computed properties
+  // Créneaux disponibles filtrés selon le mode et la date de début
+  creneauxDisponiblesFiltres = computed(() => {
+    const creneaux = this.creneauxDisponibles();
+    const estEnModePeriode = this.estPeriode();
+    const dateDebut = this.dateDebut();
+
+    // En mode date unique, afficher tous les créneaux disponibles
+    if (!estEnModePeriode) {
+      return creneaux;
+    }
+
+    // En mode période sans date de début, afficher tous les créneaux
+    if (!dateDebut) {
+      return creneaux;
+    }
+
+    // En mode période avec date de début :
+    // Afficher la séquence continue de dates disponibles après la date de début
+    // jusqu'à la première date complète/non programmée
+    const tousLesCreneaux = this.tousLesCreneaux();
+    const creneauxContinus: CreneauDisponible[] = [];
+
+    // Créer une date de travail à partir du jour suivant la date de début
+    const dateCourante = new Date(dateDebut);
+    dateCourante.setDate(dateCourante.getDate() + 1);
+
+    // Parcourir jour par jour jusqu'à trouver un "trou"
+    while (true) {
+      // Chercher si cette date a un créneau programmé
+      const creneauTrouve = tousLesCreneaux.find((c) => {
+        const creneauDate = new Date(c.date);
+        const targetDate = new Date(dateCourante);
+        return creneauDate.toDateString() === targetDate.toDateString();
+      });
+
+      // Si pas de créneau programmé pour cette date = trou -> arrêter
+      if (!creneauTrouve) {
+        break;
+      }
+
+      // Si créneau complet (pas de disponibilité) = trou -> arrêter
+      if (creneauTrouve.capaciteDisponible === 0) {
+        break;
+      }
+
+      // Date valide, l'ajouter à la liste continue
+      creneauxContinus.push(creneauTrouve);
+
+      // Passer au jour suivant
+      dateCourante.setDate(dateCourante.getDate() + 1);
+
+      // Sécurité : limiter à un nombre raisonnable de jours pour éviter les boucles infinies
+      if (creneauxContinus.length >= 30) {
+        break;
+      }
+    }
+
+    return creneauxContinus;
+  });
 
   // Computed properties
   selection = computed(() => {
@@ -127,14 +199,27 @@ export class SelectionDatesComponent implements OnInit {
     const creneaux = this.obtenirCreneauxPourPeriode(debut, dateFinal);
     const nombreJours = this.calculerNombreJours(debut, dateFinal);
     const estValide = this.verifierValidite(creneaux);
+    const erreurs = this.analyserErreursPeriode(debut, dateFinal, creneaux);
+
+    // Déterminer le statut selon le contexte
+    let statut: 'valide' | 'incomplete' | 'erreur';
+    if (estValide) {
+      statut = 'valide';
+    } else if (erreurs?.type === 'periode_incomplete') {
+      statut = 'incomplete'; // État informatif, pas d'erreur
+    } else {
+      statut = 'erreur'; // Vraie erreur (dates indisponibles, etc.)
+    }
 
     return {
       dateDebut: debut,
       dateFin: dateFinal,
       estValide,
+      statut,
       creneauxSelectionnes: creneaux,
       nombreJours,
-      prixTotal: nombreJours * prestation.prix
+      prixTotal: nombreJours * prestation.prix,
+      erreurs
     };
   });
 
@@ -151,11 +236,15 @@ export class SelectionDatesComponent implements OnInit {
         .toPromise();
 
       if (planning?.creneaux) {
-        // Filtrer les créneaux futurs uniquement
-        const creneauxFuturs = planning.creneaux.filter(
-          (c) => c.date >= this.minDate && c.capaciteDisponible > 0
+        // Tous les créneaux futurs programmés (même complets)
+        const tousCreneauxFuturs = planning.creneaux.filter((c) => c.date >= this.minDate);
+        this.tousLesCreneaux.set(tousCreneauxFuturs);
+
+        // Créneaux avec disponibilité uniquement
+        const creneauxAvecDisponibilite = tousCreneauxFuturs.filter(
+          (c) => c.capaciteDisponible > 0
         );
-        this.creneauxDisponibles.set(creneauxFuturs);
+        this.creneauxDisponibles.set(creneauxAvecDisponibilite);
       }
     } catch (_error) {
       // Erreur lors du chargement des créneaux
@@ -165,14 +254,18 @@ export class SelectionDatesComponent implements OnInit {
   }
 
   private obtenirCreneauxPourPeriode(debut: Date, fin: Date | null): CreneauDisponible[] {
-    const creneaux = this.creneauxDisponibles();
+    const tousCreneaux = this.tousLesCreneaux(); // Utiliser tous les créneaux, pas seulement les disponibles
     const dateFin = fin || debut;
 
     const creneauxPeriode: CreneauDisponible[] = [];
     const dateCourante = new Date(debut);
 
     while (dateCourante <= dateFin) {
-      const creneau = creneaux.find((c) => c.date.getTime() === dateCourante.getTime());
+      const creneau = tousCreneaux.find((c) => {
+        const creneauDate = new Date(c.date);
+        const targetDate = new Date(dateCourante);
+        return creneauDate.toDateString() === targetDate.toDateString();
+      });
 
       if (creneau) {
         creneauxPeriode.push(creneau);
@@ -195,6 +288,11 @@ export class SelectionDatesComponent implements OnInit {
 
     if (!debut) return false;
 
+    // En mode période, il faut OBLIGATOIREMENT une date de début ET une date de fin
+    if (this.estPeriode() && !fin) {
+      return false;
+    }
+
     const dateFin = this.estPeriode() ? fin : null;
     const nombreJoursRequis = this.calculerNombreJours(debut, dateFin);
 
@@ -202,21 +300,68 @@ export class SelectionDatesComponent implements OnInit {
     return creneaux.length === nombreJoursRequis && creneaux.every((c) => c.capaciteDisponible > 0);
   }
 
-  onDateDebutChange(date: Date | null): void {
-    this.dateDebut.set(date);
-
-    // Si on change la date de début et qu'on est en mode période,
-    // réinitialiser la date de fin si elle est antérieure
-    if (date && this.estPeriode() && this.dateFin() && this.dateFin()! < date) {
-      this.dateFin.set(null);
+  private analyserErreursPeriode(
+    debut: Date,
+    fin: Date | null,
+    _creneaux: CreneauDisponible[]
+  ):
+    | {
+        type: 'periode_incomplete' | 'dates_indisponibles';
+        message: string;
+        datesProblematiques?: Date[];
+      }
+    | undefined {
+    // En mode période, vérifier que la date de fin est sélectionnée
+    if (this.estPeriode() && !fin) {
+      return {
+        type: 'periode_incomplete',
+        message: 'Veuillez sélectionner une date de fin pour votre période.'
+      };
     }
 
-    this.emettreSelection();
+    const dateFin = this.estPeriode() ? fin : null;
+
+    // Analyser les dates problématiques
+    const datesProblematiques: Date[] = [];
+    const dateCourante = new Date(debut);
+    const dateFinale = dateFin || debut;
+
+    while (dateCourante <= dateFinale) {
+      const tousCreneaux = this.tousLesCreneaux();
+      const creneau = tousCreneaux.find((c) => {
+        const creneauDate = new Date(c.date);
+        const targetDate = new Date(dateCourante);
+        return creneauDate.toDateString() === targetDate.toDateString();
+      });
+
+      if (!creneau || creneau.capaciteDisponible === 0) {
+        datesProblematiques.push(new Date(dateCourante));
+      }
+
+      dateCourante.setDate(dateCourante.getDate() + 1);
+    }
+
+    if (datesProblematiques.length > 0) {
+      const datesStr = datesProblematiques.map((d) => d.toLocaleDateString('fr-FR')).join(', ');
+
+      return {
+        type: 'dates_indisponibles',
+        message: `Les dates suivantes ne sont pas disponibles : ${datesStr}`,
+        datesProblematiques
+      };
+    }
+
+    return undefined;
+  }
+
+  onDateDebutChange(date: Date | null): void {
+    // Utiliser le setter qui inclut la validation
+    this.dateDebutValue = date;
   }
 
   onDateFinChange(date: Date | null): void {
-    this.dateFin.set(date);
-    this.emettreSelection();
+    // Utiliser le setter qui inclut la validation
+    this.dateFinValue = date;
   }
 
   onModeChange(estPeriode: boolean): void {
@@ -238,69 +383,82 @@ export class SelectionDatesComponent implements OnInit {
   }
 
   onDateClick(date: Date): void {
+    // Vérifier d'abord que la date est disponible
+    if (!this.estDateDisponible(date)) {
+      console.warn("Tentative de sélection d'une date non disponible:", date);
+      return;
+    }
+
     if (!this.estPeriode()) {
-      // Mode date unique - sélectionner directement cette date
-      this.dateDebut.set(date);
-      this._dateDebutValue = date;
-      this.dateFin.set(null);
-      this._dateFinValue = null;
+      // Mode date unique - utiliser les setters qui incluent la validation
+      this.dateDebutValue = date;
+      this.dateFinValue = null;
     } else {
       // Mode période - logique de sélection de période
       const debut = this.dateDebut();
 
       if (!debut) {
         // Pas de date de début - définir cette date comme début
-        this.dateDebut.set(date);
-        this._dateDebutValue = date;
+        this.dateDebutValue = date;
       } else if (!this.dateFin()) {
         // Date de début existe mais pas de fin - définir la fin
         if (date >= debut) {
-          this.dateFin.set(date);
-          this._dateFinValue = date;
+          this.dateFinValue = date;
         } else {
           // La nouvelle date est antérieure - redéfinir le début
-          this.dateDebut.set(date);
-          this._dateDebutValue = date;
-          this.dateFin.set(null);
-          this._dateFinValue = null;
+          this.dateDebutValue = date;
+          this.dateFinValue = null;
         }
       } else {
         // Les deux dates sont définies - recommencer avec cette date
-        this.dateDebut.set(date);
-        this._dateDebutValue = date;
-        this.dateFin.set(null);
-        this._dateFinValue = null;
+        this.dateDebutValue = date;
+        this.dateFinValue = null;
       }
     }
 
     this.emettreSelection();
   }
 
-  // Fonction pour le DatePicker - permettre seulement les dates programmées
+  // Fonction pour le DatePicker - permettre seulement les dates avec disponibilité
   dateFilter = (date: Date | null): boolean => {
     if (!date) return false;
 
     // Empêcher les dates passées
     if (date < this.minDate) return false;
 
-    // Vérifier si la date a des créneaux programmés
-    const creneaux = this.creneauxDisponibles();
-    const aDesCreneaux = creneaux.some((c) => {
+    // Vérifier si la date a des créneaux programmés ET avec disponibilité
+    const tousCreneaux = this.tousLesCreneaux();
+    const creneauAvecDisponibilite = tousCreneaux.find((c) => {
       const creneauDate = new Date(c.date);
       const targetDate = new Date(date);
       return creneauDate.toDateString() === targetDate.toDateString();
     });
 
-    // Permettre seulement les dates qui ont des créneaux programmés
-    return aDesCreneaux;
+    // Permettre seulement les dates qui ont des créneaux avec disponibilité > 0
+    return creneauAvecDisponibilite ? creneauAvecDisponibilite.capaciteDisponible > 0 : false;
+  };
+
+  // Fonction pour le DatePicker de fin - même logique + vérifier que c'est après la date de début
+  dateFilterFin = (date: Date | null): boolean => {
+    if (!date) return false;
+
+    // D'abord appliquer le filtre standard
+    if (!this.dateFilter(date)) return false;
+
+    // Empêcher les dates antérieures ou égales à la date de début
+    const dateDebut = this.dateDebut();
+    if (!dateDebut) return false;
+
+    // La date de fin doit être strictement postérieure à la date de début
+    return date > dateDebut;
   };
 
   // Fonction pour obtenir la classe CSS d'une date dans le calendrier
   dateClass = (cellDate: Date, view: 'month' | 'year' | 'multi-year'): string => {
     if (view !== 'month') return '';
 
-    const creneaux = this.creneauxDisponibles();
-    const creneau = creneaux.find((c) => {
+    const tousCreneaux = this.tousLesCreneaux();
+    const creneau = tousCreneaux.find((c) => {
       const creneauDate = new Date(c.date);
       const targetDate = new Date(cellDate);
       return creneauDate.toDateString() === targetDate.toDateString();
@@ -327,15 +485,24 @@ export class SelectionDatesComponent implements OnInit {
   };
 
   estDateDisponible(date: Date): boolean {
-    const creneaux = this.creneauxDisponibles();
-    const creneau = creneaux.find((c) => c.date.getTime() === date.getTime());
+    const tousCreneaux = this.tousLesCreneaux();
+    const creneau = tousCreneaux.find((c) => {
+      const creneauDate = new Date(c.date);
+      const targetDate = new Date(date);
+      return creneauDate.toDateString() === targetDate.toDateString();
+    });
     return creneau ? creneau.capaciteDisponible > 0 : false;
   }
 
   getDisponibiliteInfo(date: Date): string {
-    const creneau = this.creneauxDisponibles().find((c) => c.date.getTime() === date.getTime());
+    const tousCreneaux = this.tousLesCreneaux();
+    const creneau = tousCreneaux.find((c) => c.date.getTime() === date.getTime());
 
-    if (!creneau) return 'Non disponible';
+    if (!creneau) return 'Non programmé';
+
+    if (creneau.capaciteDisponible === 0) {
+      return `Complet (${creneau.capaciteMax} places)`;
+    }
 
     return `${creneau.capaciteDisponible}/${creneau.capaciteMax} places`;
   }
@@ -347,10 +514,16 @@ export class SelectionDatesComponent implements OnInit {
     if (!debut) return false;
 
     if (!this.estPeriode()) {
-      return debut.getTime() === date.getTime();
+      const debutDate = new Date(debut);
+      const targetDate = new Date(date);
+      return debutDate.toDateString() === targetDate.toDateString();
     }
 
-    if (!fin) return debut.getTime() === date.getTime();
+    if (!fin) {
+      const debutDate = new Date(debut);
+      const targetDate = new Date(date);
+      return debutDate.toDateString() === targetDate.toDateString();
+    }
 
     return date >= debut && date <= fin;
   }
@@ -358,8 +531,10 @@ export class SelectionDatesComponent implements OnInit {
   // Méthode de debug pour vérifier les créneaux
   debugCreneaux(): void {
     const creneaux = this.creneauxDisponibles();
+    const tousCreneaux = this.tousLesCreneaux();
     console.log('=== DEBUG CRÉNEAUX ===');
-    console.log('Nombre de créneaux:', creneaux.length);
+    console.log('Créneaux disponibles:', creneaux.length);
+    console.log('Tous les créneaux:', tousCreneaux.length);
 
     // Debug spécial pour le 30 août 2025
     const date30Aout = new Date(2025, 7, 30); // mois 7 = août (0-indexé)
@@ -367,7 +542,7 @@ export class SelectionDatesComponent implements OnInit {
     console.log('Date créée:', date30Aout.toDateString());
     console.log('Jour de la semaine:', date30Aout.getDay(), '(6=samedi)');
 
-    const creneaux30Aout = creneaux.filter((c) => {
+    const creneaux30Aout = tousCreneaux.filter((c) => {
       const creneauDate = new Date(c.date);
       return creneauDate.toDateString() === date30Aout.toDateString();
     });
@@ -399,13 +574,20 @@ export class SelectionDatesComponent implements OnInit {
 
     // Test de la fonction dateClass avec les prochains jours
     const today = new Date();
+    console.log('=== TEST COHÉRENCE SÉLECTION ===');
     for (let i = 0; i < 10; i++) {
       const testDate = new Date(today);
       testDate.setDate(today.getDate() + i);
       const className = this.dateClass(testDate, 'month');
       const isSelectable = this.dateFilter(testDate);
+      const isDisponible = this.estDateDisponible(testDate);
+
+      // Vérifier la cohérence
+      const coherent = isSelectable === isDisponible;
+      const status = coherent ? '✅' : '❌';
+
       console.log(
-        `J+${i} (${testDate.toLocaleDateString()}): classe="${className}", sélectionnable=${isSelectable}`
+        `${status} J+${i} (${testDate.toLocaleDateString()}): classe="${className}", sélectionnable=${isSelectable}, disponible=${isDisponible}`
       );
     }
 

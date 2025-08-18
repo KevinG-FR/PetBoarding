@@ -89,6 +89,15 @@
     }
   }
 
+  &.incomplete {
+    border: 2px solid #2196f3;
+    background-color: #e3f2fd;
+
+    .summary-header mat-icon {
+      color: #2196f3;
+    }
+  }
+
   &.invalid {
     border: 2px solid #f44336;
     background-color: #ffebee;
@@ -153,6 +162,24 @@
       background-color: rgba(244, 67, 54, 0.1);
       border-radius: 4px;
       color: #f44336;
+      font-size: 0.9rem;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .info-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px;
+      background-color: rgba(33, 150, 243, 0.1);
+      border-radius: 4px;
+      color: #2196f3;
       font-size: 0.9rem;
 
       mat-icon {
@@ -245,6 +272,7 @@
       border-radius: 8px;
       background-color: #fafafa;
       transition: all 0.2s ease;
+      min-height: 79px;
       cursor: pointer;
 
       &.disponible {
@@ -256,6 +284,21 @@
 
           &:hover {
             background-color: #e8f5e8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+
+      &.limited {
+        border-color: #ff9800;
+        background-color: #fff3e0;
+
+        &.clickable {
+          cursor: pointer;
+
+          &:hover {
+            background-color: #ffe0b2;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           }
@@ -277,6 +320,7 @@
       .capacite {
         mat-icon {
           font-size: 18px;
+          margin-top: 5px;
           width: 18px;
           height: 18px;
           color: #1976d2;
@@ -326,14 +370,25 @@
 // Styles globaux pour le calendrier datepicker avec ViewEncapsulation.None
 .mat-datepicker-content {
   .mat-calendar-body-cell {
+    /* Curseur par défaut et transition */
+    cursor: pointer;
+    transition: all 0.2s ease;
+
     &.date-available {
       background-color: #e8f5e9 !important;
       border: 2px solid #4caf50 !important;
       border-radius: 4px !important;
+      cursor: pointer !important; /* Sélectionnable */
 
       .mat-calendar-body-cell-content {
         color: #2e7d32 !important;
         font-weight: 600 !important;
+      }
+
+      /* Animation au survol */
+      &:hover {
+        background-color: #c8e6c9 !important;
+        transform: scale(1.05);
       }
     }
 
@@ -341,10 +396,17 @@
       background-color: #fff3e0 !important;
       border: 2px solid #ff9800 !important;
       border-radius: 4px !important;
+      cursor: pointer !important; /* Sélectionnable */
 
       .mat-calendar-body-cell-content {
         color: #e65100 !important;
         font-weight: 600 !important;
+      }
+
+      /* Animation au survol */
+      &:hover {
+        background-color: #ffe0b2 !important;
+        transform: scale(1.05);
       }
     }
 
@@ -352,11 +414,20 @@
       background-color: #ffebee !important;
       border: 2px solid #f44336 !important;
       border-radius: 4px !important;
+      cursor: not-allowed !important; /* Non sélectionnable */
 
       .mat-calendar-body-cell-content {
         color: #c62828 !important;
         text-decoration: line-through !important;
         opacity: 0.6 !important;
+      }
+
+      /* Effet au survol pour indiquer non-disponibilité */
+      &:hover {
+        background-color: #ffcdd2 !important;
+        border-color: #d32f2f !important;
+        cursor: not-allowed !important;
+        transform: none; /* Pas d'animation de zoom */
       }
     }
 
@@ -364,10 +435,38 @@
       background-color: #f5f5f5 !important;
       border: 1px solid #e0e0e0 !important;
       border-radius: 4px !important;
+      cursor: not-allowed !important; /* Non sélectionnable */
 
       .mat-calendar-body-cell-content {
         color: #9e9e9e !important;
         opacity: 0.5 !important;
+      }
+
+      /* Effet au survol pour indiquer non-disponibilité */
+      &:hover {
+        background-color: #eeeeee !important;
+        cursor: not-allowed !important;
+        transform: none; /* Pas d'animation de zoom */
+      }
+    }
+
+    /* Styles pour les dates désactivées par Angular Material dateFilter */
+    &.mat-calendar-body-disabled {
+      cursor: not-allowed !important;
+      opacity: 0.4 !important;
+
+      &:hover {
+        cursor: not-allowed !important;
+        transform: none !important;
+      }
+    }
+
+    /* Styles pour les dates inactives (dimanche, dates passées, etc.) */
+    &.mat-calendar-body-inactive {
+      cursor: not-allowed !important;
+
+      &:hover {
+        cursor: not-allowed !important;
       }
     }
   }

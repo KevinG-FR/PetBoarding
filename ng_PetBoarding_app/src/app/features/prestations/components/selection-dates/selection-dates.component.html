@@ -55,19 +55,39 @@
             [matDatepicker]="pickerFin"
             [(ngModel)]="dateFinValue"
             [min]="dateDebut() || minDate"
-            [matDatepickerFilter]="dateFilter" />
-          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFin [dateClass]="dateClass"></mat-datepicker>
+            [disabled]="!dateDebut()"
+            [matDatepickerFilter]="dateFilterFin" />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerFin"
+            [disabled]="!dateDebut()"></mat-datepicker-toggle>
+          <mat-datepicker
+            #pickerFin
+            [dateClass]="dateClass"
+            [disabled]="!dateDebut()"></mat-datepicker>
         </mat-form-field>
       }
     </div>
 
     <!-- Résumé de la sélection -->
     @if (selection(); as sel) {
-      <div class="selection-summary" [class.valid]="sel.estValide" [class.invalid]="!sel.estValide">
+      <div
+        class="selection-summary"
+        [class.valid]="sel.statut === 'valide'"
+        [class.incomplete]="sel.statut === 'incomplete'"
+        [class.invalid]="sel.statut === 'erreur'">
         <div class="summary-header">
-          <mat-icon [color]="sel.estValide ? 'primary' : 'warn'">
-            {{ sel.estValide ? 'check_circle' : 'error' }}
+          <mat-icon
+            [color]="
+              sel.statut === 'valide' ? 'primary' : sel.statut === 'incomplete' ? 'accent' : 'warn'
+            ">
+            @if (sel.statut === 'valide') {
+              check_circle
+            } @else if (sel.statut === 'incomplete') {
+              info
+            } @else {
+              error
+            }
           </mat-icon>
           <h4>Résumé de votre sélection</h4>
         </div>
@@ -93,10 +113,21 @@
             <span class="value price">{{ sel.prixTotal }}€</span>
           </div>
 
-          @if (!sel.estValide) {
+          @if (sel.statut === 'incomplete') {
+            <div class="info-message">
+              <mat-icon color="accent">info</mat-icon>
+              {{ sel.erreurs?.message }}
+            </div>
+          }
+
+          @if (sel.statut === 'erreur') {
             <div class="error-message">
               <mat-icon color="warn">warning</mat-icon>
-              Certaines dates sélectionnées ne sont pas disponibles ou sont complètes.
+              @if (sel.erreurs?.type === 'dates_indisponibles') {
+                {{ sel.erreurs?.message }}
+              } @else {
+                Certaines dates sélectionnées ne sont pas disponibles ou sont complètes.
+              }
             </div>
           }
         </div>
@@ -114,9 +145,6 @@
                     {{ creneau.capaciteDisponible > 0 ? 'check' : 'close' }}
                   </mat-icon>
                   {{ creneau.date | date: 'dd/MM' }}
-                  <span matChipTrailingIcon>
-                    {{ creneau.capaciteDisponible }}/{{ creneau.capaciteMax }}
-                  </span>
                 </mat-chip>
               }
             </div>
@@ -134,26 +162,28 @@
     }
 
     <!-- Calendrier des disponibilités (optionnel - pour information) -->
-    @if (creneauxDisponibles().length > 0 && !isLoading()) {
+    @if (creneauxDisponiblesFiltres().length > 0 && !isLoading()) {
       <div class="disponibilites-info">
         <h5>
           <mat-icon>info</mat-icon>
           Prochaines disponibilités
         </h5>
         <div class="disponibilites-grid">
-          @for (creneau of creneauxDisponibles().slice(0, 10); track creneau.date) {
+          @for (creneau of creneauxDisponiblesFiltres().slice(0, 18); track creneau.date) {
             <div
               class="disponibilite-item"
               [class.selected]="estDateSelectionnee(creneau.date)"
               [class.disponible]="creneau.capaciteDisponible > 0"
+              [class.limited]="creneau.capaciteDisponible > 0 && creneau.capaciteDisponible <= 2"
               [class.clickable]="creneau.capaciteDisponible > 0"
               (click)="onDateClick(creneau.date)">
               <div class="date">{{ creneau.date | date: 'dd/MM' }}</div>
-              <div class="capacite">
-                <mat-icon [matBadge]="creneau.capaciteDisponible" matBadgeColor="primary">
-                  people
-                </mat-icon>
-              </div>
+              @if (creneau.capaciteDisponible <= 2) {
+                <div class="capacite">
+                  <mat-icon [matBadge]="creneau.capaciteDisponible" matBadgeColor="primary">
+                  </mat-icon>
+                </div>
+              }
             </div>
           }
         </div>
