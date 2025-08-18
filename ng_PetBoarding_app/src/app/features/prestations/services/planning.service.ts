@@ -1,11 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import {
-  CreneauDisponible,
-  DisponibiliteQuery,
-  DisponibiliteResponse,
-  PlanningPrestation
-} from '../models/prestation.model';
+import { PlanningPrestation } from '../models/prestation.model';
+import { AvailableSlot, DisponibiliteQuery, DisponibiliteResponse } from '../models/Slot';
 
 @Injectable({
   providedIn: 'root'
@@ -82,8 +78,8 @@ export class PlanningService {
     dateDebut: Date,
     capacite: number,
     dateFin: Date
-  ): CreneauDisponible[] {
-    const creneaux: CreneauDisponible[] = [];
+  ): AvailableSlot[] {
+    const creneaux: AvailableSlot[] = [];
     const dateCourante = new Date(dateDebut);
 
     while (dateCourante <= dateFin) {
@@ -156,8 +152,8 @@ export class PlanningService {
   /**
    * Génère des créneaux avec des variations de capacité (weekend vs semaine)
    */
-  private genererCreneauxAvecVariations(dateDebut: Date, dateFin: Date): CreneauDisponible[] {
-    const creneaux: CreneauDisponible[] = [];
+  private genererCreneauxAvecVariations(dateDebut: Date, dateFin: Date): AvailableSlot[] {
+    const creneaux: AvailableSlot[] = [];
     const dateCourante = new Date(dateDebut);
 
     while (dateCourante <= dateFin) {
@@ -181,48 +177,38 @@ export class PlanningService {
     return creneaux;
   }
 
-  /**
-   * Obtient le planning d'une prestation
-   */
   getPlanningParPrestation(prestationId: string): Observable<PlanningPrestation | null> {
     const planning = this.plannings().find((p) => p.prestationId === prestationId);
     return of(planning || null);
   }
 
-  /**
-   * Obtient tous les plannings
-   */
   getTousLesPlannings(): Observable<PlanningPrestation[]> {
     return of(this.plannings());
   }
 
-  /**
-   * Vérifie la disponibilité pour une période donnée
-   */
   verifierDisponibilite(query: DisponibiliteQuery): Observable<DisponibiliteResponse> {
     const planning = this.plannings().find((p) => p.prestationId === query.prestationId);
 
     if (!planning || !planning.estActif) {
       return of({
         prestationId: query.prestationId,
-        estDisponible: false,
-        creneauxDisponibles: [],
+        isAvailable: false,
+        availablesSlots: [],
         message: 'Aucun planning actif trouvé pour cette prestation'
       });
     }
 
-    const dateFin = query.dateFin || query.dateDebut;
-    const quantiteDemandee = query.quantite || 1;
-    const creneauxDisponibles: CreneauDisponible[] = [];
-    let estDisponible = true;
+    const dateFin = query.endDate || query.startDate;
+    const quantiteDemandee = query.quantity || 1;
+    const creneauxDisponibles: AvailableSlot[] = [];
+    let isAvailable = true;
 
-    // Vérifier chaque jour de la période
-    const dateCourante = new Date(query.dateDebut);
+    const dateCourante = new Date(query.startDate);
     while (dateCourante <= dateFin) {
       const creneau = planning.creneaux.find((c) => c.date.getTime() === dateCourante.getTime());
 
       if (!creneau || creneau.capaciteDisponible < quantiteDemandee) {
-        estDisponible = false;
+        isAvailable = false;
         if (creneau) {
           creneauxDisponibles.push(creneau);
         }
@@ -235,17 +221,14 @@ export class PlanningService {
 
     return of({
       prestationId: query.prestationId,
-      estDisponible,
-      creneauxDisponibles,
-      message: estDisponible
+      isAvailable: isAvailable,
+      availablesSlots: creneauxDisponibles,
+      message: isAvailable
         ? 'Créneaux disponibles pour la période demandée'
         : 'Capacité insuffisante pour certaines dates'
     });
   }
 
-  /**
-   * Réserve des créneaux pour une période
-   */
   reserverCreneaux(
     prestationId: string,
     dateDebut: Date,
@@ -262,7 +245,6 @@ export class PlanningService {
     const planning = plannings[planningIndex];
     const dateFinal = dateFin || dateDebut;
 
-    // Vérifier d'abord la disponibilité
     const dateCourante = new Date(dateDebut);
     while (dateCourante <= dateFinal) {
       const creneauIndex = planning.creneaux.findIndex(
@@ -276,7 +258,6 @@ export class PlanningService {
       dateCourante.setDate(dateCourante.getDate() + 1);
     }
 
-    // Effectuer la réservation
     dateCourante.setTime(dateDebut.getTime());
     while (dateCourante <= dateFinal) {
       const creneauIndex = planning.creneaux.findIndex(
@@ -292,15 +273,11 @@ export class PlanningService {
       dateCourante.setDate(dateCourante.getDate() + 1);
     }
 
-    // Mettre à jour le signal
     this.plannings.set([...plannings]);
 
     return of(true);
   }
 
-  /**
-   * Annule des réservations pour une période
-   */
   annulerReservations(
     prestationId: string,
     dateDebut: Date,
@@ -333,20 +310,16 @@ export class PlanningService {
       dateCourante.setDate(dateCourante.getDate() + 1);
     }
 
-    // Mettre à jour le signal
     this.plannings.set([...plannings]);
 
     return of(true);
   }
 
-  /**
-   * Obtient les créneaux disponibles pour un mois donné
-   */
   getCreneauxPourMois(
     prestationId: string,
     annee: number,
     mois: number
-  ): Observable<CreneauDisponible[]> {
+  ): Observable<AvailableSlot[]> {
     const planning = this.plannings().find((p) => p.prestationId === prestationId);
 
     if (!planning) {
@@ -360,35 +333,18 @@ export class PlanningService {
     return of(creneauxDuMois);
   }
 
-  /**
-   * Obtient les créneaux pour une date spécifique (debug)
-   */
-  getCreneauxForDate(date: Date): CreneauDisponible[] {
-    const allCreneaux: CreneauDisponible[] = [];
+  getCreneauxForDate(date: Date): AvailableSlot[] {
+    const allCreneaux: AvailableSlot[] = [];
 
-    // Collecter tous les créneaux de tous les plannings
     this.plannings().forEach((planning) => {
       if (planning.creneaux) {
         allCreneaux.push(...planning.creneaux);
       }
     });
 
-    // Filtrer par date
     return allCreneaux.filter((creneau) => {
       const creneauDate = new Date(creneau.date);
       return creneauDate.toDateString() === date.toDateString();
     });
-  }
-
-  /**
-   * Debug : Affiche les informations pour une date spécifique
-   */
-  debugDate(date: Date): void {
-    const creneaux = this.getCreneauxForDate(date);
-    console.log(`=== DEBUG DATE ${date.toDateString()} ===`);
-    console.log('Jour de la semaine:', date.getDay()); // 0=dimanche, 6=samedi
-    console.log('Créneaux trouvés:', creneaux.length);
-    console.log('Détails des créneaux:', creneaux);
-    console.log('Est jour férié:', this.estJourFerie(date));
   }
 }

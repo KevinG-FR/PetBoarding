@@ -20,23 +20,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { CreneauDisponible, Prestation } from '../../models/prestation.model';
-import { PlanningService } from '../../services/planning.service';
-
-export interface DateSelectionResult {
-  startDate: Date;
-  endDate?: Date;
-  isValid: boolean;
-  status: 'valid' | 'incomplete' | 'error';
-  selectedSlots: CreneauDisponible[];
-  numberOfDays: number;
-  totalPrice: number;
-  errors?: {
-    type: 'incomplete_period' | 'unavailable_dates';
-    message: string;
-    problematicDates?: Date[];
-  };
-}
+import { DateSelectionResult } from '../models/DateSelectionResult';
+import { Prestation } from '../models/prestation.model';
+import { AvailableSlot } from '../models/Slot';
+import { PlanningService } from '../services/planning.service';
 
 @Component({
   selector: 'app-date-selection',
@@ -73,8 +60,8 @@ export class DateSelectionComponent implements OnInit {
   startDate = signal<Date | null>(null);
   endDate = signal<Date | null>(null);
   isPeriodMode = signal(false);
-  availableSlots = signal<CreneauDisponible[]>([]);
-  allSlots = signal<CreneauDisponible[]>([]);
+  availableSlots = signal<AvailableSlot[]>([]);
+  allSlots = signal<AvailableSlot[]>([]);
   isLoading = signal(false);
 
   // Properties for ngModel (required for datepicker)
@@ -133,14 +120,14 @@ export class DateSelectionComponent implements OnInit {
     // Show continuous sequence of available dates after start date
     // until first full/unprogrammed date
     const allSlots = this.allSlots();
-    const continuousSlots: CreneauDisponible[] = [];
+    const continuousSlots: AvailableSlot[] = [];
 
     const currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
 
     // Iterate day by day until finding a "gap"
     while (true) {
-      const foundSlot = allSlots.find((slot: CreneauDisponible) => {
+      const foundSlot = allSlots.find((slot: AvailableSlot) => {
         const slotDate = new Date(slot.date);
         const targetDate = new Date(currentDate);
         return slotDate.toDateString() === targetDate.toDateString();
@@ -216,12 +203,12 @@ export class DateSelectionComponent implements OnInit {
 
       if (planning?.creneaux) {
         const allFutureSlots = planning.creneaux.filter(
-          (slot: CreneauDisponible) => slot.date >= this.minDate
+          (slot: AvailableSlot) => slot.date >= this.minDate
         );
         this.allSlots.set(allFutureSlots);
 
         const slotsWithAvailability = allFutureSlots.filter(
-          (slot: CreneauDisponible) => slot.capaciteDisponible > 0
+          (slot: AvailableSlot) => slot.capaciteDisponible > 0
         );
         this.availableSlots.set(slotsWithAvailability);
       }
@@ -232,15 +219,15 @@ export class DateSelectionComponent implements OnInit {
     }
   }
 
-  private getSlotsForPeriod(start: Date, end: Date | null): CreneauDisponible[] {
+  private getSlotsForPeriod(start: Date, end: Date | null): AvailableSlot[] {
     const allSlots = this.allSlots();
     const endDate = end || start;
 
-    const periodSlots: CreneauDisponible[] = [];
+    const periodSlots: AvailableSlot[] = [];
     const currentDate = new Date(start);
 
     while (currentDate <= endDate) {
-      const slot = allSlots.find((slot: CreneauDisponible) => {
+      const slot = allSlots.find((slot: AvailableSlot) => {
         const slotDate = new Date(slot.date);
         const targetDate = new Date(currentDate);
         return slotDate.toDateString() === targetDate.toDateString();
@@ -261,7 +248,7 @@ export class DateSelectionComponent implements OnInit {
     return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
   }
 
-  private checkValidity(slots: CreneauDisponible[]): boolean {
+  private checkValidity(slots: AvailableSlot[]): boolean {
     const start = this.startDate();
     const end = this.endDate();
 
@@ -276,14 +263,14 @@ export class DateSelectionComponent implements OnInit {
 
     return (
       slots.length === requiredDays &&
-      slots.every((slot: CreneauDisponible) => slot.capaciteDisponible > 0)
+      slots.every((slot: AvailableSlot) => slot.capaciteDisponible > 0)
     );
   }
 
   private analyzePeriodErrors(
     start: Date,
     end: Date | null,
-    _slots: CreneauDisponible[]
+    _slots: AvailableSlot[]
   ):
     | {
         type: 'incomplete_period' | 'unavailable_dates';
@@ -306,7 +293,7 @@ export class DateSelectionComponent implements OnInit {
 
     while (currentDate <= finalDate) {
       const allSlots = this.allSlots();
-      const slot = allSlots.find((slot: CreneauDisponible) => {
+      const slot = allSlots.find((slot: AvailableSlot) => {
         const slotDate = new Date(slot.date);
         const targetDate = new Date(currentDate);
         return slotDate.toDateString() === targetDate.toDateString();
@@ -395,7 +382,7 @@ export class DateSelectionComponent implements OnInit {
     if (date < this.minDate) return false;
 
     const allSlots = this.allSlots();
-    const slotWithAvailability = allSlots.find((slot: CreneauDisponible) => {
+    const slotWithAvailability = allSlots.find((slot: AvailableSlot) => {
       const slotDate = new Date(slot.date);
       const targetDate = new Date(date);
       return slotDate.toDateString() === targetDate.toDateString();
@@ -419,7 +406,7 @@ export class DateSelectionComponent implements OnInit {
     if (view !== 'month') return '';
 
     const allSlots = this.allSlots();
-    const slot = allSlots.find((slot: CreneauDisponible) => {
+    const slot = allSlots.find((slot: AvailableSlot) => {
       const slotDate = new Date(slot.date);
       const targetDate = new Date(cellDate);
       return slotDate.toDateString() === targetDate.toDateString();
@@ -441,7 +428,7 @@ export class DateSelectionComponent implements OnInit {
 
   isDateAvailable(date: Date): boolean {
     const allSlots = this.allSlots();
-    const slot = allSlots.find((slot: CreneauDisponible) => {
+    const slot = allSlots.find((slot: AvailableSlot) => {
       const slotDate = new Date(slot.date);
       const targetDate = new Date(date);
       return slotDate.toDateString() === targetDate.toDateString();
@@ -451,7 +438,7 @@ export class DateSelectionComponent implements OnInit {
 
   getAvailabilityInfo(date: Date): string {
     const allSlots = this.allSlots();
-    const slot = allSlots.find((slot: CreneauDisponible) => slot.date.getTime() === date.getTime());
+    const slot = allSlots.find((slot: AvailableSlot) => slot.date.getTime() === date.getTime());
 
     if (!slot) return 'Not scheduled';
 

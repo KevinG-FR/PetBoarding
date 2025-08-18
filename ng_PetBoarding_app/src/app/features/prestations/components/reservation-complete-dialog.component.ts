@@ -16,12 +16,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { PetFormComponent } from '../../pets/components/pet-form.component';
 import { Pet, PetType } from '../../pets/models/pet.model';
 import { PetService } from '../../pets/services/pet.service';
+import { DateSelectionResult } from '../models/DateSelectionResult';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
-import {
-  DateSelectionComponent,
-  DateSelectionResult
-} from './selection-dates/selection-dates.component';
+import { DateSelectionComponent } from './selection-dates.component';
 
 export interface ReservationCompleteResult {
   pet: Pet;

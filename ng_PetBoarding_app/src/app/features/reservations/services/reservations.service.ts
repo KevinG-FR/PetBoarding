@@ -353,12 +353,12 @@ export class ReservationsService {
       ? this.planningService
           .verifierDisponibilite({
             prestationId: request.prestationId,
-            dateDebut: request.dateDebut,
-            dateFin: request.dateFin || undefined
+            startDate: request.dateDebut,
+            endDate: request.dateFin || undefined
           })
           .pipe(
             switchMap((disponibilite) => {
-              if (!disponibilite.estDisponible) {
+              if (!disponibilite.isAvailable) {
                 return of(false);
               }
 

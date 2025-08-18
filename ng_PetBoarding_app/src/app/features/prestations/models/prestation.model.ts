@@ -1,4 +1,5 @@
 import { PetType } from '../../pets/models/pet.model';
+import { AvailableSlot } from './Slot';
 
 export interface Prestation {
   id: string;
@@ -22,28 +23,7 @@ export interface PlanningPrestation {
   nom: string;
   description?: string;
   estActif: boolean;
-  creneaux: CreneauDisponible[];
+  creneaux: AvailableSlot[];
   dateCreation: Date;
   dateModification?: Date;
-}
-
-export interface CreneauDisponible {
-  date: Date;
-  capaciteMax: number;
-  capaciteReservee: number;
-  capaciteDisponible: number;
-}
-
-export interface DisponibiliteQuery {
-  prestationId: string;
-  dateDebut: Date;
-  dateFin?: Date;
-  quantite?: number;
-}
-
-export interface DisponibiliteResponse {
-  prestationId: string;
-  estDisponible: boolean;
-  creneauxDisponibles: CreneauDisponible[];
-  message?: string;
 }
