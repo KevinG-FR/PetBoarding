@@ -28,5 +28,14 @@ namespace PetBoarding_Persistence.Repositories
 
             return user;
         }
+
+        public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken)
+        {
+            var user = await _dbSet
+                        .Where(x => x.Email == email)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+            return user;
+        }
     }
 }

@@ -2,8 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError, of, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+import { LoginRequestDto } from '../../../shared/contracts/auth/login-request.dto';
+import { LoginResponseDto, UserDto } from '../../../shared/contracts/auth/login-response.dto';
 import { RegisterRequestDto } from '../../../shared/contracts/auth/register-request.dto';
 import { RegisterResponseDto } from '../../../shared/contracts/auth/register-response.dto';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +19,15 @@ export class AuthService {
   // Signals pour l'état d'authentification
   private readonly _isAuthenticated = signal(false);
   private readonly _isLoading = signal(false);
+  private readonly _currentUser = signal<User | null>(null);
 
-  // API base URL (à configurer selon votre backend)
-  private readonly apiUrl = '/api/auth';
+  // API base URL (configuré selon votre backend)
+  private readonly apiUrl = `${environment.apiUrl}/api/users`;
 
   // Getters publics
   isAuthenticated = this._isAuthenticated.asReadonly();
   isLoading = this._isLoading.asReadonly();
+  currentUser = this._currentUser.asReadonly();
 
   constructor() {
     // Vérifier s'il y a un token stocké au démarrage
@@ -58,19 +64,37 @@ export class AuthService {
    * Connexion utilisateur
    */
   login(
-    _email: string,
-    _password: string
-  ): Observable<{ success: boolean; token?: string; message?: string }> {
+    email: string,
+    password: string,
+    rememberMe: boolean = false
+  ): Observable<LoginResponseDto> {
     this._isLoading.set(true);
 
-    // TODO: Implémenter la connexion avec l'API
-    // Simulation pour le développement
-    return of({ success: true, token: 'mock-jwt-token' }).pipe(
+    const loginData: LoginRequestDto = {
+      email,
+      password,
+      rememberMe
+    };
+
+    return this.http.post<LoginResponseDto>(`${this.apiUrl}/login`, loginData).pipe(
       tap((response) => {
-        if (response.success && response.token) {
+        if (response.success && response.token && response.user) {
+          // Stocker le token
           localStorage.setItem('auth_token', response.token);
+
+          // Convertir UserDto en User et stocker
+          const user: User = this.mapUserDtoToUser(response.user);
+          this._currentUser.set(user);
           this._isAuthenticated.set(true);
         }
+      }),
+      catchError((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Erreur lors de la connexion:', error);
+        return of({
+          success: false,
+          message: 'Une erreur est survenue lors de la connexion'
+        });
       }),
       tap(() => this._isLoading.set(false))
     );
@@ -82,6 +106,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('auth_token');
     this._isAuthenticated.set(false);
+    this._currentUser.set(null);
 
     this.router.navigate(['/home']);
   }
@@ -100,6 +125,7 @@ export class AuthService {
     const token = localStorage.getItem('auth_token');
     if (token) {
       this._isAuthenticated.set(true);
+      // TODO: Récupérer les données utilisateur depuis l'API avec le token
     }
   }
 
@@ -114,5 +140,21 @@ export class AuthService {
       this._isAuthenticated.set(true);
       localStorage.setItem('auth_token', 'mock-jwt-token');
     }
+  }
+
+  /**
+   * Mapper UserDto vers User
+   */
+  private mapUserDtoToUser(userDto: UserDto): User {
+    return {
+      id: userDto.id,
+      email: userDto.email,
+      firstName: userDto.firstName,
+      lastName: userDto.lastName,
+      phone: userDto.phoneNumber,
+      createdAt: new Date(userDto.createdAt),
+      updatedAt: new Date(userDto.updatedAt),
+      isActive: userDto.status === 'Confirmed'
+    };
   }
 }

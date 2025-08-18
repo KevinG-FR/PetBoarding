@@ -26,9 +26,14 @@ export class ProfileService {
     // Réagir aux changements d'authentification avec effect()
     effect(() => {
       const isAuthenticated = this.authService.isAuthenticated();
+      const currentUser = this.authService.currentUser();
 
-      if (isAuthenticated) {
-        // Utilisateur connecté → charger le profil
+      if (isAuthenticated && currentUser) {
+        // Utilisateur connecté → utiliser les données du AuthService
+        this._currentUser.set(currentUser);
+        this._isLoading.set(false);
+      } else if (isAuthenticated) {
+        // Utilisateur connecté mais pas de données user → charger depuis l'API
         const token = localStorage.getItem('auth_token');
         if (token && !this._currentUser()) {
           this.loadUserProfile();

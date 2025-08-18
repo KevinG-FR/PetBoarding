@@ -2,12 +2,13 @@
 
 using Microsoft.AspNetCore.Mvc;
 
+using PetBoarding_Api.Dto.Users;
 using PetBoarding_Api.Extensions;
 
 using PetBoarding_Application.Account.CreateAccount;
-using PetBoarding_Application.Account.GetAuthentification;
 using PetBoarding_Application.Users.GetAllUsers;
 using PetBoarding_Application.Users.GetUserById;
+using PetBoarding_Application.Users.GetUserByEmail;
 
 using PetBoarding_Domain.Accounts;
 using PetBoarding_Domain.Users;
@@ -24,7 +25,8 @@ namespace PetBoarding_Api.Endpoints
 
             group.MapGet("", GetAllUsers).RequireAuthorization();
             group.MapGet("{userId}", GetUser);
-            group.MapPost("/authentification", Authentification);
+            group.MapPost("/login", Authentification);
+            group.MapPost("/authentification", Authentification); // Garder l'ancien endpoint pour compatibilité
             group.MapPost("", CreateUser);
         }
 
@@ -55,12 +57,57 @@ namespace PetBoarding_Api.Endpoints
         }
 
         private static async Task<IResult> Authentification(
-            [FromBody] AuthenticationRequest authenticationRequest,
-            ISender sender)
+            [FromBody] LoginRequestDto loginRequest,
+            ISender sender,
+            IAccountService accountService)
         {
-            var authentificationResult = await sender.Send(new GetAuthentificationQuery(authenticationRequest.Email, authenticationRequest.PasswordHash));
+            // Utiliser la méthode Authenticate qui gère correctement la vérification du mot de passe
+            var authRequest = new AuthenticationRequest(loginRequest.Email, loginRequest.Password);
+            
+            var token = await accountService.Authenticate(authRequest, CancellationToken.None);
 
-            return authentificationResult.GetHttpResult();
+            if (!string.IsNullOrEmpty(token))
+            {
+                // Récupérer les détails de l'utilisateur
+                var userResult = await sender.Send(new GetUserByEmailQuery(loginRequest.Email));
+                
+                if (userResult.IsSuccess)
+                {
+                    var user = userResult.Value;
+                    var userDto = new UserDto
+                    {
+                        Id = user.Id.Value,
+                        Email = user.Email.Value,
+                        FirstName = user.Firstname.Value,
+                        LastName = user.Lastname.Value,
+                        PhoneNumber = user.PhoneNumber.Value,
+                        EmailConfirmed = user.EmailConfirmed,
+                        PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                        ProfileType = user.ProfileType.ToString(),
+                        Status = user.Status.ToString(),
+                        CreatedAt = DateTime.UtcNow, // TODO: Ajouter ces propriétés à l'entité User
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    var response = new LoginResponseDto
+                    {
+                        Success = true,
+                        Message = "Connexion réussie",
+                        Token = token,
+                        User = userDto
+                    };
+
+                    return Results.Ok(response);
+                }
+            }
+
+            var errorResponse = new LoginResponseDto
+            {
+                Success = false,
+                Message = "Email ou mot de passe incorrect"
+            };
+
+            return Results.Unauthorized();
         }
     }
 }

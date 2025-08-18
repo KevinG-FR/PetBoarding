@@ -10,7 +10,9 @@ using PetBoarding_Api.OptionsSetup;
 
 using PetBoarding_Application;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Account;
 
+using PetBoarding_Domain.Accounts;
 using PetBoarding_Domain.Users;
 
 using PetBoarding_Infrastructure;
@@ -42,8 +44,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddControllers();
+
+// Configuration CORS pour permettre les requêtes depuis Angular
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Port par défaut d'Angular
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -96,6 +111,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.ApplyMigrations();
+
+// Utiliser CORS
+app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
 
