@@ -1,10 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
-import { catchError, delay, map, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { User } from '../../auth/models/user.model';
 import { AuthService } from '../../auth/services/auth.service';
-import { UpdateProfileRequestDto, UpdateProfileResponseDto } from '../contracts/update-profile.dto';
+import { UpdateProfileResponseDto } from '../contracts/update-profile.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ import { UpdateProfileRequestDto, UpdateProfileResponseDto } from '../contracts/
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = `${environment.apiUrl}/api/profile`;
+  private readonly baseApiUrl = `${environment.apiUrl}/api/users`;
 
   // Signals pour l'état du profil utilisateur
   private readonly _currentUser = signal<User | null>(null);
@@ -59,22 +59,33 @@ export class ProfileService {
     // En mode développement, utiliser des données mock
     if (!environment.production) {
       this.getMockUserProfile();
+      return;
+    }
+
+    const currentUser = this._currentUser();
+    if (!currentUser) {
+      this._isLoading.set(false);
+      return;
     }
 
     // En production, utiliser l'API
-    this.http.get<UpdateProfileResponseDto>(this.apiUrl).pipe(
-      map((response) => this.mapToUser(response)),
-      tap((user) => {
-        this._currentUser.set(user);
-        this._isLoading.set(false);
-      }),
-      catchError((error) => {
-        this._isLoading.set(false);
-        // eslint-disable-next-line no-console
-        console.error('Erreur lors du chargement du profil:', error);
-        return throwError(() => new Error('Impossible de charger le profil utilisateur'));
-      })
-    );
+    const apiUrl = `${this.baseApiUrl}/${currentUser.id}`;
+    this.http
+      .get<UpdateProfileResponseDto>(apiUrl)
+      .pipe(
+        map((response) => this.mapToUser(response)),
+        tap((user) => {
+          this._currentUser.set(user);
+          this._isLoading.set(false);
+        }),
+        catchError((error) => {
+          this._isLoading.set(false);
+          // eslint-disable-next-line no-console
+          console.error('Erreur lors du chargement du profil:', error);
+          return throwError(() => new Error('Impossible de charger le profil utilisateur'));
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -112,6 +123,9 @@ export class ProfileService {
       throw new Error('Aucun utilisateur connecté');
     }
 
+    // Pour tester l'API, utilisons directement l'appel backend même en développement
+    // Commenté temporairement pour tester l'API
+    /*
     // En mode développement, simuler la mise à jour
     if (!environment.production) {
       const updatedUser = {
@@ -123,17 +137,20 @@ export class ProfileService {
       this._currentUser.set(updatedUser);
       return of(updatedUser).pipe(delay(500));
     }
+    */
 
-    // En production, utiliser l'API
-    const profileData: UpdateProfileRequestDto = {
-      firstName: updates.firstName || currentUser.firstName,
-      lastName: updates.lastName || currentUser.lastName,
-      email: updates.email || currentUser.email,
-      phone: updates.phone || currentUser.phone
+    // En production (et maintenant aussi en développement), utiliser l'API
+    const profileData = {
+      firstname: updates.firstName || currentUser.firstName,
+      lastname: updates.lastName || currentUser.lastName,
+      phoneNumber: updates.phone || currentUser.phone
     };
 
-    return this.http.put<UpdateProfileResponseDto>(this.apiUrl, profileData).pipe(
-      map((response) => this.mapToUser(response)),
+    const apiUrl = `${this.baseApiUrl}/${currentUser.id}/profile`;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.http.put<any>(apiUrl, profileData).pipe(
+      map((response) => this.mapBackendUserToUser(response)),
       tap((user) => {
         this._currentUser.set(user);
       }),
@@ -142,7 +159,24 @@ export class ProfileService {
   }
 
   /**
-   * Mapper la réponse API vers le modèle User
+   * Mapper la réponse API de notre backend .NET vers le modèle User
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapBackendUserToUser(user: any): User {
+    return {
+      id: user?.id?.value || user?.id || '',
+      firstName: user?.firstname?.value || user?.firstname || user?.firstName || '',
+      lastName: user?.lastname?.value || user?.lastname || user?.lastName || '',
+      email: user?.email?.value || user?.email || '',
+      phone: user?.phoneNumber?.value || user?.phoneNumber || user?.phone || '',
+      createdAt: new Date(user?.createdAt || Date.now()),
+      updatedAt: new Date(user?.updatedAt || Date.now()),
+      isActive: user?.status === 'Confirmed' || user?.status === 'Created'
+    };
+  }
+
+  /**
+   * Mapper la réponse API vers le modèle User (ancien format)
    */
   private mapToUser(response: UpdateProfileResponseDto): User {
     return {

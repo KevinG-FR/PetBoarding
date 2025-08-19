@@ -95,6 +95,20 @@ builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
+// Configuration des policies d'autorisation
+builder.Services.AddAuthorization(options =>
+{
+    // Ajouter une policy pour chaque permission
+    foreach (PetBoarding_Domain.Accounts.Permission permission in Enum.GetValues<PetBoarding_Domain.Accounts.Permission>())
+    {
+        options.AddPolicy(permission.ToString(), policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("permissions", permission.ToString());
+        });
+    }
+});
+
 builder.Services.AddApplication()
                 .AddInfrastructure();
 

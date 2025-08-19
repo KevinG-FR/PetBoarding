@@ -35,7 +35,7 @@ namespace PetBoarding_Domain.Users
 
         public override IEnumerable<object> GetAtomicValues()
         {
-            throw new NotImplementedException();
+            yield return Value;
         }
 
         private static bool CheckIfEmailFormatIsNotValid(string email)

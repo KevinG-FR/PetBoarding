@@ -9,6 +9,7 @@ using PetBoarding_Application.Account.CreateAccount;
 using PetBoarding_Application.Users.GetAllUsers;
 using PetBoarding_Application.Users.GetUserById;
 using PetBoarding_Application.Users.GetUserByEmail;
+using PetBoarding_Application.Users.UpdateUserProfile;
 
 using PetBoarding_Domain.Accounts;
 using PetBoarding_Domain.Users;
@@ -26,8 +27,8 @@ namespace PetBoarding_Api.Endpoints
             group.MapGet("", GetAllUsers).RequireAuthorization();
             group.MapGet("{userId}", GetUser);
             group.MapPost("/login", Authentification);
-            group.MapPost("/authentification", Authentification); // Garder l'ancien endpoint pour compatibilité
             group.MapPost("", CreateUser);
+            group.MapPut("{userId}/profile", UpdateUserProfile).RequireAuthorization();
         }
 
         [HasPermission(PetBoarding_Domain.Accounts.Permission.ReadMember)]
@@ -108,6 +109,22 @@ namespace PetBoarding_Api.Endpoints
             };
 
             return Results.Unauthorized();
+        }
+
+        private static async Task<IResult> UpdateUserProfile(
+            Guid userId,
+            [FromBody] UpdateUserProfileDto updateDto,
+            ISender sender)
+        {
+            var command = new UpdateUserProfileCommand(
+                new UserId(userId),
+                updateDto.Firstname,
+                updateDto.Lastname,
+                updateDto.PhoneNumber);
+
+            var result = await sender.Send(command);
+
+            return result.GetHttpResult();
         }
     }
 }

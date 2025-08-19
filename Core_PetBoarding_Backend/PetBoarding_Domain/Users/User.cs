@@ -81,5 +81,22 @@ namespace PetBoarding_Domain.Users
 
             return Result.Ok();
         }
+
+        public Result UpdateProfile(Firstname firstname, Lastname lastname, PhoneNumber phoneNumber)
+        {
+            // Validation des données
+            if (firstname == null || lastname == null || phoneNumber == null)
+                return Result.Fail("Les données du profil ne peuvent pas être nulles");
+
+            // Mise à jour des propriétés
+            Firstname = firstname;
+            Lastname = lastname;
+            PhoneNumber = phoneNumber;
+            
+            // Mise à jour du timestamp
+            UpdateTimestamp();
+
+            return Result.Ok();
+        }
     }
 }
