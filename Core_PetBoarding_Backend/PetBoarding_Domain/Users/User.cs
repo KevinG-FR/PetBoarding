@@ -5,7 +5,7 @@ using PetBoarding_Domain.Errors;
 
 namespace PetBoarding_Domain.Users
 {
-    public class User : Entity<UserId>
+    public class User : Entity<UserId>, IAuditableEntity
     {
         public User(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
             : base(new UserId(Guid.NewGuid()))
@@ -17,6 +17,8 @@ namespace PetBoarding_Domain.Users
             PasswordHash = passwordHash;
             ProfileType = profileType;
             Status = UserStatus.Created;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public Firstname Firstname { get; set; }
@@ -35,6 +37,14 @@ namespace PetBoarding_Domain.Users
 
         public UserProfileType ProfileType { get; }
         public UserStatus Status { get; private set; }
+
+        public DateTime CreatedAt { get; private set; }
+        public DateTime UpdatedAt { get; private set; }
+
+        public void UpdateTimestamp()
+        {
+            UpdatedAt = DateTime.UtcNow;
+        }
 
         public Result ChangeForConfirmedStatus()
         {

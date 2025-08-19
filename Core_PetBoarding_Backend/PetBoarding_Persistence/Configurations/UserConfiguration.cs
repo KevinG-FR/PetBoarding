@@ -34,6 +34,14 @@ namespace PetBoarding_Persistence.Configurations
             builder.Property(x => x.Status).HasConversion<int>();
 
             builder.Property(x => x.ProfileType).HasConversion<int>();
+
+            builder.Property(x => x.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(x => x.UpdatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("NOW()");
         }
     }
 }

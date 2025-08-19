@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 
+using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Users;
 
 namespace PetBoarding_Persistence
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Permission> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
@@ -23,6 +24,29 @@ namespace PetBoarding_Persistence
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
             modelBuilder.HasDefaultSchema("PetBoarding");
+        }
+
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var entries = ChangeTracker.Entries<IAuditableEntity>()
+                .Where(e => e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                entry.Entity.UpdateTimestamp();
+            }
         }
     }
 }
