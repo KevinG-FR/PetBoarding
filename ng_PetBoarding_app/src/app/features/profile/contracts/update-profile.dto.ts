@@ -1,3 +1,5 @@
+import { Address } from '../../auth/models/user.model';
+
 /**
  * DTO pour la mise à jour du profil utilisateur
  */
@@ -6,6 +8,7 @@ export interface UpdateProfileRequestDto {
   lastName: string;
   email: string;
   phone: string;
+  address?: Address;
 }
 
 /**
@@ -17,6 +20,7 @@ export interface UpdateProfileResponseDto {
   lastName: string;
   email: string;
   phone: string;
+  address?: Address;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;

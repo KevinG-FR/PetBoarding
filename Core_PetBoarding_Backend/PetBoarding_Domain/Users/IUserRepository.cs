@@ -6,7 +6,7 @@ namespace PetBoarding_Domain.Users
     {
         Task<bool> UserEmailAlreadyUsed(string email, CancellationToken cancellationToken);
 
-        Task<User?> GetUserWithForAuthentification(string email, string passwordHash, CancellationToken cancellationToken);
+        Task<User?> GetUserForAuthentification(string email, string passwordHash, CancellationToken cancellationToken);
 
         Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken);
     }

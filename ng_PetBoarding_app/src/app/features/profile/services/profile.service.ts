@@ -73,7 +73,7 @@ export class ProfileService {
     this.http
       .get<UpdateProfileResponseDto>(apiUrl)
       .pipe(
-        map((response) => this.mapToUser(response)),
+        map((response) => this.mapBackendUserToUser(response)),
         tap((user) => {
           this._currentUser.set(user);
           this._isLoading.set(false);
@@ -99,10 +99,12 @@ export class ProfileService {
       lastName: 'Doe',
       phone: '+33 6 12 34 56 78',
       address: {
-        street: '123 Rue de la Paix',
+        streetNumber: '123',
+        streetName: 'Rue de la Paix',
         city: 'Paris',
         postalCode: '75001',
-        country: 'France'
+        country: 'France',
+        complement: 'Appartement 4B'
       },
       dateOfBirth: new Date('1990-05-15'),
       createdAt: new Date('2023-01-15'),
@@ -143,7 +145,17 @@ export class ProfileService {
     const profileData = {
       firstname: updates.firstName || currentUser.firstName,
       lastname: updates.lastName || currentUser.lastName,
-      phoneNumber: updates.phone || currentUser.phone
+      phoneNumber: updates.phone || currentUser.phone,
+      address: updates.address
+        ? {
+            streetNumber: updates.address.streetNumber,
+            streetName: updates.address.streetName,
+            city: updates.address.city,
+            postalCode: updates.address.postalCode,
+            country: updates.address.country,
+            complement: updates.address.complement
+          }
+        : currentUser.address
     };
 
     const apiUrl = `${this.baseApiUrl}/${currentUser.id}/profile`;
@@ -169,6 +181,17 @@ export class ProfileService {
       lastName: user?.lastname?.value || user?.lastname || user?.lastName || '',
       email: user?.email?.value || user?.email || '',
       phone: user?.phoneNumber?.value || user?.phoneNumber || user?.phone || '',
+      address: user?.address
+        ? {
+            id: user.address.id,
+            streetNumber: user.address.streetNumber || '',
+            streetName: user.address.streetName || '',
+            city: user.address.city || '',
+            postalCode: user.address.postalCode || '',
+            country: user.address.country || '',
+            complement: user.address.complement
+          }
+        : undefined,
       createdAt: new Date(user?.createdAt || Date.now()),
       updatedAt: new Date(user?.updatedAt || Date.now()),
       isActive: user?.status === 'Confirmed' || user?.status === 'Created'

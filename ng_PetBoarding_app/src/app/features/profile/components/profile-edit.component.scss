@@ -104,6 +104,38 @@
     }
   }
 
+  .quarter-width {
+    flex: 0 0 25%;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .three-quarters-width {
+    flex: 0 0 calc(75% - 1rem);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .third-width {
+    flex: 0 0 calc(33.333% - 0.67rem);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .two-thirds-width {
+    flex: 0 0 calc(66.667% - 0.33rem);
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
   .full-width {
     width: 100%;
   }

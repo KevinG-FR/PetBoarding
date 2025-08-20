@@ -152,6 +152,17 @@ export class AuthService {
       firstName: userDto.firstName,
       lastName: userDto.lastName,
       phone: userDto.phoneNumber,
+      address: userDto.address
+        ? {
+            id: userDto.address.id,
+            streetNumber: userDto.address.streetNumber,
+            streetName: userDto.address.streetName,
+            city: userDto.address.city,
+            postalCode: userDto.address.postalCode,
+            country: userDto.address.country,
+            complement: userDto.address.complement
+          }
+        : undefined,
       createdAt: new Date(userDto.createdAt),
       updatedAt: new Date(userDto.updatedAt),
       isActive: userDto.status === 'Confirmed'

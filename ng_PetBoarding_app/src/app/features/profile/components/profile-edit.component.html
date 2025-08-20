@@ -84,6 +84,97 @@
             </mat-form-field>
           </div>
 
+          <!-- Section adresse -->
+          <div class="form-section" formGroupName="address">
+            <h3 class="section-title">
+              <mat-icon>home</mat-icon>
+              Adresse
+            </h3>
+
+            <!-- Numéro et rue -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="quarter-width">
+                <mat-label>Numéro *</mat-label>
+                <input
+                  matInput
+                  formControlName="streetNumber"
+                  placeholder="123"
+                  autocomplete="address-line1" />
+                <mat-icon matSuffix>tag</mat-icon>
+                @if (hasAddressError('streetNumber')) {
+                  <mat-error>{{ getAddressErrorMessage('streetNumber') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="three-quarters-width">
+                <mat-label>Rue *</mat-label>
+                <input
+                  matInput
+                  formControlName="streetName"
+                  placeholder="Rue de la Paix"
+                  autocomplete="address-line2" />
+                <mat-icon matSuffix>location_on</mat-icon>
+                @if (hasAddressError('streetName')) {
+                  <mat-error>{{ getAddressErrorMessage('streetName') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <!-- Complément d'adresse -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Complément d'adresse</mat-label>
+              <input
+                matInput
+                formControlName="complement"
+                placeholder="Appartement, étage, bâtiment..."
+                autocomplete="address-line3" />
+              <mat-icon matSuffix>apartment</mat-icon>
+            </mat-form-field>
+
+            <!-- Code postal et ville -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Code postal *</mat-label>
+                <input
+                  matInput
+                  formControlName="postalCode"
+                  placeholder="75001"
+                  autocomplete="postal-code" />
+                <mat-icon matSuffix>markunread_mailbox</mat-icon>
+                @if (hasAddressError('postalCode')) {
+                  <mat-error>{{ getAddressErrorMessage('postalCode') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="two-thirds-width">
+                <mat-label>Ville *</mat-label>
+                <input
+                  matInput
+                  formControlName="city"
+                  placeholder="Paris"
+                  autocomplete="address-level2" />
+                <mat-icon matSuffix>location_city</mat-icon>
+                @if (hasAddressError('city')) {
+                  <mat-error>{{ getAddressErrorMessage('city') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <!-- Pays -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pays *</mat-label>
+              <input
+                matInput
+                formControlName="country"
+                placeholder="France"
+                autocomplete="country-name" />
+              <mat-icon matSuffix>flag</mat-icon>
+              @if (hasAddressError('country')) {
+                <mat-error>{{ getAddressErrorMessage('country') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
           <!-- Indicateur de modifications -->
           @if (hasChanges()) {
             <div class="alert alert-info">

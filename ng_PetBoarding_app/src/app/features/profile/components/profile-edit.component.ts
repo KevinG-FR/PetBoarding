@@ -73,7 +73,16 @@ export class ProfileEditComponent implements OnInit {
         [Validators.required, Validators.minLength(2), Validators.maxLength(50)]
       ],
       email: [user?.email || '', [Validators.required, Validators.email]],
-      phone: [user?.phone || '', [Validators.required, Validators.pattern(/^[+]?[0-9\s\-()]+$/)]]
+      phone: [user?.phone || '', [Validators.required, Validators.pattern(/^[+]?[0-9\s\-()]+$/)]],
+      // Groupe pour l'adresse
+      address: this.fb.group({
+        streetNumber: [user?.address?.streetNumber || '', [Validators.required]],
+        streetName: [user?.address?.streetName || '', [Validators.required]],
+        city: [user?.address?.city || '', [Validators.required]],
+        postalCode: [user?.address?.postalCode || '', [Validators.required]],
+        country: [user?.address?.country || 'France', [Validators.required]],
+        complement: [user?.address?.complement || '']
+      })
     });
   }
 
@@ -98,7 +107,8 @@ export class ProfileEditComponent implements OnInit {
         firstName: formValue.firstName,
         lastName: formValue.lastName,
         email: formValue.email,
-        phone: formValue.phone
+        phone: formValue.phone,
+        address: formValue.address
       };
 
       this.updateProfile(profileData);
@@ -221,5 +231,26 @@ export class ProfileEditComponent implements OnInit {
   hasError(fieldName: string): boolean {
     const control = this.profileForm.get(fieldName);
     return !!(control?.invalid && control?.touched);
+  }
+
+  /**
+   * Vérifier si un champ d'adresse a une erreur
+   */
+  hasAddressError(fieldName: string): boolean {
+    const control = this.profileForm.get(`address.${fieldName}`);
+    return !!(control?.invalid && control?.touched);
+  }
+
+  /**
+   * Obtenir le message d'erreur pour un champ d'adresse
+   */
+  getAddressErrorMessage(fieldName: string): string {
+    const control = this.profileForm.get(`address.${fieldName}`);
+
+    if (control?.hasError('required')) {
+      return 'Ce champ est obligatoire';
+    }
+
+    return '';
   }
 }

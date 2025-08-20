@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Users;
 
 using PetBoarding_Persistence.Constants;
@@ -42,6 +43,17 @@ namespace PetBoarding_Persistence.Configurations
             builder.Property(x => x.UpdatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("NOW()");
+
+            // Configuration de la relation avec Address
+            builder.Property(x => x.AddressId)
+                .HasConversion(
+                    addressId => addressId != null ? addressId.Value : (Guid?)null,
+                    value => value.HasValue ? new AddressId(value.Value) : null);
+
+            builder.HasOne(x => x.Address)
+                .WithMany()  // Pas de collection inverse
+                .HasForeignKey(x => x.AddressId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

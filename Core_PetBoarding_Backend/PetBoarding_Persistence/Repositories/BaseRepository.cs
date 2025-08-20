@@ -19,7 +19,7 @@ namespace PetBoarding_Persistence.Repositories
             _dbSet = context.Set<TEntity>();
         }
 
-        public async Task<TEntity?> GetByIdAsync(TEntityIdentifier entityIdentifier, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity?> GetByIdAsync(TEntityIdentifier entityIdentifier, CancellationToken cancellationToken = default)
         {
             var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == entityIdentifier, cancellationToken);
 

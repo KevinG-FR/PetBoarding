@@ -75,6 +75,19 @@ namespace PetBoarding_Api.Endpoints
                 if (userResult.IsSuccess)
                 {
                     var user = userResult.Value;
+                    
+                    AddressDto? addressDto = null;
+                    if (user.Address is not null)
+                    {
+                        addressDto = new AddressDto(
+                            user.Address.StreetNumber,
+                            user.Address.StreetName,
+                            user.Address.City,
+                            user.Address.PostalCode,
+                            user.Address.Country,
+                            user.Address.Complement);
+                    }
+
                     var userDto = new UserDto
                     {
                         Id = user.Id.Value,
@@ -86,8 +99,9 @@ namespace PetBoarding_Api.Endpoints
                         PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                         ProfileType = user.ProfileType.ToString(),
                         Status = user.Status.ToString(),
-                        CreatedAt = DateTime.UtcNow, // TODO: Ajouter ces propriétés à l'entité User
-                        UpdatedAt = DateTime.UtcNow
+                        CreatedAt = user.CreatedAt,
+                        UpdatedAt = user.UpdatedAt,
+                        Address = addressDto
                     };
 
                     var response = new LoginResponseDto
@@ -116,11 +130,24 @@ namespace PetBoarding_Api.Endpoints
             [FromBody] UpdateUserProfileDto updateDto,
             ISender sender)
         {
+            AddressData? addressData = null;
+            if (updateDto.Address != null)
+            {
+                addressData = new AddressData(
+                    updateDto.Address.StreetNumber,
+                    updateDto.Address.StreetName,
+                    updateDto.Address.City,
+                    updateDto.Address.PostalCode,
+                    updateDto.Address.Country,
+                    updateDto.Address.Complement);
+            }
+
             var command = new UpdateUserProfileCommand(
                 new UserId(userId),
                 updateDto.Firstname,
                 updateDto.Lastname,
-                updateDto.PhoneNumber);
+                updateDto.PhoneNumber,
+                addressData);
 
             var result = await sender.Send(command);
 

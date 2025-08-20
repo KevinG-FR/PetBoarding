@@ -1,8 +1,11 @@
 export interface Address {
-  street: string;
+  id?: string;
+  streetNumber: string;
+  streetName: string;
   city: string;
   postalCode: string;
   country: string;
+  complement?: string;
 }
 
 export interface User {

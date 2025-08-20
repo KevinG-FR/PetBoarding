@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 
 using PetBoarding_Domain.Abstractions;
+using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Users;
 
 namespace PetBoarding_Persistence
 {
     public class ApplicationDbContext : DbContext
     {
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

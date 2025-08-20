@@ -1,6 +1,7 @@
 using FluentResults;
 
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Errors;
 using PetBoarding_Domain.Users;
 
@@ -17,7 +18,7 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
 
         public async Task<Result<User>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            // Récupérer l'utilisateur
+            // Récupérer l'utilisateur avec son adresse
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user is null)
                 return Result.Fail(UserErrors.NotFound(request.UserId.Value));
@@ -35,11 +36,66 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
             if (phoneNumberResult.IsFailed)
                 return Result.Fail(phoneNumberResult.Errors);
 
+            // Gérer l'adresse si fournie
+            Address? address = null;
+            if (request.Address != null)
+            {
+                // Valider et créer les value objects pour l'adresse
+                var streetNumberResult = StreetNumber.Create(request.Address.StreetNumber);
+                if (streetNumberResult.IsFailed)
+                    return Result.Fail(streetNumberResult.Errors);
+
+                var streetNameResult = StreetName.Create(request.Address.StreetName);
+                if (streetNameResult.IsFailed)
+                    return Result.Fail(streetNameResult.Errors);
+
+                var cityResult = City.Create(request.Address.City);
+                if (cityResult.IsFailed)
+                    return Result.Fail(cityResult.Errors);
+
+                var postalCodeResult = PostalCode.Create(request.Address.PostalCode);
+                if (postalCodeResult.IsFailed)
+                    return Result.Fail(postalCodeResult.Errors);
+
+                var countryResult = Country.Create(request.Address.Country);
+                if (countryResult.IsFailed)
+                    return Result.Fail(countryResult.Errors);
+
+                var complementResult = Complement.Create(request.Address.Complement);
+                if (complementResult.IsFailed)
+                    return Result.Fail(complementResult.Errors);
+
+                if (user.Address is not null)
+                {
+                    // Mise à jour de l'adresse existante
+                    user.Address.UpdateAddress(
+                        streetNumberResult.Value,
+                        streetNameResult.Value,
+                        cityResult.Value,
+                        postalCodeResult.Value,
+                        countryResult.Value,
+                        complementResult.Value);
+                    address = user.Address;
+                }
+                else
+                {
+                    // Création d'une nouvelle adresse
+                    address = new Address(
+                        streetNumberResult.Value,
+                        streetNameResult.Value,
+                        cityResult.Value,
+                        postalCodeResult.Value,
+                        countryResult.Value,
+                        complementResult.Value);
+                }
+            }
+
             // Mettre à jour le profil
             var updateResult = user.UpdateProfile(
                 firstnameResult.Value,
                 lastnameResult.Value,
-                phoneNumberResult.Value);
+                phoneNumberResult.Value,
+                address);
 
             if (updateResult.IsFailed)
                 return Result.Fail(updateResult.Errors);

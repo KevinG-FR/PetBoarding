@@ -2,6 +2,7 @@
 {
     internal static class TableNames
     {
+        public const string Addresses = "Addresses";
         public const string Permissions = "Permissions";
         public const string Roles = "Roles";
         public const string Users = "Users";

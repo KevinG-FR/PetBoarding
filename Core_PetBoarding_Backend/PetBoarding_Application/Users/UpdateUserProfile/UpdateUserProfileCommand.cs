@@ -1,6 +1,7 @@
 using FluentResults;
 
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Users;
 
 namespace PetBoarding_Application.Users.UpdateUserProfile
@@ -9,5 +10,14 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
         UserId UserId,
         string Firstname,
         string Lastname,
-        string PhoneNumber) : ICommand<User>;
+        string PhoneNumber,
+        AddressData? Address = null) : ICommand<User>;
+
+    public record AddressData(
+        string StreetNumber,
+        string StreetName,
+        string City,
+        string PostalCode,
+        string Country,
+        string? Complement = null);
 }

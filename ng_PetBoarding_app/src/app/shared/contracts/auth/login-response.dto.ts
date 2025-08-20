@@ -5,6 +5,16 @@ export interface LoginResponseDto {
   user?: UserDto;
 }
 
+export interface AddressDto {
+  id?: string;
+  streetNumber: string;
+  streetName: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  complement?: string;
+}
+
 export interface UserDto {
   id: string;
   email: string;
@@ -15,6 +25,7 @@ export interface UserDto {
   phoneNumberConfirmed: boolean;
   profileType: string;
   status: string;
+  address?: AddressDto;
   createdAt: string;
   updatedAt: string;
 }

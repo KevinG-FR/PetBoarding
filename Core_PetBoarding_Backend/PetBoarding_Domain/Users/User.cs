@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 
 using PetBoarding_Domain.Abstractions;
+using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Errors;
 
 namespace PetBoarding_Domain.Users
@@ -34,6 +35,10 @@ namespace PetBoarding_Domain.Users
         public PhoneNumber PhoneNumber { get; set; }
 
         public bool PhoneNumberConfirmed { get; set; }
+
+        public AddressId? AddressId { get; set; }
+
+        public Address? Address { get; set; }
 
         public UserProfileType ProfileType { get; }
         public UserStatus Status { get; private set; }
@@ -82,7 +87,7 @@ namespace PetBoarding_Domain.Users
             return Result.Ok();
         }
 
-        public Result UpdateProfile(Firstname firstname, Lastname lastname, PhoneNumber phoneNumber)
+        public Result UpdateProfile(Firstname firstname, Lastname lastname, PhoneNumber phoneNumber, Address? address = null)
         {
             // Validation des données
             if (firstname == null || lastname == null || phoneNumber == null)
@@ -92,6 +97,13 @@ namespace PetBoarding_Domain.Users
             Firstname = firstname;
             Lastname = lastname;
             PhoneNumber = phoneNumber;
+            
+            // Mise à jour de l'adresse si fournie
+            if (address is not null)
+            {
+                Address = address;
+                AddressId = address.Id;
+            }
             
             // Mise à jour du timestamp
             UpdateTimestamp();
