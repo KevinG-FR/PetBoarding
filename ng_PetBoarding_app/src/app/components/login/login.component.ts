@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../features/auth/services/auth.service';
+import { LoginResponseDto } from '../../shared/contracts/auth/login-response.dto';
 
 @Component({
   selector: 'app-login',
@@ -49,20 +50,19 @@ export class LoginComponent {
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.loginForm.valid) {
       const { email, password, rememberMe } = this.loginForm.value;
       this.isLoading.set(true);
 
       this.authService.login(email, password, rememberMe).subscribe({
-        next: (response) => {
+        next: (response: LoginResponseDto) => {
           this.isLoading.set(false);
           if (response.success) {
             this.snackBar.open('Connexion réussie ! Bienvenue !', 'Fermer', {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
-            // Rediriger vers le profil ou la page d'accueil
             this.router.navigate(['/profile']);
           } else {
             this.snackBar.open(response.message || 'Erreur de connexion', 'Fermer', {
@@ -71,10 +71,8 @@ export class LoginComponent {
             });
           }
         },
-        error: (error) => {
+        error: (_error: unknown) => {
           this.isLoading.set(false);
-          // eslint-disable-next-line no-console
-          console.error('Erreur de connexion:', error);
           this.snackBar.open('Une erreur est survenue lors de la connexion', 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -86,14 +84,14 @@ export class LoginComponent {
     }
   }
 
-  private markFormGroupTouched() {
-    Object.keys(this.loginForm.controls).forEach((field) => {
+  private markFormGroupTouched(): void {
+    Object.keys(this.loginForm.controls).forEach((field: string) => {
       const control = this.loginForm.get(field);
       control?.markAsTouched({ onlySelf: true });
     });
   }
 
-  getEmailErrorMessage() {
+  getEmailErrorMessage(): string {
     const emailControl = this.loginForm.get('email');
     if (emailControl?.hasError('required')) {
       return "L'email est requis";
@@ -104,7 +102,7 @@ export class LoginComponent {
     return '';
   }
 
-  getPasswordErrorMessage() {
+  getPasswordErrorMessage(): string {
     const passwordControl = this.loginForm.get('password');
     if (passwordControl?.hasError('required')) {
       return 'Le mot de passe est requis';
@@ -115,7 +113,7 @@ export class LoginComponent {
     return '';
   }
 
-  togglePasswordVisibility() {
-    this.hidePassword.update((value) => !value);
+  togglePasswordVisibility(): void {
+    this.hidePassword.update((value: boolean) => !value);
   }
 }

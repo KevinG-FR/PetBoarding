@@ -18,6 +18,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 
 import { RegisterRequestDto } from '../../../shared/contracts/auth/register-request.dto';
+import { RegisterResponseDto } from '../../../shared/contracts/auth/register-response.dto';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -57,9 +58,6 @@ export class RegisterComponent {
     this.registerForm = this.createForm();
   }
 
-  /**
-   * Création du formulaire avec validations
-   */
   private createForm(): FormGroup {
     return this.fb.group(
       {
@@ -81,10 +79,7 @@ export class RegisterComponent {
     );
   }
 
-  /**
-   * Validateur personnalisé pour la force du mot de passe
-   */
-  private passwordStrengthValidator(control: AbstractControl) {
+  private passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const password = control.value;
     if (!password) return null;
 
@@ -94,7 +89,7 @@ export class RegisterComponent {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
     const validConditions = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecialChar].filter(
-      (condition) => condition
+      (condition: boolean) => condition
     ).length;
 
     if (validConditions < 3) {
@@ -104,10 +99,7 @@ export class RegisterComponent {
     return null;
   }
 
-  /**
-   * Validateur pour vérifier que les mots de passe correspondent
-   */
-  private passwordMatchValidator(group: AbstractControl) {
+  private passwordMatchValidator(group: AbstractControl): { [key: string]: boolean } | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
 
@@ -118,23 +110,14 @@ export class RegisterComponent {
     return null;
   }
 
-  /**
-   * Basculer la visibilité du mot de passe
-   */
   togglePasswordVisibility(): void {
-    this.hidePassword.update((value) => !value);
+    this.hidePassword.update((value: boolean) => !value);
   }
 
-  /**
-   * Basculer la visibilité de la confirmation du mot de passe
-   */
   toggleConfirmPasswordVisibility(): void {
-    this.hideConfirmPassword.update((value) => !value);
+    this.hideConfirmPassword.update((value: boolean) => !value);
   }
 
-  /**
-   * Obtenir les messages d'erreur pour un champ
-   */
   getErrorMessage(fieldName: string): string {
     const field = this.registerForm.get(fieldName);
     if (!field || !field.errors) return '';
@@ -183,9 +166,6 @@ export class RegisterComponent {
     return '';
   }
 
-  /**
-   * Vérifier si le formulaire a l'erreur de correspondance des mots de passe
-   */
   hasPasswordMismatchError(): boolean {
     return (
       this.registerForm.hasError('passwordMismatch') &&
@@ -193,9 +173,6 @@ export class RegisterComponent {
     );
   }
 
-  /**
-   * Soumission du formulaire
-   */
   onSubmit(): void {
     if (this.registerForm.valid && !this.isSubmitting()) {
       this.isSubmitting.set(true);
@@ -213,14 +190,13 @@ export class RegisterComponent {
       };
 
       this.authService.register(registerData).subscribe({
-        next: (response) => {
+        next: (response: RegisterResponseDto) => {
           if (response.success) {
             this.snackBar.open('Inscription réussie ! Bienvenue chez PetBoarding !', 'Fermer', {
               duration: 5000,
               panelClass: ['success-snackbar']
             });
 
-            // Rediriger vers l'accueil ou le profil
             this.router.navigate(['/home']);
           } else {
             this.snackBar.open(response.message || "Erreur lors de l'inscription", 'Fermer', {
@@ -229,9 +205,7 @@ export class RegisterComponent {
             });
           }
         },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Erreur inscription:', error);
+        error: (_error: unknown) => {
           this.snackBar.open('Une erreur est survenue. Veuillez réessayer.', 'Fermer', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -242,16 +216,12 @@ export class RegisterComponent {
         }
       });
     } else {
-      // Marquer tous les champs comme touchés pour afficher les erreurs
-      Object.keys(this.registerForm.controls).forEach((key) => {
+      Object.keys(this.registerForm.controls).forEach((key: string) => {
         this.registerForm.get(key)?.markAsTouched();
       });
     }
   }
 
-  /**
-   * Naviguer vers la page de connexion
-   */
   goToLogin(): void {
     this.router.navigate(['/login']);
   }

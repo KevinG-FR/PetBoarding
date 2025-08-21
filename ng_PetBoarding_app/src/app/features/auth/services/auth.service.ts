@@ -30,27 +30,20 @@ export class AuthService {
   currentUser = this._currentUser.asReadonly();
 
   constructor() {
-    // Vérifier s'il y a un token stocké au démarrage
     this.checkStoredAuth();
   }
 
-  /**
-   * Inscription d'un nouvel utilisateur
-   */
   register(registerData: RegisterRequestDto): Observable<RegisterResponseDto> {
     this._isLoading.set(true);
 
     return this.http.post<RegisterResponseDto>(`${this.apiUrl}/register`, registerData).pipe(
-      tap((response) => {
+      tap((response: RegisterResponseDto) => {
         if (response.success && response.token) {
-          // Stocker le token
           localStorage.setItem('auth_token', response.token);
           this._isAuthenticated.set(true);
         }
       }),
-      catchError((error) => {
-        // eslint-disable-next-line no-console
-        console.error("Erreur lors de l'inscription:", error);
+      catchError((_error: unknown) => {
         return of({
           success: false,
           message: "Une erreur est survenue lors de l'inscription"
@@ -60,9 +53,6 @@ export class AuthService {
     );
   }
 
-  /**
-   * Connexion utilisateur
-   */
   login(
     email: string,
     password: string,
@@ -77,20 +67,16 @@ export class AuthService {
     };
 
     return this.http.post<LoginResponseDto>(`${this.apiUrl}/login`, loginData).pipe(
-      tap((response) => {
+      tap((response: LoginResponseDto) => {
         if (response.success && response.token && response.user) {
-          // Stocker le token
           localStorage.setItem('auth_token', response.token);
 
-          // Convertir UserDto en User et stocker
           const user: User = this.mapUserDtoToUser(response.user);
           this._currentUser.set(user);
           this._isAuthenticated.set(true);
         }
       }),
-      catchError((error) => {
-        // eslint-disable-next-line no-console
-        console.error('Erreur lors de la connexion:', error);
+      catchError((_error: unknown) => {
         return of({
           success: false,
           message: 'Une erreur est survenue lors de la connexion'
@@ -100,9 +86,6 @@ export class AuthService {
     );
   }
 
-  /**
-   * Déconnexion utilisateur
-   */
   logout(): void {
     localStorage.removeItem('auth_token');
     this._isAuthenticated.set(false);
@@ -111,27 +94,17 @@ export class AuthService {
     this.router.navigate(['/home']);
   }
 
-  /**
-   * Obtenir le token d'authentification
-   */
   getToken(): string | null {
     return localStorage.getItem('auth_token');
   }
 
-  /**
-   * Vérifier l'authentification stockée
-   */
   private checkStoredAuth(): void {
     const token = localStorage.getItem('auth_token');
     if (token) {
       this._isAuthenticated.set(true);
-      // TODO: Récupérer les données utilisateur depuis l'API avec le token
     }
   }
 
-  /**
-   * Simulation pour basculer l'état d'authentification (développement)
-   */
   toggleAuthForTesting(): void {
     const isAuth = this._isAuthenticated();
     if (isAuth) {
@@ -142,9 +115,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Mapper UserDto vers User
-   */
   private mapUserDtoToUser(userDto: UserDto): User {
     return {
       id: userDto.id,
