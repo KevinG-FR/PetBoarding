@@ -24,7 +24,7 @@ import { BasketService } from '../services/basket.service';
   styleUrls: ['./basket-mini.component.scss']
 })
 export class BasketMiniComponent {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   basketService = inject(BasketService);
 
   goToBasket(): void {

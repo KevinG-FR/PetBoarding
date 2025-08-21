@@ -9,15 +9,20 @@ import { BasketItem, BasketSummary } from '../models/basket-item.model';
 export class BasketService {
   private _items = signal<BasketItem[]>([]);
 
-  // Signals publics en lecture seule
   readonly items = this._items.asReadonly();
 
   readonly summary = computed<BasketSummary>(() => {
     const items = this._items();
     return {
-      totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
-      totalPrice: items.reduce((sum, item) => sum + item.prestation.prix * item.quantity, 0),
-      totalDuration: items.reduce((sum, item) => sum + item.prestation.duree * item.quantity, 0)
+      totalItems: items.reduce((sum: number, item: BasketItem) => sum + item.quantity, 0),
+      totalPrice: items.reduce(
+        (sum: number, item: BasketItem) => sum + item.prestation.prix * item.quantity,
+        0
+      ),
+      totalDuration: items.reduce(
+        (sum: number, item: BasketItem) => sum + item.prestation.duree * item.quantity,
+        0
+      )
     };
   });
 
@@ -34,7 +39,7 @@ export class BasketService {
   ): void {
     const currentItems = this._items();
     const existingItemIndex = currentItems.findIndex(
-      (item) => item.prestation.id === prestation.id
+      (item: BasketItem) => item.prestation.id === prestation.id
     );
 
     const nombreJours =
@@ -43,7 +48,6 @@ export class BasketService {
         : undefined;
 
     if (existingItemIndex >= 0) {
-      // Mise à jour de la quantité si l'item existe déjà
       const updatedItems = [...currentItems];
       updatedItems[existingItemIndex] = {
         ...updatedItems[existingItemIndex],
@@ -53,11 +57,9 @@ export class BasketService {
         dateFin: dateFin || updatedItems[existingItemIndex].dateFin,
         nombreJours: nombreJours || updatedItems[existingItemIndex].nombreJours,
         notes: notes || updatedItems[existingItemIndex].notes
-        // ne remplace pas le pet existant si déjà présent
       };
       this._items.set(updatedItems);
     } else {
-      // Ajout d'un nouvel item
       const newItem: BasketItem = {
         id: this.generateId(),
         prestation,
@@ -75,7 +77,7 @@ export class BasketService {
 
   removeItem(itemId: string): void {
     const currentItems = this._items();
-    this._items.set(currentItems.filter((item) => item.id !== itemId));
+    this._items.set(currentItems.filter((item: BasketItem) => item.id !== itemId));
   }
 
   updateQuantity(itemId: string, quantity: number): void {
@@ -85,7 +87,7 @@ export class BasketService {
     }
 
     const currentItems = this._items();
-    const itemIndex = currentItems.findIndex((item) => item.id === itemId);
+    const itemIndex = currentItems.findIndex((item: BasketItem) => item.id === itemId);
 
     if (itemIndex >= 0) {
       const updatedItems = [...currentItems];
@@ -99,7 +101,7 @@ export class BasketService {
 
   updateItem(itemId: string, updates: Partial<Omit<BasketItem, 'id' | 'prestation'>>): void {
     const currentItems = this._items();
-    const itemIndex = currentItems.findIndex((item) => item.id === itemId);
+    const itemIndex = currentItems.findIndex((item: BasketItem) => item.id === itemId);
 
     if (itemIndex >= 0) {
       const updatedItems = [...currentItems];
@@ -116,7 +118,7 @@ export class BasketService {
   }
 
   getItem(itemId: string): BasketItem | undefined {
-    return this._items().find((item) => item.id === itemId);
+    return this._items().find((item: BasketItem) => item.id === itemId);
   }
 
   private generateId(): string {

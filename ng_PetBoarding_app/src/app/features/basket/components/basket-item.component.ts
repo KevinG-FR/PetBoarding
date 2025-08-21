@@ -31,9 +31,8 @@ export class BasketItemComponent {
   remove = output<string>();
   prestationClick = output<string>();
 
-  private prestationsService = inject(PrestationsService);
+  private readonly prestationsService = inject(PrestationsService);
 
-  // Computed signal pour optimiser les performances
   petCategoryInfo = computed(() => {
     const pet = this.item().pet;
     return pet ? this.prestationsService.getCategoryInfo(pet.type) : null;

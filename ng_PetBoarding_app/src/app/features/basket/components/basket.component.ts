@@ -27,8 +27,8 @@ import { BasketItemComponent } from './basket-item.component';
   styleUrls: ['./basket.component.scss']
 })
 export class BasketComponent {
-  private router = inject(Router);
-  private snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   basketService = inject(BasketService);
 
@@ -56,7 +56,6 @@ export class BasketComponent {
   }
 
   onProceedToCheckout(): void {
-    // TODO: Implémenter la logique de checkout
     this.snackBar.open('Fonctionnalité en cours de développement', 'Fermer', {
       duration: 3000
     });
