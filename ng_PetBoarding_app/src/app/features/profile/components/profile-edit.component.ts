@@ -57,9 +57,6 @@ export class ProfileEditComponent implements OnInit {
     this.setupFormChangeDetection();
   }
 
-  /**
-   * Initialiser le formulaire avec les données de l'utilisateur
-   */
   private initializeForm(): void {
     const user = this.currentUser();
 
@@ -74,7 +71,6 @@ export class ProfileEditComponent implements OnInit {
       ],
       email: [user?.email || '', [Validators.required, Validators.email]],
       phone: [user?.phone || '', [Validators.required, Validators.pattern(/^[+]?[0-9\s\-()]+$/)]],
-      // Groupe pour l'adresse
       address: this.fb.group({
         streetNumber: [user?.address?.streetNumber || '', [Validators.required]],
         streetName: [user?.address?.streetName || '', [Validators.required]],
@@ -86,18 +82,12 @@ export class ProfileEditComponent implements OnInit {
     });
   }
 
-  /**
-   * Configurer la détection des changements dans le formulaire
-   */
   private setupFormChangeDetection(): void {
     this.profileForm.valueChanges.subscribe(() => {
       this._hasChanges.set(this.profileForm.dirty);
     });
   }
 
-  /**
-   * Soumettre le formulaire
-   */
   onSubmit(): void {
     if (this.profileForm.valid && !this._isSubmitting()) {
       this._isSubmitting.set(true);
@@ -117,9 +107,6 @@ export class ProfileEditComponent implements OnInit {
     }
   }
 
-  /**
-   * Mettre à jour le profil via l'API
-   */
   private updateProfile(profileData: UpdateProfileRequestDto): void {
     this.profileService.updateUserProfile(profileData).subscribe({
       next: (_updatedUser: User) => {
@@ -134,7 +121,6 @@ export class ProfileEditComponent implements OnInit {
         this._hasChanges.set(false);
         this._isSubmitting.set(false);
 
-        // Rediriger vers le profil après la mise à jour
         this.router.navigate(['/profile']);
       },
       error: (error: Error) => {
@@ -149,9 +135,6 @@ export class ProfileEditComponent implements OnInit {
     });
   }
 
-  /**
-   * Annuler les modifications
-   */
   onCancel(): void {
     if (this._hasChanges()) {
       const confirmCancel = confirm(
@@ -165,9 +148,6 @@ export class ProfileEditComponent implements OnInit {
     }
   }
 
-  /**
-   * Ouvrir le dialogue de changement de mot de passe
-   */
   openChangePasswordDialog(): void {
     const dialogRef = this.dialog.open(ChangePasswordDialogComponent, {
       width: '500px',
@@ -175,26 +155,19 @@ export class ProfileEditComponent implements OnInit {
       autoFocus: true
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         // Le mot de passe a été changé avec succès
-        // Aucune action supplémentaire nécessaire car le snackbar est déjà affiché
       }
     });
   }
 
-  /**
-   * Marquer tous les champs du formulaire comme touchés
-   */
   private markFormGroupTouched(): void {
-    Object.keys(this.profileForm.controls).forEach((key) => {
+    Object.keys(this.profileForm.controls).forEach((key: string) => {
       this.profileForm.get(key)?.markAsTouched();
     });
   }
 
-  /**
-   * Obtenir le message d'erreur pour un champ
-   */
   getErrorMessage(fieldName: string): string {
     const control = this.profileForm.get(fieldName);
 
@@ -225,25 +198,16 @@ export class ProfileEditComponent implements OnInit {
     return '';
   }
 
-  /**
-   * Vérifier si un champ a une erreur
-   */
   hasError(fieldName: string): boolean {
     const control = this.profileForm.get(fieldName);
     return !!(control?.invalid && control?.touched);
   }
 
-  /**
-   * Vérifier si un champ d'adresse a une erreur
-   */
   hasAddressError(fieldName: string): boolean {
     const control = this.profileForm.get(`address.${fieldName}`);
     return !!(control?.invalid && control?.touched);
   }
 
-  /**
-   * Obtenir le message d'erreur pour un champ d'adresse
-   */
   getAddressErrorMessage(fieldName: string): string {
     const control = this.profileForm.get(`address.${fieldName}`);
 

@@ -63,9 +63,6 @@ export class ChangePasswordDialogComponent {
     this.passwordForm = this.createForm();
   }
 
-  /**
-   * Créer le formulaire
-   */
   private createForm(): FormGroup {
     return this.fb.group(
       {
@@ -80,10 +77,7 @@ export class ChangePasswordDialogComponent {
     );
   }
 
-  /**
-   * Validateur de force du mot de passe
-   */
-  private passwordStrengthValidator(control: AbstractControl) {
+  private passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const value = control.value;
     if (!value) return null;
 
@@ -97,98 +91,63 @@ export class ChangePasswordDialogComponent {
     return passwordValid ? null : { passwordStrength: true };
   }
 
-  /**
-   * Validateur de correspondance des mots de passe
-   */
-  private passwordMatchValidator(group: FormGroup) {
+  private passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
     const newPassword = group.get('newPassword')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
 
     return newPassword === confirmPassword ? null : { passwordMismatch: true };
   }
 
-  /**
-   * Basculer la visibilité du mot de passe actuel
-   */
   toggleCurrentPasswordVisibility(): void {
     this._hideCurrentPassword.set(!this._hideCurrentPassword());
   }
 
-  /**
-   * Basculer la visibilité du nouveau mot de passe
-   */
   toggleNewPasswordVisibility(): void {
     this._hideNewPassword.set(!this._hideNewPassword());
   }
 
-  /**
-   * Basculer la visibilité de la confirmation du mot de passe
-   */
   toggleConfirmPasswordVisibility(): void {
     this._hideConfirmPassword.set(!this._hideConfirmPassword());
   }
 
-  /**
-   * Vérifier si le nouveau mot de passe a la longueur minimale
-   */
   hasMinLength(): boolean {
     const newPassword = this.passwordForm.get('newPassword')?.value || '';
     return newPassword.length >= 8;
   }
 
-  /**
-   * Vérifier si le nouveau mot de passe a une majuscule
-   */
   hasUppercase(): boolean {
     const newPassword = this.passwordForm.get('newPassword')?.value || '';
     return /[A-Z]/.test(newPassword);
   }
 
-  /**
-   * Vérifier si le nouveau mot de passe a une minuscule
-   */
   hasLowercase(): boolean {
     const newPassword = this.passwordForm.get('newPassword')?.value || '';
     return /[a-z]/.test(newPassword);
   }
 
-  /**
-   * Vérifier si le nouveau mot de passe a un chiffre
-   */
   hasNumber(): boolean {
     const newPassword = this.passwordForm.get('newPassword')?.value || '';
     return /\d/.test(newPassword);
   }
 
-  /**
-   * Vérifier si le nouveau mot de passe a un caractère spécial
-   */
   hasSpecialChar(): boolean {
     const newPassword = this.passwordForm.get('newPassword')?.value || '';
     return /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(newPassword);
   }
 
-  /**
-   * Soumettre le formulaire
-   */
   onSubmit(): void {
     if (this.passwordForm.valid && !this._isSubmitting()) {
       this._isSubmitting.set(true);
 
       const formValue = this.passwordForm.value;
 
-      // TODO: Appeler le service pour changer le mot de passe
       this.changePassword(formValue);
     } else {
       this.markFormGroupTouched();
     }
   }
 
-  /**
-   * Simuler le changement de mot de passe
-   */
   private changePassword(_passwordData: ChangePasswordData): void {
-    // Simulation d'un appel API
     setTimeout(() => {
       try {
         this.snackBar.open('Mot de passe modifié avec succès !', 'Fermer', {
@@ -211,25 +170,16 @@ export class ChangePasswordDialogComponent {
     }, 1500);
   }
 
-  /**
-   * Annuler
-   */
   onCancel(): void {
     this.dialogRef.close(false);
   }
 
-  /**
-   * Marquer tous les champs comme touchés
-   */
   private markFormGroupTouched(): void {
-    Object.keys(this.passwordForm.controls).forEach((key) => {
+    Object.keys(this.passwordForm.controls).forEach((key: string) => {
       this.passwordForm.get(key)?.markAsTouched();
     });
   }
 
-  /**
-   * Obtenir le message d'erreur pour un champ
-   */
   getErrorMessage(fieldName: string): string {
     const control = this.passwordForm.get(fieldName);
 
@@ -252,9 +202,6 @@ export class ChangePasswordDialogComponent {
     return '';
   }
 
-  /**
-   * Vérifier si un champ a une erreur
-   */
   hasError(fieldName: string): boolean {
     const control = this.passwordForm.get(fieldName);
     const formErrors =

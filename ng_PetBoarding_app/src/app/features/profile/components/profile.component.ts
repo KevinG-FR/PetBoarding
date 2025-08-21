@@ -53,6 +53,7 @@ export class ProfileComponent implements OnInit {
   private loadUserPets(): void {
     this.petService.loadUserPets();
   }
+
   editProfile(): void {
     this.router.navigate(['/profile/edit']);
   }

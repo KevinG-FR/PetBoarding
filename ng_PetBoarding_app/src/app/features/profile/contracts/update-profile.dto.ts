@@ -1,8 +1,5 @@
 import { Address } from '../../auth/models/user.model';
 
-/**
- * DTO pour la mise à jour du profil utilisateur
- */
 export interface UpdateProfileRequestDto {
   firstName: string;
   lastName: string;
@@ -11,9 +8,6 @@ export interface UpdateProfileRequestDto {
   address?: Address;
 }
 
-/**
- * DTO pour la réponse de mise à jour du profil
- */
 export interface UpdateProfileResponseDto {
   id: string;
   firstName: string;

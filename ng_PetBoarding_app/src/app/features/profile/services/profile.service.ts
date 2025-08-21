@@ -50,17 +50,8 @@ export class ProfileService {
     this._isLoading.set(false);
   }
 
-  /**
-   * Charger le profil de l'utilisateur connecté
-   */
   loadUserProfile(): void {
     this._isLoading.set(true);
-
-    // En mode développement, utiliser des données mock
-    if (!environment.production) {
-      this.getMockUserProfile();
-      return;
-    }
 
     const currentUser = this._currentUser();
     if (!currentUser) {
@@ -68,80 +59,29 @@ export class ProfileService {
       return;
     }
 
-    // En production, utiliser l'API
     const apiUrl = `${this.baseApiUrl}/${currentUser.id}`;
     this.http
       .get<UpdateProfileResponseDto>(apiUrl)
       .pipe(
-        map((response) => this.mapBackendUserToUser(response)),
-        tap((user) => {
+        map((response: UpdateProfileResponseDto) => this.mapBackendUserToUser(response)),
+        tap((user: User) => {
           this._currentUser.set(user);
           this._isLoading.set(false);
         }),
-        catchError((error) => {
+        catchError((_error: HttpErrorResponse) => {
           this._isLoading.set(false);
-          // eslint-disable-next-line no-console
-          console.error('Erreur lors du chargement du profil:', error);
           return throwError(() => new Error('Impossible de charger le profil utilisateur'));
         })
       )
       .subscribe();
   }
 
-  /**
-   * Obtenir des données utilisateur mock pour le développement
-   */
-  private getMockUserProfile(): void {
-    const mockUser: User = {
-      id: '1',
-      email: 'user@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: '+33 6 12 34 56 78',
-      address: {
-        streetNumber: '123',
-        streetName: 'Rue de la Paix',
-        city: 'Paris',
-        postalCode: '75001',
-        country: 'France',
-        complement: 'Appartement 4B'
-      },
-      dateOfBirth: new Date('1990-05-15'),
-      createdAt: new Date('2023-01-15'),
-      updatedAt: new Date('2024-08-14'),
-      isActive: true
-    };
-
-    this._currentUser.set(mockUser);
-    this._isLoading.set(false);
-  }
-
-  /**
-   * Mettre à jour le profil utilisateur
-   */
   updateUserProfile(updates: Partial<User>): Observable<User> {
     const currentUser = this._currentUser();
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
 
-    // Pour tester l'API, utilisons directement l'appel backend même en développement
-    // Commenté temporairement pour tester l'API
-    /*
-    // En mode développement, simuler la mise à jour
-    if (!environment.production) {
-      const updatedUser = {
-        ...currentUser,
-        ...updates,
-        updatedAt: new Date()
-      };
-
-      this._currentUser.set(updatedUser);
-      return of(updatedUser).pipe(delay(500));
-    }
-    */
-
-    // En production (et maintenant aussi en développement), utiliser l'API
     const profileData = {
       firstname: updates.firstName || currentUser.firstName,
       lastname: updates.lastName || currentUser.lastName,
@@ -160,47 +100,39 @@ export class ProfileService {
 
     const apiUrl = `${this.baseApiUrl}/${currentUser.id}/profile`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return this.http.put<any>(apiUrl, profileData).pipe(
-      map((response) => this.mapBackendUserToUser(response)),
-      tap((user) => {
+    return this.http.put<UpdateProfileResponseDto>(apiUrl, profileData).pipe(
+      map((response: UpdateProfileResponseDto) => this.mapBackendUserToUser(response)),
+      tap((user: User) => {
         this._currentUser.set(user);
       }),
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Mapper la réponse API de notre backend .NET vers le modèle User
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private mapBackendUserToUser(user: any): User {
+  private mapBackendUserToUser(user: UpdateProfileResponseDto): User {
     return {
-      id: user?.id?.value || user?.id || '',
-      firstName: user?.firstname?.value || user?.firstname || user?.firstName || '',
-      lastName: user?.lastname?.value || user?.lastname || user?.lastName || '',
-      email: user?.email?.value || user?.email || '',
-      phone: user?.phoneNumber?.value || user?.phoneNumber || user?.phone || '',
+      id: user?.id || '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
       address: user?.address
         ? {
             id: user.address.id,
-            streetNumber: user.address.streetNumber.value || '',
-            streetName: user.address.streetName.value || '',
-            city: user.address.city.value || '',
-            postalCode: user.address.postalCode.value || '',
-            country: user.address.country.value || '',
-            complement: user.address.complement?.value || ''
+            streetNumber: user.address.streetNumber || '',
+            streetName: user.address.streetName || '',
+            city: user.address.city || '',
+            postalCode: user.address.postalCode || '',
+            country: user.address.country || '',
+            complement: user.address.complement || ''
           }
         : undefined,
       createdAt: new Date(user?.createdAt || Date.now()),
       updatedAt: new Date(user?.updatedAt || Date.now()),
-      isActive: user?.status === 'Confirmed' || user?.status === 'Created'
+      isActive: user?.isActive ?? true
     };
   }
 
-  /**
-   * Mapper la réponse API vers le modèle User (ancien format)
-   */
   private mapToUser(response: UpdateProfileResponseDto): User {
     return {
       id: response.id,
@@ -214,9 +146,6 @@ export class ProfileService {
     };
   }
 
-  /**
-   * Gérer les erreurs HTTP
-   */
   private handleError = (error: HttpErrorResponse): Observable<never> => {
     let errorMessage = "Une erreur inattendue s'est produite";
 
