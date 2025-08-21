@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-using PetBoarding_Api.Dto.Users;
 using PetBoarding_Api.Extensions;
 
 using PetBoarding_Application.Account.CreateAccount;
@@ -15,6 +14,11 @@ using PetBoarding_Domain.Accounts;
 using PetBoarding_Domain.Users;
 
 using PetBoarding_Infrastructure.Authentication;
+using PetBoarding_Api.Mappers.Users;
+using PetBoarding_Api.Dto.Login.Requests;
+using PetBoarding_Api.Dto.Addresses;
+using PetBoarding_Api.Dto.Login.Responses;
+using PetBoarding_Api.Dto.Users;
 
 namespace PetBoarding_Api.Endpoints
 {
@@ -36,7 +40,9 @@ namespace PetBoarding_Api.Endpoints
         {
             var getAllUsersResult = await sender.Send(new GetAllUsersQuery());
 
-            return getAllUsersResult.GetHttpResult();
+            return getAllUsersResult.GetHttpResult(
+                UserMapper.ToDto, 
+                UserResponseMapper.ToGetAllUsersResponse);
         }
 
         private static async Task<IResult> GetUser(
@@ -45,32 +51,39 @@ namespace PetBoarding_Api.Endpoints
         {
             var userResult = await sender.Send(new GetUserByIdQuery(new UserId(userId)));
 
-            return userResult.GetHttpResult();
+            return userResult.GetHttpResult(UserMapper.ToDto, UserResponseMapper.ToGetUserResponse);
         }
 
         private static async Task<IResult> CreateUser(
-            [FromBody] CreateAccountCommand createAccountCommand,
+            [FromBody] CreateUserDto createUserDto,
             ISender sender)
         {
-            var createAccountResult = await sender.Send(createAccountCommand);
+            var createUserCommand = new CreateAccountCommand(
+                createUserDto.Email,
+                createUserDto.PasswordHash,
+                createUserDto.Firstname,
+                createUserDto.Lastname,
+                createUserDto.ProfileType,
+                createUserDto.PhoneNumber);
+            var createAccountResult = await sender.Send(createUserCommand);
 
-            return createAccountResult.GetHttpResult();
+            return createAccountResult.GetHttpResult(UserMapper.ToDto, UserResponseMapper.ToGetUserResponse);
         }
 
         private static async Task<IResult> Authentification(
-            [FromBody] LoginRequestDto loginRequest,
+            [FromBody] LoginRequestDto loginRequestDto,
             ISender sender,
             IAccountService accountService)
         {
             // Utiliser la méthode Authenticate qui gère correctement la vérification du mot de passe
-            var authRequest = new AuthenticationRequest(loginRequest.Email, loginRequest.Password);
+            var authRequest = new AuthenticationRequest(loginRequestDto.Email, loginRequestDto.Password);
             
             var token = await accountService.Authenticate(authRequest, CancellationToken.None);
 
             if (!string.IsNullOrEmpty(token))
             {
                 // Récupérer les détails de l'utilisateur
-                var userResult = await sender.Send(new GetUserByEmailQuery(loginRequest.Email));
+                var userResult = await sender.Send(new GetUserByEmailQuery(loginRequestDto.Email));
                 
                 if (userResult.IsSuccess)
                 {
@@ -127,7 +140,7 @@ namespace PetBoarding_Api.Endpoints
 
         private static async Task<IResult> UpdateUserProfile(
             Guid userId,
-            [FromBody] UpdateUserProfileDto updateDto,
+            [FromBody] UpdateUserDto updateDto,
             ISender sender)
         {
             AddressData? addressData = null;
@@ -151,7 +164,7 @@ namespace PetBoarding_Api.Endpoints
 
             var result = await sender.Send(command);
 
-            return result.GetHttpResult();
+            return result.GetHttpResult(UserMapper.ToDto, UserResponseMapper.ToGetUserResponse);
         }
     }
 }

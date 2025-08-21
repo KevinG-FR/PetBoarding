@@ -1,4 +1,4 @@
-namespace PetBoarding_Api.Dto.Users
+namespace PetBoarding_Api.Dto.Addresses
 {
     public record AddressDto
     {

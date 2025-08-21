@@ -1,14 +1,6 @@
-namespace PetBoarding_Api.Dto.Users
-{
-    public record LoginResponseDto
-    {
-        public bool Success { get; init; }
-        public string Message { get; init; } = string.Empty;
-        public string? Token { get; init; }
-        public UserDto? User { get; init; }
-    }
+using PetBoarding_Api.Dto.Addresses;
 
-    public record UserDto
+public record UserDto
     {
         public Guid Id { get; init; }
         public string Email { get; init; } = string.Empty;
@@ -23,4 +15,3 @@ namespace PetBoarding_Api.Dto.Users
         public DateTime UpdatedAt { get; init; }
         public AddressDto? Address { get; init; }
     }
-}
