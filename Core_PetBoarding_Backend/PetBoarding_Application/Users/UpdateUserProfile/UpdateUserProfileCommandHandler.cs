@@ -90,22 +90,29 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
                 }
             }
 
-            // Mettre à jour le profil
-            var updateResult = user.UpdateProfile(
-                firstnameResult.Value,
-                lastnameResult.Value,
-                phoneNumberResult.Value,
-                address);
+            try
+            {
+                // Mettre à jour le profil de l'utilisateur
+                var updateResult = user.UpdateProfile(
+                    firstnameResult.Value,
+                    lastnameResult.Value,
+                    phoneNumberResult.Value,
+                    address);
 
-            if (updateResult.IsFailed)
-                return Result.Fail(updateResult.Errors);
+                if (updateResult.IsFailed)
+                    return Result.Fail(updateResult.Errors);
 
-            // Sauvegarder les modifications
-            var updatedUser = await _userRepository.UpdateAsync(user, cancellationToken);
-            if (updatedUser is null)
-                return Result.Fail("Erreur lors de la mise à jour de l'utilisateur");
+                var updatedUser = await _userRepository.UpdateAsync(user, cancellationToken);
+                if (updatedUser is null)
+                    return Result.Fail("Error occurred while updating the user");
 
-            return Result.Ok(updatedUser);
+                return Result.Ok(updatedUser);
+            
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Unexpected error updating user profile: {ex.Message}");
+            }   
         }
     }
 }

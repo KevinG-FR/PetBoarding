@@ -1,7 +1,4 @@
-using FluentResults;
-
 using PetBoarding_Application.Abstractions;
-using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Users;
 
 namespace PetBoarding_Application.Users.UpdateUserProfile

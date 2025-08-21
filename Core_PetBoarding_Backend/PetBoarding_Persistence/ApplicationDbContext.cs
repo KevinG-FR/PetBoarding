@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
+using PetBoarding_Domain.Reservations;
 using PetBoarding_Domain.Users;
 
 namespace PetBoarding_Persistence
@@ -10,6 +11,7 @@ namespace PetBoarding_Persistence
     {
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
@@ -26,12 +28,6 @@ namespace PetBoarding_Persistence
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
             modelBuilder.HasDefaultSchema("PetBoarding");
-        }
-
-        public override int SaveChanges()
-        {
-            UpdateTimestamps();
-            return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

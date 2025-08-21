@@ -39,5 +39,168 @@ namespace PetBoarding_Api.Extensions
 
             return Results.BadRequest(result.Errors);
         }
+
+        /// <summary>
+        /// Extension générique pour mapper une entité vers un DTO et retourner un HttpResult
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto>(this Result<TEntity> result, Func<TEntity, TDto> mapper)
+        {
+            if (result.IsSuccess)
+            {
+                var dto = mapper(result.Value);
+                return Results.Ok(dto);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension générique pour mapper une entité vers un DTO puis vers un objet de réponse structuré
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto, TResponse>(
+            this Result<TEntity> result, 
+            Func<TEntity, TDto> mapper,
+            Func<TDto, TResponse> responseBuilder)
+        {
+            if (result.IsSuccess)
+            {
+                var dto = mapper(result.Value);
+                var response = responseBuilder(dto);
+                return Results.Ok(response);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension générique pour mapper une collection d'entités vers une collection de DTOs
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto>(this Result<IReadOnlyList<TEntity>> result, Func<TEntity, TDto> mapper)
+        {
+            if (result.IsSuccess)
+            {
+                var dtos = result.Value.Select(mapper).ToList();
+                return Results.Ok(dtos);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension générique pour mapper une List d'entités vers une collection de DTOs
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto>(this Result<List<TEntity>> result, Func<TEntity, TDto> mapper)
+        {
+            if (result.IsSuccess)
+            {
+                var dtos = result.Value.Select(mapper).ToList();
+                return Results.Ok(dtos);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension pour mapper une collection vers un objet de réponse structuré
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto, TResponse>(
+            this Result<IReadOnlyList<TEntity>> result, 
+            Func<TEntity, TDto> mapper,
+            Func<IReadOnlyList<TDto>, TResponse> responseBuilder)
+        {
+            if (result.IsSuccess)
+            {
+                var dtos = result.Value.Select(mapper).ToList();
+                var response = responseBuilder(dtos);
+                return Results.Ok(response);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension pour mapper une List vers un objet de réponse structuré
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto, TResponse>(
+            this Result<List<TEntity>> result, 
+            Func<TEntity, TDto> mapper,
+            Func<IReadOnlyList<TDto>, TResponse> responseBuilder)
+        {
+            if (result.IsSuccess)
+            {
+                var dtos = result.Value.Select(mapper).ToList();
+                var response = responseBuilder(dtos);
+                return Results.Ok(response);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
+
+        /// <summary>
+        /// Extension pour mapper une IEnumerable vers un objet de réponse structuré
+        /// </summary>
+        public static IResult GetHttpResult<TEntity, TDto, TResponse>(
+            this Result<IEnumerable<TEntity>> result, 
+            Func<TEntity, TDto> mapper,
+            Func<IReadOnlyList<TDto>, TResponse> responseBuilder)
+        {
+            if (result.IsSuccess)
+            {
+                var dtos = result.Value.Select(mapper).ToList();
+                var response = responseBuilder(dtos);
+                return Results.Ok(response);
+            }
+
+            var notFoundError = result.Errors.FirstOrDefault(x => x is INotFoundError)?.Message;
+
+            if (result.IsFailed && notFoundError is not null)
+            {
+                return Results.NotFound(notFoundError);
+            }
+
+            return Results.BadRequest(result.Errors);
+        }
     }
 }

@@ -110,7 +110,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddApplication()
-                .AddInfrastructure();
+                .AddInfrastructure()
+                .AddPersistence(builder.Configuration);
 
 builder.Services.AddEndpoint(Assembly.GetExecutingAssembly());
 
@@ -118,6 +119,7 @@ var app = builder.Build();
 
 // Add Endpoints. Don't forget to add new Endpoints here.
 app.MapUsersEndpoints();
+app.MapReservationsEndpoints();
 
 // Configure the HTTP request pipeline.
 

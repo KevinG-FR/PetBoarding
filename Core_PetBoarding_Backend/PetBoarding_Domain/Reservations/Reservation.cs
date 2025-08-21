@@ -4,140 +4,139 @@ using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Planning;
 
 /// <summary>
-/// Entité représentant une réservation avec gestion du planning
+/// Entity representing a reservation with schedule management
 /// </summary>
 public sealed class Reservation : Entity<ReservationId>
 {
     public Reservation(
-        ReservationId id,
-        string utilisateurId,
+        string userId,
         string animalId,
-        string animalNom,
-        string prestationId,
-        DateTime dateDebut,
-        DateTime? dateFin = null,
-        string? commentaires = null) : base(id)
+        string animalName,
+        string serviceId,
+        DateTime startDate,
+        DateTime? endDate = null,
+        string? comments = null) : base(new ReservationId(Guid.CreateVersion7()))
     {
-        if (string.IsNullOrWhiteSpace(utilisateurId))
-            throw new ArgumentException("L'ID utilisateur ne peut pas être vide", nameof(utilisateurId));
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("User ID cannot be empty", nameof(userId));
         
         if (string.IsNullOrWhiteSpace(animalId))
-            throw new ArgumentException("L'ID animal ne peut pas être vide", nameof(animalId));
+            throw new ArgumentException("Animal ID cannot be empty", nameof(animalId));
         
-        if (string.IsNullOrWhiteSpace(prestationId))
-            throw new ArgumentException("L'ID prestation ne peut pas être vide", nameof(prestationId));
+        if (string.IsNullOrWhiteSpace(serviceId))
+            throw new ArgumentException("Service ID cannot be empty", nameof(serviceId));
         
-        if (dateFin.HasValue && dateFin.Value.Date < dateDebut.Date)
-            throw new ArgumentException("La date de fin ne peut pas être antérieure à la date de début");
+        if (endDate.HasValue && endDate.Value.Date < startDate.Date)
+            throw new ArgumentException("End date cannot be before start date");
 
-        UtilisateurId = utilisateurId;
+        UserId = userId;
         AnimalId = animalId;
-        AnimalNom = animalNom;
-        PrestationId = prestationId;
-        DateDebut = dateDebut.Date;
-        DateFin = dateFin?.Date;
-        Commentaires = commentaires;
-        Statut = StatutReservation.EnAttente;
-        DateCreation = DateTime.UtcNow;
+        AnimalName = animalName;
+        ServiceId = serviceId;
+        StartDate = startDate.Date;
+        EndDate = endDate?.Date;
+        Comments = comments;
+        Status = ReservationStatus.Pending;
+        CreatedAt = DateTime.UtcNow;
     }
 
-    public string UtilisateurId { get; private set; }
+    public string UserId { get; private set; }
     public string AnimalId { get; private set; }
-    public string AnimalNom { get; private set; }
-    public string PrestationId { get; private set; }
-    public DateTime DateDebut { get; private set; }
-    public DateTime? DateFin { get; private set; }
-    public string? Commentaires { get; private set; }
-    public StatutReservation Statut { get; private set; }
-    public DateTime DateCreation { get; private set; }
-    public DateTime? DateModification { get; private set; }
-    public decimal? PrixTotal { get; private set; }
+    public string AnimalName { get; private set; }
+    public string ServiceId { get; private set; }
+    public DateTime StartDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
+    public string? Comments { get; private set; }
+    public ReservationStatus Status { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
+    public decimal? TotalPrice { get; private set; }
 
     /// <summary>
-    /// Obtient toutes les dates couvertes par cette réservation
+    /// Gets all dates covered by this reservation
     /// </summary>
-    public IEnumerable<DateTime> ObtenirDatesReservees()
+    public IEnumerable<DateTime> GetReservedDates()
     {
-        var dateCourante = DateDebut;
-        var dateFin = DateFin ?? DateDebut;
+        var currentDate = StartDate;
+        var endDate = EndDate ?? StartDate;
 
-        while (dateCourante <= dateFin)
+        while (currentDate <= endDate)
         {
-            yield return dateCourante;
-            dateCourante = dateCourante.AddDays(1);
+            yield return currentDate;
+            currentDate = currentDate.AddDays(1);
         }
     }
 
     /// <summary>
-    /// Calcule le nombre de jours de la réservation
+    /// Calculates the number of days for the reservation
     /// </summary>
-    public int ObtenirNombreJours()
+    public int GetNumberOfDays()
     {
-        if (!DateFin.HasValue) return 1;
-        return (int)(DateFin.Value - DateDebut).TotalDays + 1;
+        if (!EndDate.HasValue) return 1;
+        return (int)(EndDate.Value - StartDate).TotalDays + 1;
     }
 
-    public void ModifierDates(DateTime nouvelleDateDebut, DateTime? nouvelleDateFin = null)
+    public void UpdateDates(DateTime newStartDate, DateTime? newEndDate = null)
     {
-        if (Statut == StatutReservation.Terminee || Statut == StatutReservation.Annulee)
-            throw new InvalidOperationException("Impossible de modifier les dates d'une réservation terminée ou annulée");
+        if (Status == ReservationStatus.Completed || Status == ReservationStatus.Cancelled)
+            throw new InvalidOperationException("Cannot modify dates of a completed or cancelled reservation");
 
-        if (nouvelleDateFin.HasValue && nouvelleDateFin.Value.Date < nouvelleDateDebut.Date)
-            throw new ArgumentException("La date de fin ne peut pas être antérieure à la date de début");
+        if (newEndDate.HasValue && newEndDate.Value.Date < newStartDate.Date)
+            throw new ArgumentException("End date cannot be before start date");
 
-        DateDebut = nouvelleDateDebut.Date;
-        DateFin = nouvelleDateFin?.Date;
-        DateModification = DateTime.UtcNow;
+        StartDate = newStartDate.Date;
+        EndDate = newEndDate?.Date;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void ModifierCommentaires(string? nouveauxCommentaires)
+    public void UpdateComments(string? newComments)
     {
-        Commentaires = nouveauxCommentaires;
-        DateModification = DateTime.UtcNow;
+        Comments = newComments;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void DefinirPrixTotal(decimal prix)
+    public void SetTotalPrice(decimal price)
     {
-        if (prix < 0)
-            throw new ArgumentException("Le prix ne peut pas être négatif", nameof(prix));
+        if (price < 0)
+            throw new ArgumentException("Price cannot be negative", nameof(price));
 
-        PrixTotal = prix;
-        DateModification = DateTime.UtcNow;
+        TotalPrice = price;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void Confirmer()
+    public void Confirm()
     {
-        if (Statut != StatutReservation.EnAttente)
-            throw new InvalidOperationException($"Impossible de confirmer une réservation au statut {Statut}");
+        if (Status != ReservationStatus.Pending)
+            throw new InvalidOperationException($"Cannot confirm a reservation with status {Status}");
 
-        Statut = StatutReservation.Confirmee;
-        DateModification = DateTime.UtcNow;
+        Status = ReservationStatus.Confirmed;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void DemarrerService()
+    public void StartService()
     {
-        if (Statut != StatutReservation.Confirmee)
-            throw new InvalidOperationException($"Impossible de démarrer le service d'une réservation au statut {Statut}");
+        if (Status != ReservationStatus.Confirmed)
+            throw new InvalidOperationException($"Cannot start service for a reservation with status {Status}");
 
-        Statut = StatutReservation.EnCours;
-        DateModification = DateTime.UtcNow;
+        Status = ReservationStatus.InProgress;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void Terminer()
+    public void Complete()
     {
-        if (Statut != StatutReservation.EnCours)
-            throw new InvalidOperationException($"Impossible de terminer une réservation au statut {Statut}");
+        if (Status != ReservationStatus.InProgress)
+            throw new InvalidOperationException($"Cannot complete a reservation with status {Status}");
 
-        Statut = StatutReservation.Terminee;
-        DateModification = DateTime.UtcNow;
+        Status = ReservationStatus.Completed;
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void Annuler()
+    public void Cancel()
     {
-        if (Statut == StatutReservation.Terminee)
-            throw new InvalidOperationException("Impossible d'annuler une réservation terminée");
+        if (Status == ReservationStatus.Completed)
+            throw new InvalidOperationException("Cannot cancel a completed reservation");
 
-        Statut = StatutReservation.Annulee;
-        DateModification = DateTime.UtcNow;
+        Status = ReservationStatus.Cancelled;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
