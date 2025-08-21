@@ -9,7 +9,7 @@ namespace PetBoarding_Domain.Users
     public class User : Entity<UserId>, IAuditableEntity
     {
         public User(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
-            : base(new UserId(Guid.NewGuid()))
+            : base(new UserId(Guid.CreateVersion7()))
         {
             Firstname = firstname;
             Lastname = lastname;
@@ -43,8 +43,11 @@ namespace PetBoarding_Domain.Users
         public UserProfileType ProfileType { get; }
         public UserStatus Status { get; private set; }
 
-        public DateTime CreatedAt { get; private set; }
+        public readonly DateTime CreatedAt;
         public DateTime UpdatedAt { get; private set; }
+
+        // Implémentation explicite de l'interface pour le readonly field
+        DateTime IAuditableEntity.CreatedAt => CreatedAt;
 
         public void UpdateTimestamp()
         {

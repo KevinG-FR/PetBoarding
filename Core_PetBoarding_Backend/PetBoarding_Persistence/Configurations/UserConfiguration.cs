@@ -37,12 +37,10 @@ namespace PetBoarding_Persistence.Configurations
             builder.Property(x => x.ProfileType).HasConversion<int>();
 
             builder.Property(x => x.CreatedAt)
-                .IsRequired()
-                .HasDefaultValueSql("NOW()");
+                .IsRequired();
 
             builder.Property(x => x.UpdatedAt)
-                .IsRequired()
-                .HasDefaultValueSql("NOW()");
+                .IsRequired();
 
             // Configuration de la relation avec Address
             builder.Property(x => x.AddressId)

@@ -5,7 +5,7 @@ namespace PetBoarding_Domain.Addresses
     public class Address : Entity<AddressId>, IAuditableEntity
     {
         public Address(StreetNumber streetNumber, StreetName streetName, City city, PostalCode postalCode, Country country, Complement? complement = null)
-            : base(new AddressId(Guid.NewGuid()))
+            : base(new AddressId(Guid.CreateVersion7()))
         {
             StreetNumber = streetNumber;
             StreetName = streetName;
@@ -27,8 +27,11 @@ namespace PetBoarding_Domain.Addresses
         public Country Country { get; private set; } = null!;
         public Complement? Complement { get; private set; }
 
-        public DateTime CreatedAt { get; private set; }
+        public readonly DateTime CreatedAt;
         public DateTime UpdatedAt { get; private set; }
+
+        // Implémentation explicite de l'interface pour le readonly field
+        DateTime IAuditableEntity.CreatedAt => CreatedAt;
 
         public void UpdateTimestamp()
         {

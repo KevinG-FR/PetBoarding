@@ -49,12 +49,10 @@ namespace PetBoarding_Persistence.Configurations
                 .HasMaxLength(200);
 
             builder.Property(x => x.CreatedAt)
-                .IsRequired()
-                .HasDefaultValueSql("NOW()");
+                .IsRequired();
 
             builder.Property(x => x.UpdatedAt)
-                .IsRequired()
-                .HasDefaultValueSql("NOW()");
+                .IsRequired();
         }
     }
 }
