@@ -80,12 +80,12 @@ namespace PetBoarding_Api.Endpoints
                     if (user.Address is not null)
                     {
                         addressDto = new AddressDto(
-                            user.Address.StreetNumber,
-                            user.Address.StreetName,
-                            user.Address.City,
-                            user.Address.PostalCode,
-                            user.Address.Country,
-                            user.Address.Complement);
+                            user.Address.StreetNumber.Value,
+                            user.Address.StreetName.Value,
+                            user.Address.City.Value,
+                            user.Address.PostalCode.Value,
+                            user.Address.Country.Value,
+                            user.Address.Complement?.Value);
                     }
 
                     var userDto = new UserDto
