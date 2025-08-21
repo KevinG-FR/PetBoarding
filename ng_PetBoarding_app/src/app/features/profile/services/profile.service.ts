@@ -184,12 +184,12 @@ export class ProfileService {
       address: user?.address
         ? {
             id: user.address.id,
-            streetNumber: user.address.streetNumber || '',
-            streetName: user.address.streetName || '',
-            city: user.address.city || '',
-            postalCode: user.address.postalCode || '',
-            country: user.address.country || '',
-            complement: user.address.complement
+            streetNumber: user.address.streetNumber.value || '',
+            streetName: user.address.streetName.value || '',
+            city: user.address.city.value || '',
+            postalCode: user.address.postalCode.value || '',
+            country: user.address.country.value || '',
+            complement: user.address.complement?.value || ''
           }
         : undefined,
       createdAt: new Date(user?.createdAt || Date.now()),
