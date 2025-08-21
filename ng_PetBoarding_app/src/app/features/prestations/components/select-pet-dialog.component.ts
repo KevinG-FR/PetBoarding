@@ -50,7 +50,7 @@ export class SelectPetDialogComponent {
     this.loadPets();
   }
 
-  get filteredPets() {
+  get filteredPets(): Pet[] {
     if (!this.pets) return [];
     const category = this.prestation.categorieAnimal;
     if (!category) return this.pets;
@@ -65,29 +65,25 @@ export class SelectPetDialogComponent {
     this.isLoading = false;
   }
 
-  selectPet(pet: Pet) {
-    // Close this dialog and return the selected pet as result
+  selectPet(pet: Pet): void {
     this.dialogRef.close(pet);
   }
 
-  openAddPet() {
+  openAddPet(): void {
     const dialogRef = this.dialog.open(PetFormComponent, {
       width: '700px'
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      // reload pets after closing form
       this.loadPets();
     });
   }
 
   getPetAvatarClass(type: string): string {
-    // Map pet type string to PetType enum for consistent styling
     const petType = type === 'dog' ? PetType.DOG : type === 'cat' ? PetType.CAT : null;
 
     if (!petType) return 'chip-default';
 
-    // Use same logic as PrestationItemComponent
     switch (petType) {
       case PetType.DOG:
         return 'chip-chien';

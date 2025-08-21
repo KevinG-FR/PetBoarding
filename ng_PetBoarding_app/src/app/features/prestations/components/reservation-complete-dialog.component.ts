@@ -18,7 +18,7 @@ import { Pet, PetType } from '../../pets/models/pet.model';
 import { PetService } from '../../pets/services/pet.service';
 import { DateSelectionResult } from '../models/DateSelectionResult';
 import { Prestation } from '../models/prestation.model';
-import { PrestationsService } from '../services/prestations.service';
+import { CategoryInfo, PrestationsService } from '../services/prestations.service';
 import { DateSelectionComponent } from './selection-dates.component';
 
 export interface ReservationCompleteResult {
@@ -54,7 +54,6 @@ export class ReservationCompleteDialogComponent {
   private prestationsService = inject(PrestationsService);
   private data = inject(MAT_DIALOG_DATA) as { prestation: Prestation };
 
-  // État du composant
   pets = signal<Pet[]>([]);
   isLoading = signal(false);
   selectedPet = signal<Pet | null>(null);
@@ -65,14 +64,12 @@ export class ReservationCompleteDialogComponent {
     return this.data.prestation;
   }
 
-  // Computed pour vérifier si la réservation peut être confirmée
   canConfirm = computed(() => {
     const pet = this.selectedPet();
     const dates = this.dateSelection();
     return pet && dates && dates.isValid;
   });
 
-  // Computed pour le résumé
   reservationSummary = computed(() => {
     const pet = this.selectedPet();
     const dates = this.dateSelection();
@@ -95,7 +92,7 @@ export class ReservationCompleteDialogComponent {
   private loadPets(): void {
     this.isLoading.set(true);
     try {
-      this.petService.loadUserPets(); // à modifier.
+      this.petService.loadUserPets();
       this.pets.set(this.petService.getPetsByType(this.prestation.categorieAnimal));
       this.isLoading.set(false);
     } catch {
@@ -164,7 +161,7 @@ export class ReservationCompleteDialogComponent {
     this.dialogRef.close();
   }
 
-  getCategoryInfo() {
+  getCategoryInfo(): CategoryInfo {
     return this.prestationsService.getCategoryInfo(this.prestation.categorieAnimal);
   }
 

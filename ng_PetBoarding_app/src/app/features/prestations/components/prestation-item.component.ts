@@ -32,7 +32,6 @@ import { ReservationCompleteDialogComponent } from './reservation-complete-dialo
 export class PrestationItemComponent {
   prestation = input.required<Prestation>();
 
-  // Événements émis par le composant
   viewDetails = output<Prestation>();
 
   private prestationsService = inject(PrestationsService);
@@ -41,7 +40,6 @@ export class PrestationItemComponent {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  // Computed pour optimiser les appels répétés
   categoryInfo = computed(() =>
     this.prestationsService.getCategoryInfo(this.prestation().categorieAnimal)
   );
@@ -83,7 +81,6 @@ export class PrestationItemComponent {
     });
 
     dialogRef.afterClosed().subscribe((result: Pet) => {
-      // If the dialog closed with a selected pet (result), add to basket with pet
       const pet = result;
 
       if (pet) {

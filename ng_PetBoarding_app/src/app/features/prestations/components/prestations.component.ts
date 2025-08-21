@@ -13,10 +13,9 @@ import { PrestationsListComponent } from './prestations-list.component';
   styleUrl: './prestations.component.scss'
 })
 export class PrestationsComponent {
-  // Gestion centralisée des filtres
   filters = signal<PrestationFilters>({});
 
-  onFiltersChanged(newFilters: PrestationFilters) {
+  onFiltersChanged(newFilters: PrestationFilters): void {
     this.filters.set(newFilters);
   }
 }

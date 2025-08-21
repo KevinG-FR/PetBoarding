@@ -47,16 +47,12 @@ import { PlanningService } from '../services/planning.service';
   encapsulation: ViewEncapsulation.None
 })
 export class DateSelectionComponent implements OnInit {
-  // Inputs
   prestation = input.required<Prestation>();
 
-  // Outputs
   selectionChange = output<DateSelectionResult>();
 
-  // Services
   private planningService = inject(PlanningService);
 
-  // Component state
   startDate = signal<Date | null>(null);
   endDate = signal<Date | null>(null);
   isPeriodMode = signal(false);
@@ -64,7 +60,6 @@ export class DateSelectionComponent implements OnInit {
   allSlots = signal<AvailableSlot[]>([]);
   isLoading = signal(false);
 
-  // Properties for ngModel (required for datepicker)
   private _startDateValue: Date | null = null;
   private _endDateValue: Date | null = null;
 
@@ -102,7 +97,6 @@ export class DateSelectionComponent implements OnInit {
 
   minDate = new Date();
 
-  // Available slots filtered by mode and start date
   filteredAvailableSlots = computed(() => {
     const slots = this.availableSlots();
     const isInPeriodMode = this.isPeriodMode();
@@ -115,9 +109,6 @@ export class DateSelectionComponent implements OnInit {
     if (!startDate) {
       return slots;
     }
-
-    // In period mode with start date:
-    // Show continuous sequence of available dates after start date
     // until first full/unprogrammed date
     const allSlots = this.allSlots();
     const continuousSlots: AvailableSlot[] = [];

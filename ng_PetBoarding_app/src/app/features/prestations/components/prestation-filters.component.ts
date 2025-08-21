@@ -35,7 +35,6 @@ export class PrestationFiltersComponent {
   selectedCategory = signal<PetType | null>(null);
   searchText = signal<string>('');
 
-  // Signal computed pour les informations de catégorie
   categoriesInfo = computed(() => {
     const infos = new Map<PetType, CategoryInfo>();
     this.categories.forEach((category) => {
@@ -44,16 +43,15 @@ export class PrestationFiltersComponent {
     return infos;
   });
 
-  onCategoryChange(category: PetType | null) {
+  onCategoryChange(category: PetType | null): void {
     this.selectedCategory.set(category);
-    this.emitFilters(); // Pas de debounce pour la catégorie
+    this.emitFilters();
   }
 
-  onSearchChange(event: Event) {
+  onSearchChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchText.set(target.value);
 
-    // Debounce de 300ms pour la recherche textuelle
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
@@ -63,11 +61,10 @@ export class PrestationFiltersComponent {
     }, 300);
   }
 
-  clearFilters() {
+  clearFilters(): void {
     this.selectedCategory.set(null);
     this.searchText.set('');
 
-    // Annuler le timeout en cours si nécessaire
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
       this.searchTimeout = null;
@@ -93,11 +90,10 @@ export class PrestationFiltersComponent {
     return this.categoriesInfo().get(category)?.color || '#666666';
   }
 
-  private emitFilters() {
+  private emitFilters(): void {
     const searchText = this.searchText().trim();
     const filters: PrestationFilters = {
       categorieAnimal: this.selectedCategory() || undefined,
-      // N'inclure le texte de recherche que s'il y a au moins 3 caractères
       searchText: searchText.length >= 3 ? searchText : undefined
     };
     this.filtersChanged.emit(filters);

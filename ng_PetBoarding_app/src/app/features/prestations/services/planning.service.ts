@@ -8,7 +8,6 @@ import { AvailableSlot, DisponibiliteQuery, DisponibiliteResponse } from '../mod
 })
 export class PlanningService {
   private plannings = signal<PlanningPrestation[]>([
-    // Planning pour Pension complète
     {
       id: 'planning-1',
       prestationId: '1',
@@ -18,7 +17,6 @@ export class PlanningService {
       dateCreation: new Date('2025-01-01'),
       creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 5, new Date('2025-08-31'))
     },
-    // Planning pour Garderie journée
     {
       id: 'planning-2',
       prestationId: '2',
@@ -28,7 +26,6 @@ export class PlanningService {
       dateCreation: new Date('2025-01-01'),
       creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 10, new Date('2025-08-31'))
     },
-    // Planning pour Toilettage
     {
       id: 'planning-3',
       prestationId: '3',
@@ -38,7 +35,6 @@ export class PlanningService {
       dateCreation: new Date('2025-01-01'),
       creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 4, new Date('2025-08-31'))
     },
-    // Planning pour Promenade
     {
       id: 'planning-4',
       prestationId: '4',
@@ -48,7 +44,6 @@ export class PlanningService {
       dateCreation: new Date('2025-01-01'),
       creneaux: this.genererCreneauxAvecVariations(new Date('2025-08-01'), new Date('2025-08-31'))
     },
-    // Planning pour Garde à domicile
     {
       id: 'planning-5',
       prestationId: '5',
@@ -58,7 +53,6 @@ export class PlanningService {
       dateCreation: new Date('2025-01-01'),
       creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 6, new Date('2025-08-31'))
     },
-    // Planning pour Pension chat
     {
       id: 'planning-6',
       prestationId: '6',
@@ -70,10 +64,6 @@ export class PlanningService {
     }
   ]);
 
-  /**
-   * Génère des créneaux avec la même capacité pour une période donnée
-   * Inclut différents scénarios : disponible, limité, complet
-   */
   private genererCreneauxPourMois(
     dateDebut: Date,
     capacite: number,
@@ -84,36 +74,26 @@ export class PlanningService {
 
     while (dateCourante <= dateFin) {
       let reservationsExistantes = 0;
-      const jourSemaine = dateCourante.getDay(); // 0 = dimanche, 6 = samedi
+      const jourSemaine = dateCourante.getDay();
       const jourMois = dateCourante.getDate();
 
-      // Créer différents scénarios de disponibilité pour les tests
       if (jourMois <= 5 || jourMois === 29) {
-        // Première semaine : créneaux pleins (pour tester date-full)
-        reservationsExistantes = capacite; // Complet
+        reservationsExistantes = capacite;
       } else if (jourMois <= 10) {
-        // Deuxième semaine : places limitées (pour tester date-limited)
-        reservationsExistantes = Math.max(0, capacite - Math.floor(Math.random() * 2 + 1)); // 1-2 places restantes
+        reservationsExistantes = Math.max(0, capacite - Math.floor(Math.random() * 2 + 1));
       } else if (jourMois <= 15) {
-        // Troisième semaine : bien disponible (pour tester date-available)
-        reservationsExistantes = Math.floor(Math.random() * (capacite / 3)); // Beaucoup de places
+        reservationsExistantes = Math.floor(Math.random() * (capacite / 3));
       } else {
-        // Reste du mois : mix aléatoire
         const scenario = Math.random();
         if (scenario < 0.2) {
-          // 20% de chances d'être complet
           reservationsExistantes = capacite;
         } else if (scenario < 0.4) {
-          // 20% de chances d'être limité
           reservationsExistantes = Math.max(0, capacite - Math.floor(Math.random() * 2 + 1));
         } else {
-          // 60% de chances d'être disponible
           reservationsExistantes = Math.floor(Math.random() * (capacite / 2));
         }
       }
 
-      // Ne pas générer de créneaux seulement pour les dimanches (pour tester date-unavailable)
-      // Les samedis sont maintenus avec un service normal
       const estDimanche = jourSemaine === 0;
       const estJourFerie = this.estJourFerie(dateCourante);
 
@@ -125,8 +105,6 @@ export class PlanningService {
           capaciteDisponible: capacite - reservationsExistantes
         });
       }
-      // Si c'est dimanche ou jour férié, on ne génère pas de créneau
-      // = date non programmée = date-unavailable
 
       dateCourante.setDate(dateCourante.getDate() + 1);
     }
@@ -134,34 +112,25 @@ export class PlanningService {
     return creneaux;
   }
 
-  /**
-   * Détermine si une date est un jour férié (simplifié)
-   */
   private estJourFerie(date: Date): boolean {
     const jourMois = date.getDate();
     const mois = date.getMonth();
 
-    // Quelques jours fériés fixes pour les tests
     return (
-      (mois === 7 && jourMois === 15) || // 15 août
-      (mois === 7 && jourMois === 25) || // Arbitraire pour tests
+      (mois === 7 && jourMois === 15) ||
+      (mois === 7 && jourMois === 25) ||
       (mois === 8 && jourMois === 1)
-    ); // Arbitraire pour tests
+    );
   }
 
-  /**
-   * Génère des créneaux avec des variations de capacité (weekend vs semaine)
-   */
   private genererCreneauxAvecVariations(dateDebut: Date, dateFin: Date): AvailableSlot[] {
     const creneaux: AvailableSlot[] = [];
     const dateCourante = new Date(dateDebut);
 
     while (dateCourante <= dateFin) {
-      // Plus de capacité le weekend
       const estWeekend = dateCourante.getDay() === 0 || dateCourante.getDay() === 6;
       const capacite = estWeekend ? 12 : 8;
 
-      // Simuler quelques réservations existantes
       const reservationsExistantes = Math.floor(Math.random() * (capacite / 3));
 
       creneaux.push({
@@ -294,7 +263,6 @@ export class PlanningService {
     const planning = plannings[planningIndex];
     const dateFinal = dateFin || dateDebut;
 
-    // Annuler les réservations
     const dateCourante = new Date(dateDebut);
     while (dateCourante <= dateFinal) {
       const creneauIndex = planning.creneaux.findIndex(

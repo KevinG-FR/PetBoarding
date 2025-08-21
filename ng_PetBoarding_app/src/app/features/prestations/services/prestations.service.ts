@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { PetType } from '../../pets/models/pet.model';
-import { Prestation, PrestationFilters } from '../models/prestation.model';
+import { PlanningPrestation, Prestation, PrestationFilters } from '../models/prestation.model';
 import { PlanningService } from './planning.service';
 
 export interface CategoryInfo {
@@ -14,7 +14,7 @@ export interface CategoryInfo {
   providedIn: 'root'
 })
 export class PrestationsService {
-  private planningService = inject(PlanningService);
+  private readonly planningService = inject(PlanningService);
 
   private prestations = signal<Prestation[]>([
     {
@@ -23,7 +23,7 @@ export class PrestationsService {
       description: 'Garde de jour et nuit avec promenades et soins',
       categorieAnimal: PetType.DOG,
       prix: 35,
-      duree: 1440, // 24h en minutes
+      duree: 1440,
       disponible: true
     },
     {
@@ -32,7 +32,7 @@ export class PrestationsService {
       description: 'Garde en journée avec activités et socialisation',
       categorieAnimal: PetType.DOG,
       prix: 25,
-      duree: 480, // 8h en minutes
+      duree: 480,
       disponible: true
     },
     {
@@ -41,7 +41,7 @@ export class PrestationsService {
       description: 'Bain, coupe, griffes et soins esthétiques',
       categorieAnimal: PetType.DOG,
       prix: 45,
-      duree: 120, // 2h en minutes
+      duree: 120,
       disponible: true
     },
     {
@@ -50,7 +50,7 @@ export class PrestationsService {
       description: 'Sortie individuelle ou en groupe',
       categorieAnimal: PetType.DOG,
       prix: 15,
-      duree: 60, // 1h en minutes
+      duree: 60,
       disponible: true
     },
     {
@@ -59,7 +59,7 @@ export class PrestationsService {
       description: 'Visite et soins au domicile du propriétaire',
       categorieAnimal: PetType.CAT,
       prix: 20,
-      duree: 30, // 30min en minutes
+      duree: 30,
       disponible: true
     },
     {
@@ -68,7 +68,7 @@ export class PrestationsService {
       description: 'Hébergement en chatterie avec soins personnalisés',
       categorieAnimal: PetType.CAT,
       prix: 25,
-      duree: 1440, // 24h en minutes
+      duree: 1440,
       disponible: true
     },
     {
@@ -77,7 +77,7 @@ export class PrestationsService {
       description: 'Brossage, bain et coupe de griffes',
       categorieAnimal: PetType.CAT,
       prix: 35,
-      duree: 90, // 1h30 en minutes
+      duree: 90,
       disponible: true
     },
     {
@@ -86,24 +86,22 @@ export class PrestationsService {
       description: 'Séance avec un spécialiste du comportement animal',
       categorieAnimal: PetType.DOG,
       prix: 60,
-      duree: 60, // 1h en minutes
+      duree: 60,
       disponible: false
     }
   ]);
 
-  // Getters pour exposer les signals
   getAllPrestations() {
     return this.prestations.asReadonly();
   }
 
-  /**
-   * Obtient toutes les prestations avec leur planning associé
-   */
   getAllPrestationsAvecPlanning(): Observable<Prestation[]> {
     return this.planningService.getTousLesPlannings().pipe(
-      map((plannings) => {
-        return this.prestations().map((prestation) => {
-          const planning = plannings.find((p) => p.prestationId === prestation.id);
+      map((plannings: PlanningPrestation[]) => {
+        return this.prestations().map((prestation: Prestation) => {
+          const planning = plannings.find(
+            (p: PlanningPrestation) => p.prestationId === prestation.id
+          );
           return {
             ...prestation,
             planning: planning || undefined
@@ -113,12 +111,9 @@ export class PrestationsService {
     );
   }
 
-  /**
-   * Obtient une prestation avec son planning
-   */
   getPrestationAvecPlanning(prestationId: string): Observable<Prestation | null> {
     return this.planningService.getPlanningParPrestation(prestationId).pipe(
-      map((planning) => {
+      map((planning: PlanningPrestation | null) => {
         const prestation = this.getPrestationById(prestationId);
         if (!prestation) return null;
 
@@ -130,15 +125,12 @@ export class PrestationsService {
     );
   }
 
-  // Nouvelle méthode pour créer des filtres locaux par composant
-  createFilteredPrestations(prestations: Prestation[], filters: PrestationFilters) {
-    return prestations.filter((prestation) => {
-      // Filtre par catégorie d'animal
+  createFilteredPrestations(prestations: Prestation[], filters: PrestationFilters): Prestation[] {
+    return prestations.filter((prestation: Prestation) => {
       if (filters.categorieAnimal && prestation.categorieAnimal !== filters.categorieAnimal) {
         return false;
       }
 
-      // Filtre par texte de recherche
       if (filters.searchText) {
         const searchTerm = filters.searchText.toLowerCase().trim();
         if (searchTerm) {
@@ -154,16 +146,13 @@ export class PrestationsService {
     });
   }
 
-  // Méthodes CRUD (pour plus tard)
   getPrestationById(id: string): Prestation | undefined {
-    return this.prestations().find((p) => p.id === id);
+    return this.prestations().find((p: Prestation) => p.id === id);
   }
 
   getCategoriesAnimaux(): PetType[] {
     return Object.values(PetType);
   }
-
-  // Méthodes utilitaires pour l'affichage
   getCategoryInfo(category: PetType): CategoryInfo {
     switch (category) {
       case PetType.DOG:
@@ -205,7 +194,6 @@ export class PrestationsService {
     }
   }
 
-  // Méthodes de compatibilité (délèguent à getCategoryInfo)
   getCategoryIcon(category: PetType): string {
     return this.getCategoryInfo(category).icon;
   }

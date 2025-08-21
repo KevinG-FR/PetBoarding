@@ -7,7 +7,7 @@ export interface Prestation {
   description: string;
   categorieAnimal: PetType;
   prix: number;
-  duree: number; // en minutes
+  duree: number;
   disponible: boolean;
   planning?: PlanningPrestation;
 }

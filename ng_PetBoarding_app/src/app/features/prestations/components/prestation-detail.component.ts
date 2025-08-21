@@ -48,15 +48,12 @@ export class PrestationDetailComponent {
   private data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialog);
 
-  // Récupérer la prestation depuis les données du modal
   prestation: Prestation = this.data.prestation;
 
-  // Computed pour optimiser les appels répétés
   categoryInfo = computed(() =>
     this.prestationsService.getCategoryInfo(this.prestation.categorieAnimal)
   );
 
-  // Informations détaillées de la prestation
   detailedInfo = computed(() => {
     const prestation = this.prestation;
     const baseInfo = {
@@ -67,7 +64,6 @@ export class PrestationDetailComponent {
       additionalInfo: [] as string[]
     };
 
-    // Informations spécifiques selon le type de prestation
     const libelle = prestation.libelle.toLowerCase();
 
     if (libelle.includes('pension')) {
@@ -211,7 +207,6 @@ export class PrestationDetailComponent {
 
     dialogRef.afterClosed().subscribe((result: ReservationResult) => {
       if (result?.action === 'reserve' && result.pet && result.dates) {
-        // Close the detail dialog and pass complete reservation data
         this.dialogRef.close({
           action: 'reserve',
           pet: result.pet,

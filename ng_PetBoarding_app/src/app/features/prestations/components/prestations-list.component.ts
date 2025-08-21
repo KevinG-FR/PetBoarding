@@ -25,18 +25,14 @@ export class PrestationsListComponent {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
-  // Input pour recevoir les filtres du parent
   filters = input<PrestationFilters>({});
 
-  // Données de base
   allPrestations = this.prestationsService.getAllPrestations();
 
-  // Prestations filtrées basées sur les filtres reçus
   filteredPrestations = computed(() => {
     return this.prestationsService.createFilteredPrestations(this.allPrestations(), this.filters());
   });
 
-  // Computed pour les statistiques
   hasResults = computed(() => this.filteredPrestations().length > 0);
   isFiltered = computed(() => this.filteredPrestations().length < this.allPrestations().length);
   resultCount = computed(() => this.filteredPrestations().length);
@@ -54,12 +50,10 @@ export class PrestationsListComponent {
       panelClass: 'prestation-detail-dialog'
     });
 
-    // Gérer la fermeture du modal
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'reserve') {
         this.onReservePrestation(prestation);
       } else if (result && typeof result === 'object' && result.action === 'reserve') {
-        // result.pet et result.dates peuvent être présents
         const pet = result.pet as Pet | undefined;
         const dateDebut = result.dateDebut as Date | undefined;
         const dateFin = result.dateFin as Date | undefined;
@@ -96,7 +90,6 @@ export class PrestationsListComponent {
   }
 
   onReservePrestation(prestation: Prestation): void {
-    // Simuler une réservation
     this.basketService.addItem(prestation);
 
     const snackBarRef = this.snackBar.open(
