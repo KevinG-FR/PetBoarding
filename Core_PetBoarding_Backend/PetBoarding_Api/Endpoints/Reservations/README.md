@@ -1,70 +1,120 @@
-# Structure des Endpoints - Reservations
+# Endpoints Reservations - PetBoarding API
 
-Cette structure utilise des **classes partielles** pour améliorer la lisibilité et la maintenabilité du code.
+Gestion des **réservations** pour les services de pension d'animaux.
 
-## 📁 Organisation des fichiers
+## 📋 **Endpoints disponibles**
+
+| Endpoint                    | Méthode  | Description                          | Autorisation |
+| --------------------------- | -------- | ------------------------------------ | ------------ |
+| `/api/v1/reservations`      | `GET`    | Lister les réservations avec filtres | Ouvert       |
+| `/api/v1/reservations/{id}` | `GET`    | Détail d'une réservation             | Ouvert       |
+| `/api/v1/reservations`      | `POST`   | Créer une nouvelle réservation       | Ouvert       |
+| `/api/v1/reservations/{id}` | `PUT`    | Modifier une réservation             | Ouvert       |
+| `/api/v1/reservations/{id}` | `DELETE` | Annuler une réservation              | Ouvert       |
+
+## 🏗️ **Structure des fichiers**
 
 ```
 Reservations/
-├── ReservationsEndpoints.cs                    # Configuration des routes principales
-├── ReservationsEndpoints.GetReservations.cs    # Logique GET /reservations
-├── ReservationsEndpoints.GetReservationById.cs # Logique GET /reservations/{id}
-├── ReservationsEndpoints.CreateReservation.cs  # Logique POST /reservations
-├── ReservationsEndpoints.UpdateReservation.cs  # Logique PUT /reservations/{id}
-└── ReservationsEndpoints.CancelReservation.cs  # Logique DELETE /reservations/{id}
+├── ReservationsEndpoints.cs                    # Configuration routes + tags Swagger
+├── ReservationsEndpoints.GetReservations.cs    # Liste avec filtres
+├── ReservationsEndpoints.GetReservationById.cs # Détail par ID
+├── ReservationsEndpoints.CreateReservation.cs  # Création avec validation
+├── ReservationsEndpoints.UpdateReservation.cs  # Modification complète
+└── ReservationsEndpoints.CancelReservation.cs  # Annulation (soft delete)
 ```
 
-## 🎯 Avantages de cette approche
+## 🔍 **Spécificités métier**
 
-### ✅ **Lisibilité**
+### **Filtres disponibles (GetReservations)**
 
-- Chaque endpoint dans son propre fichier
-- Code plus facile à naviguer
-- Logique isolée par responsabilité
+- **UserId** : Réservations d'un utilisateur spécifique
+- **StartDate** : Réservations à partir d'une date
+- **EndDate** : Réservations jusqu'à une date
+- **Status** : Filtrer par statut (En attente, Confirmée, Annulée, etc.)
 
-### ✅ **Maintenabilité**
+### **États des réservations**
 
-- Modifications isolées par endpoint
-- Moins de conflits Git sur le même fichier
-- Facilite les revues de code
+- **Pending** : En attente de confirmation
+- **Confirmed** : Confirmée par l'établissement
+- **InProgress** : En cours (animal hébergé)
+- **Completed** : Terminée avec succès
+- **Cancelled** : Annulée (par client ou établissement)
 
-### ✅ **Collaboration**
+### **Règles de validation**
 
-- Développeurs peuvent travailler en parallèle
-- Responsabilités clairement séparées
-- Historique Git plus précis
+- **Dates** : StartDate < EndDate et futures uniquement
+- **Durée** : Minimum 1 jour, maximum configurable
+- **Conflits** : Vérification de disponibilité des prestations
+- **Utilisateur** : Doit exister et être actif
 
-## 📋 Conventions
+## � **Exemples d'utilisation**
 
-### **Nommage des fichiers**
+### **Créer une réservation**
 
-- Format : `{Entity}Endpoints.{Action}.cs`
-- Exemple : `ReservationsEndpoints.GetReservations.cs`
+```json
+POST /api/v1/reservations
+{
+  "userId": "guid-user-id",
+  "startDate": "2025-09-01T10:00:00Z",
+  "endDate": "2025-09-05T12:00:00Z",
+  "prestationIds": ["guid-prestation-1", "guid-prestation-2"],
+  "notes": "Chat sensible, préfère le calme"
+}
+```
 
-### **Structure du code**
+### **Filtrer les réservations**
 
-- Namespace : `PetBoarding_Api.Endpoints.{Entity}`
-- Classe : `public static partial class {Entity}Endpoints`
-- Méthode : `private static async Task<IResult> {Action}(...)`
+```
+GET /api/v1/reservations?userId=guid&startDate=2025-09-01&status=Confirmed
+```
 
-### **Imports**
+### **Mise à jour du statut**
 
-- Imports spécifiques dans chaque fichier partiel
-- Imports communs dans le fichier principal si nécessaire
+```json
+PUT /api/v1/reservations/{id}
+{
+  "status": "Confirmed",
+  "notes": "Confirmation avec instructions spéciales"
+}
+```
 
-## 🚀 Prochaines étapes
+## ⚠️ **Points d'attention**
 
-Cette structure peut être appliquée aux autres entités :
+### **Gestion des conflits**
 
-- `Users/`
-- `Prestations/`
-- Futures entités
+- Vérifier la disponibilité avant confirmation
+- Gérer les chevauchements de dates
+- Limites de capacité par type de prestation
 
-## 📝 Exemple d'utilisation
+### **Notifications** (à implémenter)
 
-Pour ajouter un nouvel endpoint :
+- Confirmation de réservation → Email client
+- Changement de statut → Notification push
+- Rappel J-1 → SMS/Email
 
-1. Créer `ReservationsEndpoints.{NouvelAction}.cs`
-2. Ajouter la méthode privée avec la logique
-3. Ajouter le mapping dans `ReservationsEndpoints.cs`
-4. Respecter les conventions de nommage et structure
+### **Audit et traçabilité**
+
+- Log des changements de statut
+- Historique des modifications
+- Identification des auteurs
+
+## � **Évolutions prévues**
+
+### **Court terme**
+
+- [ ] Gestion des disponibilités en temps réel
+- [ ] Calcul automatique des prix
+- [ ] Validation des créneaux horaires
+
+### **Moyen terme**
+
+- [ ] Système de notifications
+- [ ] Gestion des acomptes/paiements
+- [ ] Planning visuel intégré
+
+### **Long terme**
+
+- [ ] IA pour optimisation des créneaux
+- [ ] Intégration calendrier externe
+- [ ] Système de recommandations

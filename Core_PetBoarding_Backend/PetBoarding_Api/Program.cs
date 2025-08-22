@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 using PetBoarding_Api.Endpoints;
+using PetBoarding_Api.Endpoints.Prestations;
 using PetBoarding_Api.Endpoints.Reservations;
 using PetBoarding_Api.Endpoints.Users;
 using PetBoarding_Api.Extensions;
