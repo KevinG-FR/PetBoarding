@@ -21,6 +21,9 @@ public static class DependencyInjection
         // Enregistrement des repositories
         services.AddScoped<IReservationRepository, ReservationRepository>();
 
+        // Enregistrement de l'UnitOfWork
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         return services;
     }
 }

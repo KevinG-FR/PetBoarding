@@ -70,7 +70,10 @@ export class ProfileEditComponent implements OnInit {
         [Validators.required, Validators.minLength(2), Validators.maxLength(50)]
       ],
       email: [user?.email || '', [Validators.required, Validators.email]],
-      phone: [user?.phone || '', [Validators.required, Validators.pattern(/^[+]?[0-9\s\-()]+$/)]],
+      phoneNumber: [
+        user?.phoneNumber || '',
+        [Validators.required, Validators.pattern(/^[+]?[0-9\s\-()]+$/)]
+      ],
       address: this.fb.group({
         streetNumber: [user?.address?.streetNumber || '', [Validators.required]],
         streetName: [user?.address?.streetName || '', [Validators.required]],

@@ -121,10 +121,11 @@ export class AuthService {
       email: userDto.email,
       firstName: userDto.firstName,
       lastName: userDto.lastName,
-      phone: userDto.phoneNumber,
+      phoneNumber: userDto.phoneNumber,
+      profileType: userDto.profileType,
+      status: userDto.status,
       address: userDto.address
         ? {
-            id: userDto.address.id,
             streetNumber: userDto.address.streetNumber,
             streetName: userDto.address.streetName,
             city: userDto.address.city,
@@ -134,8 +135,7 @@ export class AuthService {
           }
         : undefined,
       createdAt: new Date(userDto.createdAt),
-      updatedAt: new Date(userDto.updatedAt),
-      isActive: userDto.status === 'Confirmed'
+      updatedAt: new Date(userDto.updatedAt)
     };
   }
 }

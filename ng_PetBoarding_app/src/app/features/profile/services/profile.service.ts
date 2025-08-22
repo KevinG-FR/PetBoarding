@@ -81,11 +81,11 @@ export class ProfileService {
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
-
+    debugger;
     const profileData = {
       firstname: updates.firstName || currentUser.firstName,
       lastname: updates.lastName || currentUser.lastName,
-      phoneNumber: updates.phone || currentUser.phone,
+      phoneNumber: updates.phoneNumber || currentUser.phoneNumber,
       address: updates.address
         ? {
             streetNumber: updates.address.streetNumber,
@@ -103,46 +103,41 @@ export class ProfileService {
     return this.http.put<UpdateProfileResponseDto>(apiUrl, profileData).pipe(
       map((response: UpdateProfileResponseDto) => this.mapBackendUserToUser(response)),
       tap((user: User) => {
+        debugger;
         this._currentUser.set(user);
       }),
       catchError(this.handleError)
     );
   }
 
-  private mapBackendUserToUser(user: UpdateProfileResponseDto): User {
+  private mapBackendUserToUser(response: UpdateProfileResponseDto): User {
+    debugger;
+
+    // Vérification si user existe
+    if (!response) {
+      throw new Error('Données utilisateur manquantes');
+    }
+
     return {
-      id: user?.id || '',
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      address: user?.address
+      id: response.user.id ?? '',
+      firstName: response.user.firstName ?? '',
+      lastName: response.user.lastName ?? '',
+      email: response.user.email ?? '',
+      phoneNumber: response.user.phoneNumber ?? '',
+      profileType: response.user.profileType ?? '',
+      status: response.user.status ?? '',
+      address: response.user.address
         ? {
-            id: user.address.id,
-            streetNumber: user.address.streetNumber || '',
-            streetName: user.address.streetName || '',
-            city: user.address.city || '',
-            postalCode: user.address.postalCode || '',
-            country: user.address.country || '',
-            complement: user.address.complement || ''
+            streetNumber: response.user.address.streetNumber ?? '',
+            streetName: response.user.address.streetName ?? '',
+            city: response.user.address.city ?? '',
+            postalCode: response.user.address.postalCode ?? '',
+            country: response.user.address.country ?? '',
+            complement: response.user.address.complement ?? ''
           }
         : undefined,
-      createdAt: new Date(user?.createdAt || Date.now()),
-      updatedAt: new Date(user?.updatedAt || Date.now()),
-      isActive: user?.isActive ?? true
-    };
-  }
-
-  private mapToUser(response: UpdateProfileResponseDto): User {
-    return {
-      id: response.id,
-      firstName: response.firstName,
-      lastName: response.lastName,
-      email: response.email,
-      phone: response.phone,
-      createdAt: new Date(response.createdAt),
-      updatedAt: new Date(response.updatedAt),
-      isActive: response.isActive
+      createdAt: new Date(response.user.createdAt ?? Date.now()),
+      updatedAt: new Date(response.user.updatedAt ?? Date.now())
     };
   }
 
