@@ -25,24 +25,7 @@ using PetBoarding_Persistence.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(
-    (serviceProvider, dbContextOptionsBuilder) =>
-    {
-        var databaseOptions = serviceProvider.GetService<IOptions<DatabaseOptions>>()!.Value;
-
-        dbContextOptionsBuilder.UseNpgsql(databaseOptions.ConnectionString, postgreAction =>
-        {
-            postgreAction.CommandTimeout(databaseOptions.CommandTimeout);
-            postgreAction.EnableRetryOnFailure(databaseOptions.MaxRetry);
-        });
-
-        dbContextOptionsBuilder.EnableDetailedErrors(databaseOptions.EnableDetailedErrors);
-        dbContextOptionsBuilder.EnableSensitiveDataLogging(databaseOptions.EnableSensitiveDataLogging);
-    });
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
@@ -111,7 +94,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddApplication()
                 .AddInfrastructure()
-                .AddPersistence(builder.Configuration);
+                .AddPersistence();
 
 builder.Services.AddEndpoint(Assembly.GetExecutingAssembly());
 
@@ -120,6 +103,7 @@ var app = builder.Build();
 // Add Endpoints. Don't forget to add new Endpoints here.
 app.MapUsersEndpoints();
 app.MapReservationsEndpoints();
+app.MapPrestationsEndpoints();
 
 // Configure the HTTP request pipeline.
 

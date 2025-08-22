@@ -75,6 +75,24 @@ public sealed class Prestation : Entity<PrestationId>
         DateModification = DateTime.UtcNow;
     }
 
+    public void ModifierCategorieAnimal(TypeAnimal nouvelleCategorieAnimal)
+    {
+        CategorieAnimal = nouvelleCategorieAnimal;
+        DateModification = DateTime.UtcNow;
+    }
+
+    public void RendreDisponible()
+    {
+        EstDisponible = true;
+        DateModification = DateTime.UtcNow;
+    }
+
+    public void RendreIndisponible()
+    {
+        EstDisponible = false;
+        DateModification = DateTime.UtcNow;
+    }
+
     public void Activer()
     {
         EstDisponible = true;

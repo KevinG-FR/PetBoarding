@@ -1,32 +1,30 @@
 ﻿using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
-using PetBoarding_Api.Extensions;
-
-using PetBoarding_Application.Account.CreateAccount;
-using PetBoarding_Application.Users.GetAllUsers;
-using PetBoarding_Application.Users.GetUserById;
-using PetBoarding_Application.Users.GetUserByEmail;
-using PetBoarding_Application.Users.UpdateUserProfile;
-
-using PetBoarding_Domain.Accounts;
-using PetBoarding_Domain.Users;
-
-using PetBoarding_Infrastructure.Authentication;
-using PetBoarding_Api.Mappers.Users;
-using PetBoarding_Api.Dto.Login.Requests;
 using PetBoarding_Api.Dto.Addresses;
+using PetBoarding_Api.Dto.Login.Requests;
 using PetBoarding_Api.Dto.Login.Responses;
 using PetBoarding_Api.Dto.Users;
+using PetBoarding_Api.Extensions;
+using PetBoarding_Api.Mappers.Users;
+using PetBoarding_Application.Account.CreateAccount;
+using PetBoarding_Application.Users.GetAllUsers;
+using PetBoarding_Application.Users.GetUserByEmail;
+using PetBoarding_Application.Users.GetUserById;
+using PetBoarding_Application.Users.UpdateUserProfile;
+using PetBoarding_Domain.Accounts;
+using PetBoarding_Domain.Prestations;
+using PetBoarding_Domain.Users;
+using PetBoarding_Infrastructure.Authentication;
 
 namespace PetBoarding_Api.Endpoints
 {
     public static class UsersEndpoints
     {
+        private const string RouteBase = "api/users";
+
         public static void MapUsersEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("api/users");
+            var group = app.MapGroup(RouteBase);
 
             group.MapGet("", GetAllUsers).RequireAuthorization();
             group.MapGet("{userId}", GetUser);
@@ -67,7 +65,11 @@ namespace PetBoarding_Api.Endpoints
                 createUserDto.PhoneNumber);
             var createAccountResult = await sender.Send(createUserCommand);
 
-            return createAccountResult.GetHttpResult(UserMapper.ToDto, UserResponseMapper.ToGetUserResponse);
+            return createAccountResult.GetHttpResult(
+                UserMapper.ToDto,
+                UserResponseMapper.ToGetUserResponse,
+                user => $"{RouteBase}/{user.Id.Value}",
+                SuccessStatusCode.Created);
         }
 
         private static async Task<IResult> Authentification(

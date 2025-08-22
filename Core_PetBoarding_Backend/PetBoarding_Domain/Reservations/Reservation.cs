@@ -1,7 +1,6 @@
 namespace PetBoarding_Domain.Reservations;
 
 using PetBoarding_Domain.Abstractions;
-using PetBoarding_Domain.Planning;
 
 /// <summary>
 /// Entity representing a reservation with schedule management
