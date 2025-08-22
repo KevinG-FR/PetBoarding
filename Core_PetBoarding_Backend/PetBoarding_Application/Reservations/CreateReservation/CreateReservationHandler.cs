@@ -6,7 +6,7 @@ using PetBoarding_Application.Abstractions;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Reservations;
 
-internal sealed class CreateReservationHandler : ICommandHandler<CreateReservationCommand, string>
+internal sealed class CreateReservationHandler : ICommandHandler<CreateReservationCommand, Reservation>
 {
     private readonly IReservationRepository _reservationRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +19,7 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<string>> Handle(
+    public async Task<Result<Reservation>> Handle(
         CreateReservationCommand request,
         CancellationToken cancellationToken)
     {
@@ -35,8 +35,9 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
                 request.Comments);
 
             var createdReservation = await _reservationRepository.AddAsync(reservation, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             
-            return Result.Ok(createdReservation.Id.Value.ToString());
+            return Result.Ok(createdReservation);
         }
         catch (Exception ex)
         {

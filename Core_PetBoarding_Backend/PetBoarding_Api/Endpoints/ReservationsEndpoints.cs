@@ -38,7 +38,7 @@ public static class ReservationsEndpoints
             .WithName("CreateReservation")
             .WithSummary("Create a new reservation")
             .WithDescription("Allows creating a new reservation for an animal and a service.")
-            .Produces<string>(201)
+            .Produces<CreateReservationResponse>(201)
             .Produces(400);
 
         group.MapPut("/{id}", UpdateReservation)
@@ -110,7 +110,11 @@ public static class ReservationsEndpoints
 
         var result = await mediator.Send(command, cancellationToken);       
 
-        return result.GetHttpResult();
+        return result.GetHttpResult(
+            ReservationMapper.ToDto,
+            ReservationResponseMapper.ToCreateReservationResponse,
+            reservation => $"/api/v1/reservations/{reservation.Id.Value}",
+            SuccessStatusCode.Created);
     }
 
     private static async Task<IResult> UpdateReservation(

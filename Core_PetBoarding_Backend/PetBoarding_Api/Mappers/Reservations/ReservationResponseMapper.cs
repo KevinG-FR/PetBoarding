@@ -10,6 +10,11 @@ namespace PetBoarding_Api.Mappers.Reservations
             return new GetReservationResponse(reservation);
         }
 
+        public static CreateReservationResponse ToCreateReservationResponse(ReservationDto reservation)
+        {
+            return new CreateReservationResponse(reservation);
+        }
+
         public static GetAllReservationsResponse ToGetAllReservationsResponse(IReadOnlyList<ReservationDto> reservations)
         {
             return new GetAllReservationsResponse(
