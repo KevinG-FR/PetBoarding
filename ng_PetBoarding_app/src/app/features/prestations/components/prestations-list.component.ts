@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BasketService } from '../../basket/services/basket.service';
@@ -14,11 +16,17 @@ import { PrestationItemComponent } from './prestation-item.component';
 @Component({
   selector: 'app-prestations-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, PrestationItemComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    PrestationItemComponent
+  ],
   templateUrl: './prestations-list.component.html',
   styleUrl: './prestations-list.component.scss'
 })
-export class PrestationsListComponent {
+export class PrestationsListComponent implements OnInit {
   private prestationsService = inject(PrestationsService);
   private basketService = inject(BasketService);
   private dialog = inject(MatDialog);
@@ -27,8 +35,12 @@ export class PrestationsListComponent {
 
   filters = input<PrestationFilters>({});
 
+  // Utilise les signaux du service pour l'état de chargement
   allPrestations = this.prestationsService.getAllPrestations();
+  isLoading = this.prestationsService.getIsLoading();
+  error = this.prestationsService.getError();
 
+  // Computed pour les prestations filtrées
   filteredPrestations = computed(() => {
     return this.prestationsService.createFilteredPrestations(this.allPrestations(), this.filters());
   });
@@ -37,6 +49,27 @@ export class PrestationsListComponent {
   isFiltered = computed(() => this.filteredPrestations().length < this.allPrestations().length);
   resultCount = computed(() => this.filteredPrestations().length);
   totalCount = computed(() => this.allPrestations().length);
+
+  constructor() {
+    // Effect pour recharger les prestations quand les filtres changent
+    effect(() => {
+      const currentFilters = this.filters();
+      if (currentFilters && Object.keys(currentFilters).length > 0) {
+        this.prestationsService.loadPrestations(currentFilters).subscribe();
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    // Charge les prestations si pas encore chargées
+    if (this.allPrestations().length === 0) {
+      this.prestationsService.loadPrestations().subscribe();
+    }
+  }
+
+  onRetry(): void {
+    this.prestationsService.loadPrestations(this.filters()).subscribe();
+  }
 
   onViewDetails(prestation: Prestation): void {
     const dialogRef = this.dialog.open(PrestationDetailComponent, {

@@ -349,8 +349,13 @@ export class ReservationsService {
    * Crée une nouvelle réservation avec gestion du planning
    */
   creerReservationAvecPlanning(request: CreerReservationRequest): Observable<boolean> {
-    return this.prestationsService.getPrestationById(request.prestationId)
-      ? this.planningService
+    return this.prestationsService.getPrestationById(request.prestationId).pipe(
+      switchMap((prestation) => {
+        if (!prestation) {
+          return of(false);
+        }
+
+        return this.planningService
           .verifierDisponibilite({
             prestationId: request.prestationId,
             startDate: request.dateDebut,
@@ -377,8 +382,9 @@ export class ReservationsService {
                   })
                 );
             })
-          )
-      : of(false);
+          );
+      })
+    );
   }
 
   /**
@@ -413,7 +419,7 @@ export class ReservationsService {
   }
 
   private creerNouvelleReservation(request: CreerReservationRequest): Reservation {
-    const prestation = this.prestationsService.getPrestationById(request.prestationId);
+    const prestation = this.prestationsService.getPrestationFromCache(request.prestationId);
     if (!prestation) {
       throw new Error('Prestation non trouvée');
     }

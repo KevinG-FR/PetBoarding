@@ -21,11 +21,8 @@ public sealed class CreatePrestationCommandHandler : ICommandHandler<CreatePrest
     public async Task<Result<Prestation>> Handle(CreatePrestationCommand command, CancellationToken cancellationToken)
     {
         try
-        {
-            var prestationId = PrestationId.New();
-
+        {            
             var prestation = new Prestation(
-                prestationId,
                 command.Libelle,
                 command.Description,
                 command.CategorieAnimal,

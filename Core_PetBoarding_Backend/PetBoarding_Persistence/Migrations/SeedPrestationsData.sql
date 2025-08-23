@@ -15,111 +15,96 @@ INSERT INTO "PetBoarding"."Prestations"
     "DateModification"
 )
 VALUES
--- Pension complète pour chiens
 (
-    'a1b2c3d4-e5f6-7890-1234-56789abcdef0',
+    '018f4b4a-6789-7000-8000-123456789abc',
     'Pension complète',
     'Garde de jour et nuit avec promenades et soins',
-    0, -- TypeAnimal.Chien
+    0, 
     35.00,
-    1440, -- 24 heures en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    1440,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Garderie journée pour chiens
 (
-    'b2c3d4e5-f6g7-8901-2345-6789abcdef01',
+    '018f4b4a-6789-7001-8000-123456789abd',
     'Garderie journée',
     'Garde en journée avec activités et socialisation',
-    0, -- TypeAnimal.Chien
+    0,
     25.00,
-    480, -- 8 heures en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    480,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Toilettage complet pour chiens
 (
-    'c3d4e5f6-g7h8-9012-3456-789abcdef012',
+    '018f4b4a-6789-7002-8000-123456789abe',
     'Toilettage complet',
     'Bain, coupe, griffes et soins esthétiques',
-    0, -- TypeAnimal.Chien
+    0,
     45.00,
-    120, -- 2 heures en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    120,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Promenade pour chiens
 (
-    'd4e5f6g7-h8i9-0123-4567-89abcdef0123',
+    '018f4b4a-6789-7003-8000-123456789abf',
     'Promenade',
     'Sortie individuelle ou en groupe',
-    0, -- TypeAnimal.Chien
+    0,
     15.00,
-    60, -- 1 heure en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    60,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Garde à domicile pour chats
 (
-    'e5f6g7h8-i9j0-1234-5678-9abcdef01234',
+    '018f4b4a-6789-7004-8000-123456789ac0',
     'Garde à domicile',
     'Visite et soins au domicile du propriétaire',
-    1, -- TypeAnimal.Chat
+    1,
     20.00,
-    30, -- 30 minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    30,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Pension chat
 (
-    'f6g7h8i9-j0k1-2345-6789-abcdef012345',
+    '018f4b4a-6789-7005-8000-123456789ac1',
     'Pension chat',
     'Hébergement en chatterie avec soins personnalisés',
-    1, -- TypeAnimal.Chat
+    1,
     25.00,
-    1440, -- 24 heures en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    1440,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Toilettage chat
 (
-    'g7h8i9j0-k1l2-3456-789a-bcdef0123456',
+    '018f4b4a-6789-7006-8000-123456789ac2',
     'Toilettage chat',
     'Brossage, bain et coupe de griffes',
-    1, -- TypeAnimal.Chat
+    1,
     35.00,
-    90, -- 1h30 en minutes
-    true,
-    '2025-01-01 00:00:00'::timestamp,
+    90,
+    TRUE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 ),
-
--- Consultation comportementale (non disponible)
 (
-    'h8i9j0k1-l2m3-4567-89ab-cdef01234567',
+    '018f4b4a-6789-7007-8000-123456789ac3',
     'Consultation comportementale',
     'Séance avec un spécialiste du comportement animal',
-    0, -- TypeAnimal.Chien
+    0,
     60.00,
-    60, -- 1 heure en minutes
-    false, -- Non disponible
-    '2025-01-01 00:00:00'::timestamp,
+    60,
+    FALSE,
+    '2025-01-01 00:00:00+00'::timestamp with time zone,
     NULL
 );
 
--- Vérification des données insérées
+
 SELECT 
     "Id",
     "Libelle",

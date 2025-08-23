@@ -8,12 +8,11 @@ using PetBoarding_Domain.Abstractions;
 public sealed class Prestation : Entity<PrestationId>
 {
     public Prestation(
-        PrestationId id, 
         string libelle, 
         string description, 
         TypeAnimal categorieAnimal, 
         decimal prix, 
-        int dureeEnMinutes) : base(id)
+        int dureeEnMinutes) : base(new PrestationId(Guid.CreateVersion7()))
     {
         if (string.IsNullOrWhiteSpace(libelle))
             throw new ArgumentException("Le libellé ne peut pas être vide", nameof(libelle));

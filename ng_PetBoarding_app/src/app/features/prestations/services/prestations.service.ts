@@ -1,8 +1,22 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, of, tap } from 'rxjs';
+import {
+  CreatePrestationRequest,
+  PrestationDto,
+  UpdatePrestationRequest
+} from '../../../shared/contracts/prestations/prestation.dto';
+import { PrestationApiService } from '../../../shared/services/prestation-api.service';
 import { PetType } from '../../pets/models/pet.model';
 import { PlanningPrestation, Prestation, PrestationFilters } from '../models/prestation.model';
 import { PlanningService } from './planning.service';
+
+export interface CategoryInfo {
+  label: string;
+  icon: string;
+  color: string;
+}
+
+import { switchMap } from 'rxjs';
 
 export interface CategoryInfo {
   label: string;
@@ -15,112 +29,197 @@ export interface CategoryInfo {
 })
 export class PrestationsService {
   private readonly planningService = inject(PlanningService);
+  private readonly prestationApiService = inject(PrestationApiService);
 
-  private prestations = signal<Prestation[]>([
-    {
-      id: '1',
-      libelle: 'Pension complète',
-      description: 'Garde de jour et nuit avec promenades et soins',
-      categorieAnimal: PetType.DOG,
-      prix: 35,
-      duree: 1440,
-      disponible: true
-    },
-    {
-      id: '2',
-      libelle: 'Garderie journée',
-      description: 'Garde en journée avec activités et socialisation',
-      categorieAnimal: PetType.DOG,
-      prix: 25,
-      duree: 480,
-      disponible: true
-    },
-    {
-      id: '3',
-      libelle: 'Toilettage complet',
-      description: 'Bain, coupe, griffes et soins esthétiques',
-      categorieAnimal: PetType.DOG,
-      prix: 45,
-      duree: 120,
-      disponible: true
-    },
-    {
-      id: '4',
-      libelle: 'Promenade',
-      description: 'Sortie individuelle ou en groupe',
-      categorieAnimal: PetType.DOG,
-      prix: 15,
-      duree: 60,
-      disponible: true
-    },
-    {
-      id: '5',
-      libelle: 'Garde à domicile',
-      description: 'Visite et soins au domicile du propriétaire',
-      categorieAnimal: PetType.CAT,
-      prix: 20,
-      duree: 30,
-      disponible: true
-    },
-    {
-      id: '6',
-      libelle: 'Pension chat',
-      description: 'Hébergement en chatterie avec soins personnalisés',
-      categorieAnimal: PetType.CAT,
-      prix: 25,
-      duree: 1440,
-      disponible: true
-    },
-    {
-      id: '7',
-      libelle: 'Toilettage chat',
-      description: 'Brossage, bain et coupe de griffes',
-      categorieAnimal: PetType.CAT,
-      prix: 35,
-      duree: 90,
-      disponible: true
-    },
-    {
-      id: '8',
-      libelle: 'Consultation comportementale',
-      description: 'Séance avec un spécialiste du comportement animal',
-      categorieAnimal: PetType.DOG,
-      prix: 60,
-      duree: 60,
-      disponible: false
-    }
-  ]);
+  // Signal pour stocker les prestations en cache local
+  private prestations = signal<Prestation[]>([]);
+  private isLoading = signal<boolean>(false);
+  private error = signal<string | null>(null);
 
-  getAllPrestations() {
-    return this.prestations.asReadonly();
+  private mapDtoToPrestation(dto: PrestationDto): Prestation {
+    return {
+      id: dto.id,
+      libelle: dto.libelle,
+      description: dto.description,
+      categorieAnimal: dto.categorieAnimal,
+      prix: dto.prix,
+      duree: dto.dureeEnMinutes,
+      disponible: dto.estDisponible
+    };
   }
 
-  getAllPrestationsAvecPlanning(): Observable<Prestation[]> {
-    return this.planningService.getTousLesPlannings().pipe(
-      map((plannings: PlanningPrestation[]) => {
-        return this.prestations().map((prestation: Prestation) => {
-          const planning = plannings.find(
-            (p: PlanningPrestation) => p.prestationId === prestation.id
-          );
-          return {
-            ...prestation,
-            planning: planning || undefined
-          };
-        });
+  /**
+   * Convertit une Prestation en CreatePrestationRequest
+   */
+  private mapPrestationToCreateRequest(
+    prestation: Omit<Prestation, 'id'>
+  ): CreatePrestationRequest {
+    return {
+      libelle: prestation.libelle,
+      description: prestation.description,
+      categorieAnimal: prestation.categorieAnimal,
+      prix: prestation.prix,
+      dureeEnMinutes: prestation.duree,
+      estDisponible: prestation.disponible
+    };
+  }
+
+  /**
+   * Charge toutes les prestations depuis l'API
+   */
+  loadPrestations(filters?: PrestationFilters): Observable<Prestation[]> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    const apiFilters = filters
+      ? {
+          categorieAnimal: filters.categorieAnimal,
+          searchText: filters.searchText
+        }
+      : undefined;
+
+    return this.prestationApiService.getPrestations(apiFilters).pipe(
+      map((response) => response.prestations.map((dto) => this.mapDtoToPrestation(dto))),
+      tap((prestations) => {
+        this.prestations.set(prestations);
+        this.isLoading.set(false);
+      }),
+      catchError((_) => {
+        this.error.set('Erreur lors du chargement des prestations');
+        this.isLoading.set(false);
+        return of([]);
       })
     );
   }
 
+  /**
+   * Récupère toutes les prestations (depuis le cache local ou charge depuis l'API)
+   */
+  getAllPrestations() {
+    if (this.prestations().length === 0) {
+      // Si pas de données en cache, charge depuis l'API
+      this.loadPrestations().subscribe();
+    }
+    return this.prestations.asReadonly();
+  }
+
+  /**
+   * Récupère une prestation par son ID
+   */
+  getPrestationById(id: string): Observable<Prestation | null> {
+    return this.prestationApiService.getPrestationById(id).pipe(
+      map((response) => this.mapDtoToPrestation(response.prestation)),
+      catchError((_) => {
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Crée une nouvelle prestation
+   */
+  createPrestation(prestation: Omit<Prestation, 'id'>): Observable<boolean> {
+    const request = this.mapPrestationToCreateRequest(prestation);
+
+    return this.prestationApiService.createPrestation(request).pipe(
+      tap((response) => {
+        if (response.prestation) {
+          // Recharge les prestations après création
+          this.loadPrestations().subscribe();
+        }
+      }),
+      map((response) => !!response.prestation),
+      catchError((_) => {
+        return of(false);
+      })
+    );
+  }
+
+  /**
+   * Met à jour une prestation existante
+   */
+  updatePrestation(id: string, updates: Partial<Prestation>): Observable<boolean> {
+    const request: UpdatePrestationRequest = {};
+
+    if (updates.libelle !== undefined) request.libelle = updates.libelle;
+    if (updates.description !== undefined) request.description = updates.description;
+    if (updates.categorieAnimal !== undefined) request.categorieAnimal = updates.categorieAnimal;
+    if (updates.prix !== undefined) request.prix = updates.prix;
+    if (updates.duree !== undefined) request.dureeEnMinutes = updates.duree;
+    if (updates.disponible !== undefined) request.estDisponible = updates.disponible;
+
+    return this.prestationApiService.updatePrestation(id, request).pipe(
+      tap((response) => {
+        if (response.prestation) {
+          // Recharge les prestations après mise à jour
+          this.loadPrestations().subscribe();
+        }
+      }),
+      map((response) => !!response.prestation),
+      catchError((_) => {
+        return of(false);
+      })
+    );
+  }
+
+  /**
+   * Supprime une prestation
+   */
+  deletePrestation(id: string): Observable<boolean> {
+    return this.prestationApiService.deletePrestation(id).pipe(
+      tap((response) => {
+        if (response.success) {
+          // Recharge les prestations après suppression
+          this.loadPrestations().subscribe();
+        }
+      }),
+      map((response) => response.success),
+      catchError((_) => {
+        return of(false);
+      })
+    );
+  }
+
+  getAllPrestationsAvecPlanning(): Observable<Prestation[]> {
+    return this.planningService
+      .getTousLesPlannings()
+      .pipe(
+        map((plannings: PlanningPrestation[]) => {
+          // Utilise les prestations depuis l'API au lieu du cache local
+          return this.loadPrestations().pipe(
+            map((prestations: Prestation[]) => {
+              return prestations.map((prestation: Prestation) => {
+                const planning = plannings.find(
+                  (p: PlanningPrestation) => p.prestationId === prestation.id
+                );
+                return {
+                  ...prestation,
+                  planning: planning || undefined
+                };
+              });
+            })
+          );
+        })
+      )
+      .pipe(
+        // Flatten l'Observable imbriqué
+        switchMap((prestationsObs) => prestationsObs)
+      );
+  }
+
   getPrestationAvecPlanning(prestationId: string): Observable<Prestation | null> {
     return this.planningService.getPlanningParPrestation(prestationId).pipe(
-      map((planning: PlanningPrestation | null) => {
-        const prestation = this.getPrestationById(prestationId);
-        if (!prestation) return null;
+      switchMap((planning: PlanningPrestation | null) => {
+        return this.getPrestationById(prestationId).pipe(
+          map((prestation: Prestation | null) => {
+            if (!prestation) return null;
 
-        return {
-          ...prestation,
-          planning: planning || undefined
-        };
+            return {
+              ...prestation,
+              planning: planning || undefined
+            };
+          })
+        );
       })
     );
   }
@@ -146,13 +245,28 @@ export class PrestationsService {
     });
   }
 
-  getPrestationById(id: string): Prestation | undefined {
+  /**
+   * Récupère une prestation par son ID depuis le cache local (méthode synchrone)
+   */
+  getPrestationFromCache(id: string): Prestation | undefined {
     return this.prestations().find((p: Prestation) => p.id === id);
+  }
+
+  /**
+   * Getters pour les états
+   */
+  getIsLoading() {
+    return this.isLoading.asReadonly();
+  }
+
+  getError() {
+    return this.error.asReadonly();
   }
 
   getCategoriesAnimaux(): PetType[] {
     return Object.values(PetType);
   }
+
   getCategoryInfo(category: PetType): CategoryInfo {
     switch (category) {
       case PetType.DOG:

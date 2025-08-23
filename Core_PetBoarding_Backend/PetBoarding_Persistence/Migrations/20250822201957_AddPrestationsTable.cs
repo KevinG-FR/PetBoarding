@@ -45,8 +45,8 @@ namespace PetBoarding_Persistence.Migrations
                     EndDate = table.Column<DateTime>(type: "date", nullable: true),
                     Comments = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     TotalPrice = table.Column<decimal>(type: "numeric(10,2)", nullable: true)
                 },
                 constraints: table =>
