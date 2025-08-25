@@ -6,6 +6,6 @@
         
         bool VerifyPassword(string password, string hash);
 
-        Task<string?> Authenticate(AuthenticationRequest model, CancellationToken cancellationToken);
+        Task<AuthenticateTokens> Authenticate(AuthenticationRequest authentificationRequest, CancellationToken cancellationToken);
     }
 }

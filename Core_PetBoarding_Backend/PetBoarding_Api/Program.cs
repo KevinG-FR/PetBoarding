@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 using PetBoarding_Api.Endpoints;
+using PetBoarding_Api.Endpoints.Authentication;
 using PetBoarding_Api.Endpoints.Prestations;
 using PetBoarding_Api.Endpoints.Reservations;
 using PetBoarding_Api.Endpoints.Users;
@@ -50,6 +51,12 @@ builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen(opt =>
 {
+    opt.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PetBoarding API",
+        Version = "v1"
+    });
+
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -104,6 +111,7 @@ builder.Services.AddEndpoint(Assembly.GetExecutingAssembly());
 var app = builder.Build();
 
 // Add Endpoints. Don't forget to add new Endpoints here.
+app.MapAuthenticationEndpoints();
 app.MapUsersEndpoints();
 app.MapReservationsEndpoints();
 app.MapPrestationsEndpoints();
@@ -111,7 +119,11 @@ app.MapPrestationsEndpoints();
 // Configure the HTTP request pipeline.
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("v1/swagger.json", "PetBoarding API V1");
+    c.RoutePrefix = "swagger";
+});
 
 app.ApplyMigrations();
 

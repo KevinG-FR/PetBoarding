@@ -21,7 +21,8 @@ namespace PetBoarding_Infrastructure.Authentication
         {
             _jwtTokenOptions = jwtTokenOptions.Value;
         }
-        public string Generate(User user)
+
+        public string Generate(User user, int durationInMinutes = 1)
         {
             var claims = new Claim[]
             {
@@ -31,7 +32,7 @@ namespace PetBoarding_Infrastructure.Authentication
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(
-                    Encoding.UTF8?.GetBytes(_jwtTokenOptions.Key)),
+                    Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
                 SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -39,12 +40,73 @@ namespace PetBoarding_Infrastructure.Authentication
                 _jwtTokenOptions.Audience,
                 claims,
                 null,
-                DateTime.UtcNow.AddHours(1),
+                DateTime.UtcNow.AddMinutes(durationInMinutes),
                 signingCredentials);
 
             string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
             return tokenValue;
+        }        
+
+        public async Task<bool> ValidateRefreshToken(string refreshToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                var validationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                var tokanValidationResult = await tokenHandler.ValidateTokenAsync(refreshToken, validationParameters);
+                return tokanValidationResult.IsValid;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public IEnumerable<Claim> GetClaimsFromToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            return jwtToken.Claims;
+        }
+
+        public async Task<string> GenerateNewToken(string refreshToken)
+        {
+            if (! await ValidateRefreshToken(refreshToken))
+            {
+                throw new SecurityTokenException("Invalid refresh token");
+            }
+
+            var claims = GetClaimsFromToken(refreshToken);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Convert.FromBase64String(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"));
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(
+                [
+                    new Claim(ClaimTypes.Name, "user")
+                ]),
+                Expires = DateTime.UtcNow.AddMinutes(60),
+                SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(
+                    Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
+                SecurityAlgorithms.HmacSha256)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -7,7 +7,7 @@ using PetBoarding_Domain.Errors;
 
 namespace PetBoarding_Application.Account.GetAuthentification
 {
-    public class GetAuthentificationQueryHandler : IQueryHandler<GetAuthentificationQuery, string>
+    public class GetAuthentificationQueryHandler : IQueryHandler<GetAuthentificationQuery, AuthenticateTokens>
     {
         private readonly IAccountService _accountService;
 
@@ -16,9 +16,9 @@ namespace PetBoarding_Application.Account.GetAuthentification
             _accountService = accountService;
         }
 
-        public async Task<Result<string>> Handle(GetAuthentificationQuery request, CancellationToken cancellationToken)
+        public async Task<Result<AuthenticateTokens>> Handle(GetAuthentificationQuery request, CancellationToken cancellationToken)
         {
-            var token = await _accountService.Authenticate(new AuthenticationRequest(request.Email, request.PasswordHash), cancellationToken);
+            var token = await _accountService.Authenticate(new AuthenticationRequest(request.Email, request.PasswordHash, request.RememberMe), cancellationToken);
 
             if (token is null)
                 return Result.Fail(UserErrors.AuthentificationFailed());

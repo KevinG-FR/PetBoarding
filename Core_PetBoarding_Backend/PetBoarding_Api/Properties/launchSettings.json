@@ -25,7 +25,7 @@
     "PetBoarding_api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "/swagger/index.html",
+      "launchUrl": "swagger/index.html",
       "applicationUrl": "https://localhost:7023",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

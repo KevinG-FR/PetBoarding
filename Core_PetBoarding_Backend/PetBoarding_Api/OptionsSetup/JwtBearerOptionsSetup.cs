@@ -30,7 +30,8 @@ namespace PetBoarding_Api.OptionsSetup
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(_jwtOptions.Key ?? throw new InvalidOperationException("JWT Key is not configured"))),
                 // Mapper automatiquement le claim 'sub' vers NameIdentifier
-                NameClaimType = "sub"
+                NameClaimType = "sub",
+                ClockSkew = TimeSpan.Zero
             };
         }
 

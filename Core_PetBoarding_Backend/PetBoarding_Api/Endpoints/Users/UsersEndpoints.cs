@@ -1,8 +1,6 @@
 namespace PetBoarding_Api.Endpoints.Users;
 
-using PetBoarding_Api.Dto.Login.Responses;
 using PetBoarding_Api.Dto.Users.Responses;
-using PetBoarding_Domain.Accounts;
 
 public static partial class UsersEndpoints
 {
@@ -24,20 +22,13 @@ public static partial class UsersEndpoints
             .WithSummary("Get a user by ID")
             .WithDescription("Retrieves detailed information about a specific user.")
             .Produces<GetUserResponse>()
-            .Produces(404);
-
-        group.MapPost("/login", Authentification)
-            .WithName("Login")
-            .WithSummary("User authentication")
-            .WithDescription("Authenticates a user and returns a JWT token.")
-            .Produces<LoginResponseDto>()
-            .Produces(401);
+            .Produces(404);        
 
         group.MapGet("/profile", GetCurrentUserProfile)
             .WithName("GetCurrentUserProfile")
             .WithSummary("Get current user profile")
             .WithDescription("Retrieves the profile of the currently authenticated user.")
-            //.RequireAuthorization()
+            .RequireAuthorization()
             .Produces<GetUserResponse>()
             .Produces(401);
 

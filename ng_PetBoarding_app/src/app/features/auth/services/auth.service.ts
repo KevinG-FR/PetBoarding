@@ -23,8 +23,8 @@ export class AuthService {
   private readonly _isLoading = signal(false);
   private readonly _currentUser = signal<User | null>(null);
 
-  // API base URL (configuré selon votre backend)
-  private readonly apiUrl = `${environment.apiUrl}/api/users`;
+  // API base URL
+  private readonly apiUrl = `${environment.apiUrl}/api`;
 
   // Getters publics
   isAuthenticated = this._isAuthenticated.asReadonly();
@@ -35,12 +35,12 @@ export class AuthService {
 
   initializeAuth(): Observable<void> {
     return new Observable((observer) => {
-      if (this.tokenService.getToken()) {
+      if (this.tokenService.hasValidSession()) {
         this.getUserProfile().subscribe({
           next: (getProfileResponseDto: GetProfileResponseDto) => {
             const user = this.mapUserDtoToUser(getProfileResponseDto.user);
             this._currentUser.set(user);
-            this._isAuthenticated.set(true); // 🔥 Important: définir isAuthenticated à true
+            this._isAuthenticated.set(true);
             observer.next();
             observer.complete();
           },
@@ -60,7 +60,7 @@ export class AuthService {
   register(registerData: RegisterRequestDto): Observable<RegisterResponseDto> {
     this._isLoading.set(true);
 
-    return this.http.post<RegisterResponseDto>(`${this.apiUrl}/register`, registerData).pipe(
+    return this.http.post<RegisterResponseDto>(`${this.apiUrl}/users/register`, registerData).pipe(
       tap((response: RegisterResponseDto) => {
         if (response.success && response.token) {
           this.tokenService.setToken(response.token);
@@ -77,18 +77,29 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Observable<LoginResponseDto> {
+  login(
+    email: string,
+    password: string,
+    rememberMe: boolean = false
+  ): Observable<LoginResponseDto> {
     this._isLoading.set(true);
 
     const loginData: LoginRequestDto = {
       email,
-      password
+      password,
+      rememberMe
     };
 
-    return this.http.post<LoginResponseDto>(`${this.apiUrl}/login`, loginData).pipe(
+    return this.http.post<LoginResponseDto>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: LoginResponseDto) => {
         if (response.success && response.token && response.user) {
           this.tokenService.setToken(response.token);
+          this.tokenService.setRememberMe(rememberMe);
+
+          // Stocker le refresh token seulement si rememberMe est activé
+          if (rememberMe && response.refreshToken) {
+            this.tokenService.setRefreshToken(response.refreshToken);
+          }
 
           const user: User = this.mapUserDtoToUser(response.user);
           this._currentUser.set(user);
@@ -107,7 +118,6 @@ export class AuthService {
 
   logout(): void {
     this.clearAuthData();
-    // Navigation différée pour éviter la dépendance circulaire
     setTimeout(async () => {
       const { Router } = await import('@angular/router');
       const router = this.injector.get(Router);
@@ -115,21 +125,16 @@ export class AuthService {
     }, 0);
   }
 
-  getToken(): string | null {
-    return this.tokenService.getToken();
-  }
-
   getUserProfile(): Observable<GetProfileResponseDto> {
-    return this.http.get<GetProfileResponseDto>(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<GetProfileResponseDto>(`${this.apiUrl}/users/profile`).pipe(
       catchError((error: unknown) => {
-        // Vérifier si c'est une erreur d'authentification
         if (error && typeof error === 'object' && 'status' in error) {
           const httpError = error as { status: number };
           if (httpError.status === 401 || httpError.status === 403) {
-            this.clearAuthData();
+            // Ne pas nettoyer immédiatement, laisser l'interceptor gérer le refresh
+            // this.clearAuthData();
           }
         }
-
         throw error;
       })
     );
@@ -146,15 +151,11 @@ export class AuthService {
     if (isAuth) {
       this.logout();
     } else {
-      // Pour les tests, on peut soit :
-      // 1. Utiliser un vrai token si disponible
-      // 2. Ou créer un utilisateur de test temporaire
       const testToken = 'test-jwt-token';
       this.tokenService.setToken(testToken);
       this.tokenService.setRememberMe(true);
       this._isAuthenticated.set(true);
 
-      // Essayer de récupérer le profil réel, sinon utiliser un profil de test
       this._isLoading.set(true);
       this.getUserProfile().subscribe({
         next: (getProfileResponseDto: GetProfileResponseDto) => {
@@ -163,7 +164,6 @@ export class AuthService {
           this._isLoading.set(false);
         },
         error: () => {
-          // Si l'API n'est pas disponible, créer un utilisateur de test
           const testUser: User = {
             id: 'test-user-id',
             email: 'test@example.com',

@@ -1,8 +1,13 @@
 export interface LoginResponseDto {
   success: boolean;
-  message: string;
+  message?: string;
   token?: string;
+  refreshToken?: string;
   user?: UserDto;
+}
+
+export interface TokenRefreshResponseDto {
+  token: string;
 }
 
 export interface AddressDto {
