@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { routes } from './app.routes';
 import { authErrorInterceptor } from './shared/interceptors/auth-error.interceptor';
 import { jwtInterceptor } from './shared/interceptors/jwt.interceptor';
+import { AppInitService } from './shared/services/app-init.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,12 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([jwtInterceptor, authErrorInterceptor])),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (appInitService: AppInitService) => () => appInitService.initializeApp(),
+      deps: [AppInitService],
+      multi: true
+    }
   ]
 };

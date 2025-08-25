@@ -55,7 +55,7 @@ export class LoginComponent {
       const { email, password, rememberMe } = this.loginForm.value;
       this.isLoading.set(true);
 
-      this.authService.login(email, password, rememberMe).subscribe({
+      this.authService.login(email, password).subscribe({
         next: (response: LoginResponseDto) => {
           this.isLoading.set(false);
           if (response.success) {

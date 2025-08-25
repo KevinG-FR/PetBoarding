@@ -1,9 +1,9 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '../../features/auth/services/auth.service';
+import { TokenService } from '../services/token.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  const tokenService = inject(TokenService);
 
   const publicEndpoints = [
     { url: '/api/users/login', method: 'POST' },
@@ -22,7 +22,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const token = authService.getToken();
+  const token = tokenService.getToken();
 
   if (token) {
     const authReq = req.clone({

@@ -77,18 +77,34 @@ namespace PetBoarding_Application.Account
 
         public async Task<string?> Authenticate(AuthenticationRequest authentificationRequest, CancellationToken cancellationToken)
         {
+            Console.WriteLine($"🔍 Authenticating user: {authentificationRequest.Email}");
+            
             // Récupérer l'utilisateur par email
             var emailResult = PetBoarding_Domain.Users.Email.Create(authentificationRequest.Email);
-            if (emailResult.IsFailed) return null;
+            if (emailResult.IsFailed) 
+            {
+                Console.WriteLine($"❌ Invalid email format: {authentificationRequest.Email}");
+                return null;
+            }
             
             var user = await _userRepository.GetByEmailAsync(emailResult.Value, cancellationToken);
-            if (user is null) return null;
+            if (user is null) 
+            {
+                Console.WriteLine($"❌ User not found: {authentificationRequest.Email}");
+                return null;
+            }
+            
+            Console.WriteLine($"✅ User found: {user.Id.Value}");
 
             // Vérifier le mot de passe (authentificationRequest.PasswordHash contient le mot de passe en clair)
-            if (!VerifyPassword(authentificationRequest.PasswordHash, user.PasswordHash))
+            var passwordValid = VerifyPassword(authentificationRequest.PasswordHash, user.PasswordHash);
+            Console.WriteLine($"🔐 Password verification: {(passwordValid ? "SUCCESS" : "FAILED")}");
+            
+            if (!passwordValid)
                 return null;
 
             var token = _jwtProvider.Generate(user);
+            Console.WriteLine($"🎟️ JWT Token generated for user: {user.Id.Value}");
             return token;
         }
     }

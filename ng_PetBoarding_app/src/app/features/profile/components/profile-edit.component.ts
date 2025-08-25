@@ -100,7 +100,7 @@ export class ProfileEditComponent implements OnInit {
         firstName: formValue.firstName,
         lastName: formValue.lastName,
         email: formValue.email,
-        phone: formValue.phone,
+        phoneNumber: formValue.phoneNumber,
         address: formValue.address
       };
 

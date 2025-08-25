@@ -17,7 +17,7 @@ namespace PetBoarding_Api.OptionsSetup
             _jwtOptions = jwtOptions.Value;
         }
 
-        public void Configure(string name, JwtBearerOptions options)
+        public void Configure(string? name, JwtBearerOptions options)
         {
             options.TokenValidationParameters = new TokenValidationParameters()
             {
@@ -28,7 +28,9 @@ namespace PetBoarding_Api.OptionsSetup
                 ValidIssuer = _jwtOptions.Issuer,
                 ValidAudience = _jwtOptions.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_jwtOptions.Key))
+                    Encoding.UTF8.GetBytes(_jwtOptions.Key ?? throw new InvalidOperationException("JWT Key is not configured"))),
+                // Mapper automatiquement le claim 'sub' vers NameIdentifier
+                NameClaimType = "sub"
             };
         }
 

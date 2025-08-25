@@ -33,6 +33,14 @@ public static partial class UsersEndpoints
             .Produces<LoginResponseDto>()
             .Produces(401);
 
+        group.MapGet("/profile", GetCurrentUserProfile)
+            .WithName("GetCurrentUserProfile")
+            .WithSummary("Get current user profile")
+            .WithDescription("Retrieves the profile of the currently authenticated user.")
+            //.RequireAuthorization()
+            .Produces<GetUserResponse>()
+            .Produces(401);
+
         group.MapPost("", CreateUser)
             .WithName("CreateUser")
             .WithSummary("Create a new user")

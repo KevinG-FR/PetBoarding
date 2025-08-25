@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../shared/services/token.service';
 import { User } from '../../auth/models/user.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { UpdateProfileResponseDto } from '../contracts/update-profile.dto';
@@ -12,6 +13,7 @@ import { UpdateProfileResponseDto } from '../contracts/update-profile.dto';
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly tokenService = inject(TokenService);
   private readonly baseApiUrl = `${environment.apiUrl}/api/users`;
 
   // Signals pour l'état du profil utilisateur
@@ -28,18 +30,30 @@ export class ProfileService {
       const isAuthenticated = this.authService.isAuthenticated();
       const currentUser = this.authService.currentUser();
 
+      // eslint-disable-next-line no-console
+      console.log('🔄 ProfileService effect triggered', { isAuthenticated, currentUser });
+
       if (isAuthenticated && currentUser) {
         // Utilisateur connecté → utiliser les données du AuthService
+        // eslint-disable-next-line no-console
+        console.log('✅ ProfileService: Setting user from AuthService', currentUser);
         this._currentUser.set(currentUser);
         this._isLoading.set(false);
       } else if (isAuthenticated) {
         // Utilisateur connecté mais pas de données user → charger depuis l'API
-        const token = localStorage.getItem('auth_token');
+        const token = this.tokenService.getToken();
+        // eslint-disable-next-line no-console
+        console.log(
+          '⚠️ ProfileService: Authenticated but no user data, token:',
+          token ? 'Present' : 'Missing'
+        );
         if (token && !this._currentUser()) {
           this.loadUserProfile();
         }
       } else {
         // Utilisateur déconnecté → nettoyer les données
+        // eslint-disable-next-line no-console
+        console.log('🧹 ProfileService: Clearing user data');
         this.clearUserData();
       }
     });
@@ -81,7 +95,6 @@ export class ProfileService {
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
-    debugger;
     const profileData = {
       firstname: updates.firstName || currentUser.firstName,
       lastname: updates.lastName || currentUser.lastName,
@@ -103,7 +116,6 @@ export class ProfileService {
     return this.http.put<UpdateProfileResponseDto>(apiUrl, profileData).pipe(
       map((response: UpdateProfileResponseDto) => this.mapBackendUserToUser(response)),
       tap((user: User) => {
-        debugger;
         this._currentUser.set(user);
       }),
       catchError(this.handleError)
@@ -111,10 +123,7 @@ export class ProfileService {
   }
 
   private mapBackendUserToUser(response: UpdateProfileResponseDto): User {
-    debugger;
-
-    // Vérification si user existe
-    if (!response) {
+    if (!response?.user) {
       throw new Error('Données utilisateur manquantes');
     }
 

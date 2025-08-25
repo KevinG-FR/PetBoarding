@@ -17,10 +17,14 @@ public static partial class UsersEndpoints
         ISender sender,
         IAccountService accountService)
     {
+        Console.WriteLine($"🔍 Login attempt for email: {loginRequestDto.Email}");
+        
         // Utiliser la méthode Authenticate qui gère correctement la vérification du mot de passe
         var authRequest = new AuthenticationRequest(loginRequestDto.Email, loginRequestDto.Password);
         
         var token = await accountService.Authenticate(authRequest, CancellationToken.None);
+        
+        Console.WriteLine($"🔑 Token generated: {(!string.IsNullOrEmpty(token) ? "SUCCESS" : "FAILED")}");
 
         if (!string.IsNullOrEmpty(token))
         {

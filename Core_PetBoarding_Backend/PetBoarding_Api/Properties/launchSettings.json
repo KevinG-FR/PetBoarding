@@ -1,5 +1,5 @@
 {
-  "profiles": {    
+  "profiles": {
     "WSL": {
       "commandName": "WSL2",
       "launchBrowser": true,
@@ -21,6 +21,15 @@
       "httpPort": 51803,
       "useSSL": true,
       "sslPort": 44360
+    },
+    "PetBoarding_api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "/swagger/index.html",
+      "applicationUrl": "https://localhost:7023",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",

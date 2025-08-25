@@ -1,10 +1,10 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../../features/auth/services/auth.service';
+import { TokenService } from '../services/token.service';
 
 export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  const tokenService = inject(TokenService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -12,7 +12,13 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
         const isLoginAttempt = req.url.includes('/login') || req.url.includes('/authentification');
 
         if (!isLoginAttempt) {
-          authService.logout();
+          // Nettoyer les tokens
+          tokenService.clearAll();
+
+          // Redirection simple via window.location pour éviter les dépendances circulaires
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 100);
         }
       }
 

@@ -1,15 +1,15 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { AuthService } from '../../features/auth/services/auth.service';
+import { TokenService } from '../services/token.service';
 
 export const authGuard: CanActivateFn = (): boolean => {
-  const authService = inject(AuthService);
+  const tokenService = inject(TokenService);
   const router = inject(Router);
 
-  const isAuthenticated = authService.isAuthenticated();
+  const hasToken = tokenService.hasValidToken();
 
-  if (isAuthenticated) {
+  if (hasToken) {
     return true;
   }
 
