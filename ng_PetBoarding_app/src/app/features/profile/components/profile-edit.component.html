@@ -73,13 +73,13 @@
               <mat-label>Numéro de téléphone *</mat-label>
               <input
                 matInput
-                formControlName="phone"
+                formControlName="phoneNumber"
                 type="tel"
                 placeholder="06 12 34 56 78"
                 autocomplete="tel" />
               <mat-icon matSuffix>phone</mat-icon>
-              @if (hasError('phone')) {
-                <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+              @if (hasError('phoneNumber')) {
+                <mat-error>{{ getErrorMessage('phoneNumber') }}</mat-error>
               }
             </mat-form-field>
           </div>

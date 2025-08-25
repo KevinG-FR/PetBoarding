@@ -17,15 +17,20 @@ export interface AddressDto {
 
 export interface UserDto {
   id: string;
-  email: string;
   firstName: string;
   lastName: string;
+  email: string;
   phoneNumber: string;
-  emailConfirmed: boolean;
-  phoneNumberConfirmed: boolean;
   profileType: string;
   status: string;
-  address?: AddressDto;
-  createdAt: string;
-  updatedAt: string;
+  address?: {
+    streetNumber: string;
+    streetName: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    complement?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }

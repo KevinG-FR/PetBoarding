@@ -2,8 +2,8 @@ import { UserDto } from 'src/app/shared/contracts/auth/login-response.dto';
 import { Address, User } from '../../auth/models/user.model';
 
 export interface UpdateProfileRequestDto {
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   email: string;
   phoneNumber: string;
   address?: Address;

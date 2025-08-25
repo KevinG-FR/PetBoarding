@@ -97,8 +97,8 @@ export class ProfileEditComponent implements OnInit {
 
       const formValue = this.profileForm.value;
       const profileData: UpdateProfileRequestDto = {
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
+        firstname: formValue.firstName,
+        lastname: formValue.lastName,
         email: formValue.email,
         phoneNumber: formValue.phoneNumber,
         address: formValue.address

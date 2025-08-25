@@ -5,7 +5,11 @@ import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../shared/services/token.service';
 import { User } from '../../auth/models/user.model';
 import { AuthService } from '../../auth/services/auth.service';
-import { UpdateProfileResponseDto } from '../contracts/update-profile.dto';
+import {
+  GetProfileResponseDto,
+  UpdateProfileRequestDto,
+  UpdateProfileResponseDto
+} from '../contracts/update-profile.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -75,9 +79,9 @@ export class ProfileService {
 
     const apiUrl = `${this.baseApiUrl}/${currentUser.id}`;
     this.http
-      .get<UpdateProfileResponseDto>(apiUrl)
+      .get<GetProfileResponseDto>(apiUrl)
       .pipe(
-        map((response: UpdateProfileResponseDto) => this.mapBackendUserToUser(response)),
+        map((response: GetProfileResponseDto) => this.mapBackendUserToUser(response)),
         tap((user: User) => {
           this._currentUser.set(user);
           this._isLoading.set(false);
@@ -95,9 +99,10 @@ export class ProfileService {
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
-    const profileData = {
+    const profileData: UpdateProfileRequestDto = {
       firstname: updates.firstName || currentUser.firstName,
       lastname: updates.lastName || currentUser.lastName,
+      email: updates.email || currentUser.email,
       phoneNumber: updates.phoneNumber || currentUser.phoneNumber,
       address: updates.address
         ? {
