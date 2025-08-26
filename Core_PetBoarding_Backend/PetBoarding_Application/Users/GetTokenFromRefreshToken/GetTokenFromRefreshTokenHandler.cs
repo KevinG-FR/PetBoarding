@@ -30,7 +30,7 @@ public class GetTokenFromRefreshTokenHandler : IQueryHandler<GetTokenFromRefresh
                 var user = await _userRepository.GetByIdAsync(
                     new UserId(Guid.Parse(claims.FirstOrDefault(c => c.Type == "sub")?.Value ?? string.Empty)));
 
-                var newToken = _jwtProvider.Generate(user!, 1);
+                var newToken = _jwtProvider.Generate(user!);
 
                 return Result.Ok(newToken);
             }

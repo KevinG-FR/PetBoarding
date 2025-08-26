@@ -13,8 +13,6 @@ public class AccountService : IAccountService
     private readonly IUserRepository _userRepository;
     private readonly IJwtProvider _jwtProvider;
 
-    private const int _minutesInOneMonth = 60 * 24 * 30;
-
     public AccountService(IUserRepository userRepository, IJwtProvider jwtProvider)
     {
         _userRepository = userRepository;
@@ -93,12 +91,12 @@ public class AccountService : IAccountService
         if (!passwordValid)
             return null;
 
-        var token = _jwtProvider.Generate(user, 1);
+        var token = _jwtProvider.Generate(user);
 
         string refreshToken = null;
         if (authentificationRequest.RememberMe)
         {
-            refreshToken = _jwtProvider.Generate(user, _minutesInOneMonth);
+            refreshToken = _jwtProvider.Generate(user, _jwtProvider.GetRefreshTokenExpiryMinutes());
             return new AuthenticateTokens(token, refreshToken);
         }
 

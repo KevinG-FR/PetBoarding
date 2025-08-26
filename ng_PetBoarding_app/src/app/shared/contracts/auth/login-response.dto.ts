@@ -7,7 +7,9 @@ export interface LoginResponseDto {
 }
 
 export interface TokenRefreshResponseDto {
-  token: string;
+  success: boolean;
+  message?: string;
+  token?: string;
 }
 
 export interface AddressDto {

@@ -5,8 +5,9 @@ namespace PetBoarding_Application.Abstractions
 {
     public interface IJwtProvider
     {
-        string Generate(User user, int durationInMinutes);
+        string Generate(User user, int? durationInMinutes = null);
         Task<bool> ValidateRefreshToken(string refreshToken);
         IEnumerable<Claim> GetClaimsFromToken(string token);
+        int GetRefreshTokenExpiryMinutes();
     }
 }

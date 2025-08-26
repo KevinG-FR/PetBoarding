@@ -1,12 +1,15 @@
 import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { TokenRefreshResponseDto } from '../contracts/auth/login-response.dto';
 import { TokenService } from '../services/token.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
+  const httpClient = inject(HttpClient);
   const publicEndpoints = [
-    { url: '/api/users/login', method: 'POST' },
+    { url: '/api/auth/login', method: 'POST' },
     { url: '/api/users', method: 'POST', exact: true }
   ];
 
@@ -40,22 +43,22 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
         error.status === 401 &&
         tokenService.getRememberMe() &&
         tokenService.getRefreshToken() &&
-        !req.url.endsWith('/refresh')
+        !req.url.endsWith('/refreshToken')
       ) {
         // Appel API refresh
-        const httpClient = inject(HttpClient);
+        const refreshTokenUrl = `${environment.apiUrl}/api/auth/refreshToken`;
 
         return httpClient
-          .post<any>('/api/users/refresh', {
-            refreshToken: tokenService.getRefreshToken()
+          .post<TokenRefreshResponseDto>(refreshTokenUrl, {
+            RefreshToken: tokenService.getRefreshToken()
           })
           .pipe(
             switchMap((refreshResponse) => {
               if (refreshResponse?.success && refreshResponse.token) {
                 tokenService.setToken(refreshResponse.token);
-                if (refreshResponse.refreshToken) {
-                  tokenService.setRefreshToken(refreshResponse.refreshToken);
-                }
+                // Note: Le backend ne retourne pas de nouveau refresh token
+                // donc on garde l'ancien refresh token
+
                 // Rejouer la requête initiale avec le nouveau token
                 const retriedReq = req.clone({
                   setHeaders: {

@@ -5,7 +5,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
-import { authErrorInterceptor } from './shared/interceptors/auth-error.interceptor';
 import { jwtInterceptor } from './shared/interceptors/jwt.interceptor';
 import { AppInitService } from './shared/services/app-init.service';
 
@@ -19,7 +18,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled'
       })
     ),
-    provideHttpClient(withInterceptors([jwtInterceptor, authErrorInterceptor])),
+    provideHttpClient(withInterceptors([jwtInterceptor])),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },

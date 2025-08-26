@@ -22,7 +22,7 @@ namespace PetBoarding_Infrastructure.Authentication
             _jwtTokenOptions = jwtTokenOptions.Value;
         }
 
-        public string Generate(User user, int durationInMinutes = 1)
+        public string Generate(User user, int? durationInMinutes = null)
         {
             var claims = new Claim[]
             {
@@ -35,12 +35,15 @@ namespace PetBoarding_Infrastructure.Authentication
                     Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
                 SecurityAlgorithms.HmacSha256);
 
+            // Utiliser la durée fournie ou la durée par défaut du token d'accès
+            var expiryMinutes = durationInMinutes ?? _jwtTokenOptions.AccessTokenExpiryMinutes;
+            
             var token = new JwtSecurityToken(
                 _jwtTokenOptions.Issuer,
                 _jwtTokenOptions.Audience,
                 claims,
                 null,
-                DateTime.UtcNow.AddMinutes(durationInMinutes),
+                DateTime.UtcNow.AddMinutes(expiryMinutes),
                 signingCredentials);
 
             string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
@@ -60,7 +63,9 @@ namespace PetBoarding_Infrastructure.Authentication
                     IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
                     ValidateIssuer = true,
+                    ValidIssuer = _jwtTokenOptions.Issuer,
                     ValidateAudience = true,
+                    ValidAudience = _jwtTokenOptions.Audience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
@@ -79,6 +84,11 @@ namespace PetBoarding_Infrastructure.Authentication
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
             return jwtToken.Claims;
+        }
+
+        public int GetRefreshTokenExpiryMinutes()
+        {
+            return _jwtTokenOptions.RefreshTokenExpiryMinutes;
         }
 
         public async Task<string> GenerateNewToken(string refreshToken)
