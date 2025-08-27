@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
+using PetBoarding_Domain.Pets;
 using PetBoarding_Domain.Prestations;
 using PetBoarding_Domain.Reservations;
 using PetBoarding_Domain.Users;
@@ -15,6 +16,7 @@ namespace PetBoarding_Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Prestation> Prestations { get; set; }
+        public DbSet<Pet> Pets { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
