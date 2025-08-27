@@ -51,7 +51,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private loadUserPets(): void {
-    this.petService.loadUserPets();
+    this.petService.loadUserPets().subscribe();
   }
 
   editProfile(): void {

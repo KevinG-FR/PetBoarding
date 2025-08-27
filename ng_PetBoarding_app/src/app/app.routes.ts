@@ -38,7 +38,7 @@ export const routes: Routes = [
   {
     path: 'profile/pets/add',
     loadComponent: () =>
-      import('./features/pets/components/pet-form.component').then((m) => m.PetFormComponent),
+      import('./features/pets/components/pet-add.component').then((m) => m.PetAddComponent),
     canActivate: [authGuard]
   },
   {

@@ -15,7 +15,7 @@ export class PlanningService {
       description: 'Planning pour la pension complète avec 5 places par jour',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 5, new Date('2025-08-31'))
+      creneaux: this.genererCreneauxPourMois(new Date('2025-08-17'), 5, new Date('2025-07-05'))
     },
     {
       id: 'planning-2',
@@ -24,7 +24,7 @@ export class PlanningService {
       description: 'Planning pour la garderie avec 10 places par jour',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 10, new Date('2025-08-31'))
+      creneaux: this.genererCreneauxPourMois(new Date('2025-08-17'), 10, new Date('2025-07-05'))
     },
     {
       id: 'planning-3',
@@ -33,7 +33,7 @@ export class PlanningService {
       description: 'Planning pour le toilettage avec 4 créneaux par jour',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 4, new Date('2025-08-31'))
+      creneaux: this.genererCreneauxPourMois(new Date('2025-08-17'), 4, new Date('2025-07-05'))
     },
     {
       id: 'planning-4',
@@ -42,7 +42,7 @@ export class PlanningService {
       description: 'Planning pour les promenades avec 8 créneaux par jour',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxAvecVariations(new Date('2025-08-01'), new Date('2025-08-31'))
+      creneaux: this.genererCreneauxAvecVariations(new Date('2025-08-17'), new Date('2025-07-05'))
     },
     {
       id: 'planning-5',
@@ -51,7 +51,7 @@ export class PlanningService {
       description: 'Planning pour les gardes à domicile',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 6, new Date('2025-08-31'))
+      creneaux: this.genererCreneauxPourMois(new Date('2025-08-27'), 6, new Date('2025-07-05'))
     },
     {
       id: 'planning-6',
@@ -60,7 +60,7 @@ export class PlanningService {
       description: 'Planning pour la pension des chats avec 8 places par jour',
       estActif: true,
       dateCreation: new Date('2025-01-01'),
-      creneaux: this.genererCreneauxPourMois(new Date('2025-08-01'), 8, new Date('2025-08-31'))
+      creneaux: this.genererCreneauxPourMois(new Date('2025-08-27'), 8, new Date('2025-07-05'))
     }
   ]);
 

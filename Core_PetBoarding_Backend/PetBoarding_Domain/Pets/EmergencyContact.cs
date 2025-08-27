@@ -7,20 +7,23 @@ namespace PetBoarding_Domain.Pets;
 /// </summary>
 public sealed class EmergencyContact : ValueObject
 {
-    public EmergencyContact(string name, string phone, string relationship)
+    public EmergencyContact(string? name, string? phone, string? relationship = null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Le nom du contact d'urgence ne peut pas être vide", nameof(name));
-        
-        if (string.IsNullOrWhiteSpace(phone))
-            throw new ArgumentException("Le téléphone du contact d'urgence ne peut pas être vide", nameof(phone));
-        
-        if (string.IsNullOrWhiteSpace(relationship))
-            throw new ArgumentException("La relation du contact d'urgence ne peut pas être vide", nameof(relationship));
+        // Au moins le nom OU le téléphone doit être renseigné pour que le contact soit valide
+        if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(phone))
+            throw new ArgumentException("Au moins le nom ou le téléphone du contact d'urgence doit être renseigné");
 
-        Name = name.Trim();
-        Phone = phone.Trim();
-        Relationship = relationship.Trim();
+        Name = name?.Trim() ?? string.Empty;
+        Phone = phone?.Trim() ?? string.Empty;
+        Relationship = relationship?.Trim() ?? string.Empty;
+    }
+    
+    // Constructeur privé pour EF Core
+    private EmergencyContact()
+    {
+        Name = string.Empty;
+        Phone = string.Empty;
+        Relationship = string.Empty;
     }
 
     public string Name { get; }

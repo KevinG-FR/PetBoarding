@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using PetBoarding_Api.Dto.Users.Responses;
-using PetBoarding_Application.Users.GetUserById;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Users;
+using PetBoarding_Application.Users.GetUserById;
 using PetBoarding_Domain.Users;
 using System.Security.Claims;
 

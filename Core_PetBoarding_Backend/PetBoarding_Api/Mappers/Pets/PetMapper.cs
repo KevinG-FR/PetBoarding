@@ -23,7 +23,6 @@ public static class PetMapper
             SpecialNeeds = pet.SpecialNeeds,
             PhotoUrl = pet.PhotoUrl,
             OwnerId = pet.OwnerId.Value,
-            OwnerName = pet.Owner != null ? $"{pet.Owner.Firstname} {pet.Owner.Lastname}" : null,
             EmergencyContact = pet.EmergencyContact != null ? ToEmergencyContactDto(pet.EmergencyContact) : null,
             CreatedAt = pet.CreatedAt,
             UpdatedAt = pet.UpdatedAt

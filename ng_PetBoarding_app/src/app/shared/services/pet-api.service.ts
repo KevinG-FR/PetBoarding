@@ -6,9 +6,9 @@ import { PetType } from '../../features/pets/models/pet.model';
 
 // Mapping pour convertir PetType frontend vers backend
 const BackendPetTypeMap = {
-  [PetType.DOG]: 1,    // Chien
-  [PetType.CAT]: 2,    // Chat  
-  [PetType.BIRD]: 3,   // Oiseau
+  [PetType.DOG]: 1, // Chien
+  [PetType.CAT]: 2, // Chat
+  [PetType.BIRD]: 3, // Oiseau
   [PetType.RABBIT]: 4, // Lapin
   [PetType.HAMSTER]: 5 // Hamster
 } as const;
@@ -33,9 +33,7 @@ export class PetApiService {
   /**
    * Récupère tous les pets de l'utilisateur connecté
    */
-  getPets(filters?: {
-    type?: PetType;
-  }): Observable<GetAllPetsResponse> {
+  getPets(filters?: { type?: PetType }): Observable<GetAllPetsResponse> {
     let params = new HttpParams();
 
     if (filters?.type !== undefined) {
@@ -49,9 +47,12 @@ export class PetApiService {
   /**
    * Récupère tous les pets d'un propriétaire spécifique
    */
-  getPetsByOwner(ownerId: string, filters?: {
-    type?: PetType;
-  }): Observable<GetAllPetsResponse> {
+  getPetsByOwner(
+    ownerId: string,
+    filters?: {
+      type?: PetType;
+    }
+  ): Observable<GetAllPetsResponse> {
     let params = new HttpParams();
 
     if (filters?.type !== undefined) {
@@ -79,10 +80,7 @@ export class PetApiService {
   /**
    * Met à jour un pet existant
    */
-  updatePet(
-    id: string,
-    request: UpdatePetRequest
-  ): Observable<UpdatePetResponse> {
+  updatePet(id: string, request: UpdatePetRequest): Observable<UpdatePetResponse> {
     return this.http.put<UpdatePetResponse>(`${this.baseUrl}/${id}`, request);
   }
 

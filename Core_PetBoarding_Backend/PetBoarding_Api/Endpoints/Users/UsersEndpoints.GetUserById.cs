@@ -1,7 +1,6 @@
 namespace PetBoarding_Api.Endpoints.Users;
 
 using MediatR;
-using PetBoarding_Api.Dto.Users.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Users;
 using PetBoarding_Application.Users.GetUserById;

@@ -1,0 +1,150 @@
+.pet-add-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #4caf50 0%, #388e3c 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  padding-top: 40px;
+
+  @media (min-width: 769px) {
+    padding-top: 60px;
+  }
+}
+
+.pet-add-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+// En-tête
+.pet-add-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: white;
+
+  @media (min-width: 769px) {
+    margin-bottom: 2rem;
+  }
+
+  .pet-add-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .pet-add-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .pet-add-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+// Carte principale
+.pet-add-card {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+
+  mat-card-content {
+    padding: 2rem;
+  }
+}
+
+// Section d'informations
+.info-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  .info-title {
+    display: flex;
+    align-items: center;
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+
+    mat-icon {
+      margin-right: 0.5rem;
+      color: #4caf50;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #555;
+
+    li {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .pet-add-container {
+    padding: 10px;
+  }
+
+  .pet-add-header {
+    margin-bottom: 1.5rem;
+
+    .pet-add-title {
+      font-size: 2rem;
+    }
+
+    .pet-add-subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .pet-add-card mat-card-content {
+    padding: 1.5rem;
+  }
+
+  .info-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pet-add-container {
+    padding: 5px;
+  }
+
+  .pet-add-header {
+    .pet-add-icon {
+      font-size: 2.5rem;
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+
+    .pet-add-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .pet-add-card mat-card-content {
+    padding: 1rem;
+  }
+
+  .info-section {
+    padding: 1rem;
+  }
+}

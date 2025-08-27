@@ -1,15 +1,15 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, map, of, tap } from 'rxjs';
+import { CreatePetRequest, PetDto, UpdatePetRequest } from '../../../shared/contracts/pets/pet.dto';
 import { PetApiService } from '../../../shared/services/pet-api.service';
-import { PetDto, CreatePetRequest, UpdatePetRequest } from '../../../shared/contracts/pets/pet.dto';
-import { Pet, PetGender, PetType } from '../models/pet.model';
 import { PetFormData } from '../models/pet-form.model';
+import { Pet, PetGender, PetType } from '../models/pet.model';
 
 // Mappers pour convertir entre les enums frontend (strings) et backend (integers)
 const BackendPetTypeMap = {
-  [PetType.DOG]: 1,    // Chien
-  [PetType.CAT]: 2,    // Chat  
-  [PetType.BIRD]: 3,   // Oiseau
+  [PetType.DOG]: 1, // Chien
+  [PetType.CAT]: 2, // Chat
+  [PetType.BIRD]: 3, // Oiseau
   [PetType.RABBIT]: 4, // Lapin
   [PetType.HAMSTER]: 5 // Hamster
 } as const;
@@ -66,11 +66,13 @@ export class PetService {
       medicalNotes: dto.medicalNotes,
       specialNeeds: dto.specialNeeds,
       photoUrl: dto.photoUrl,
-      emergencyContact: dto.emergencyContact ? {
-        name: dto.emergencyContact.name,
-        phone: dto.emergencyContact.phone,
-        relationship: dto.emergencyContact.relationship
-      } : undefined,
+      emergencyContact: dto.emergencyContact
+        ? {
+            name: dto.emergencyContact.name,
+            phone: dto.emergencyContact.phone,
+            relationship: dto.emergencyContact.relationship
+          }
+        : undefined,
       // Pour l'instant, pas de vaccinations dans l'API - on met un tableau vide
       vaccinations: [],
       createdAt: new Date(dto.createdAt),
@@ -197,10 +199,10 @@ export class PetService {
           this.loadUserPets().subscribe();
         }
       }),
-      map((response) => response.pet ? this.mapDtoToPet(response.pet) : null),
+      map((response) => (response.pet ? this.mapDtoToPet(response.pet) : null)),
       catchError((error) => {
         console.error('Erreur lors de la création du pet:', error);
-        this._error.set('Erreur lors de la création de l\'animal');
+        this._error.set("Erreur lors de la création de l'animal");
         return of(null);
       })
     );
@@ -228,10 +230,10 @@ export class PetService {
           this.loadUserPets().subscribe();
         }
       }),
-      map((response) => response.pet ? this.mapDtoToPet(response.pet) : null),
+      map((response) => (response.pet ? this.mapDtoToPet(response.pet) : null)),
       catchError((error) => {
         console.error('Erreur lors de la mise à jour du pet:', error);
-        this._error.set('Erreur lors de la mise à jour de l\'animal');
+        this._error.set("Erreur lors de la mise à jour de l'animal");
         return of(null);
       })
     );
@@ -251,7 +253,7 @@ export class PetService {
       map((response) => response.success),
       catchError((error) => {
         console.error('Erreur lors de la suppression du pet:', error);
-        this._error.set('Erreur lors de la suppression de l\'animal');
+        this._error.set("Erreur lors de la suppression de l'animal");
         return of(false);
       })
     );

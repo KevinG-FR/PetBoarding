@@ -13,7 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
-import { PetFormComponent } from '../../pets/components/pet-form.component';
+import { PetDialogComponent } from '../../pets/components/pet-dialog.component';
 import { Pet, PetType } from '../../pets/models/pet.model';
 import { PetService } from '../../pets/services/pet.service';
 import { DateSelectionResult } from '../models/DateSelectionResult';
@@ -54,8 +54,21 @@ export class ReservationCompleteDialogComponent {
   private prestationsService = inject(PrestationsService);
   private data = inject(MAT_DIALOG_DATA) as { prestation: Prestation };
 
-  pets = signal<Pet[]>([]);
-  isLoading = signal(false);
+  // Computed signal pour filtrer les animaux compatibles depuis le service
+  pets = computed(() => {
+    const allPets = this.petService.pets();
+    const filteredPets = allPets.filter(pet => pet.type === this.prestation.categorieAnimal);
+    if (filteredPets.length === 0 && allPets.length > 0) {
+      console.log('DEBUG - No compatible pets found:', {
+        allPetsCount: allPets.length,
+        prestationType: this.prestation.categorieAnimal,
+        allPetsTypes: allPets.map(p => p.type),
+        filteredCount: filteredPets.length
+      });
+    }
+    return filteredPets;
+  });
+  isLoading = computed(() => this.petService.isLoading());
   selectedPet = signal<Pet | null>(null);
   dateSelection = signal<DateSelectionResult | null>(null);
   currentStep = signal(0);
@@ -86,18 +99,15 @@ export class ReservationCompleteDialogComponent {
   });
 
   constructor() {
-    this.loadPets();
-  }
-
-  private loadPets(): void {
-    this.isLoading.set(true);
-    try {
-      this.petService.loadUserPets();
-      this.pets.set(this.petService.getPetsByType(this.prestation.categorieAnimal));
-      this.isLoading.set(false);
-    } catch {
-      this.isLoading.set(false);
-    }
+    // Toujours charger les pets à l'ouverture du dialog pour s'assurer d'avoir les données les plus récentes
+    this.petService.loadUserPets().subscribe({
+      next: (pets) => {
+        console.log('Pets chargés:', pets);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des pets:', error);
+      }
+    });
   }
 
   onPetSelected(pet: Pet): void {
@@ -110,7 +120,7 @@ export class ReservationCompleteDialogComponent {
   }
 
   onCreateNewPet(): void {
-    const dialogRef = this.dialog.open(PetFormComponent, {
+    const dialogRef = this.dialog.open(PetDialogComponent, {
       width: '600px',
       data: {
         mode: 'create',
@@ -120,8 +130,7 @@ export class ReservationCompleteDialogComponent {
 
     dialogRef.afterClosed().subscribe((newPet: Pet) => {
       if (newPet) {
-        const currentPets = this.pets();
-        this.pets.set([...currentPets, newPet]);
+        // Le service se charge automatiquement de recharger les pets après création
         this.selectedPet.set(newPet);
         this.nextStep();
       }
@@ -162,7 +171,10 @@ export class ReservationCompleteDialogComponent {
   }
 
   getCategoryInfo(): CategoryInfo {
-    return this.prestationsService.getCategoryInfo(this.prestation.categorieAnimal);
+    console.log('getCategoryInfo - prestation.categorieAnimal:', this.prestation.categorieAnimal, typeof this.prestation.categorieAnimal);
+    const categoryInfo = this.prestationsService.getCategoryInfo(this.prestation.categorieAnimal);
+    console.log('getCategoryInfo - result:', categoryInfo);
+    return categoryInfo;
   }
 
   getPetIcon(petType: PetType): string {

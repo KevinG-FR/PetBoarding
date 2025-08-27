@@ -18,7 +18,6 @@ public record PetDto
     public string? SpecialNeeds { get; init; }
     public string? PhotoUrl { get; init; }
     public Guid OwnerId { get; init; }
-    public string? OwnerName { get; init; }
     public EmergencyContactDto? EmergencyContact { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }

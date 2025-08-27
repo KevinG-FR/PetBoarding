@@ -1,218 +1,239 @@
-<div class="pet-form-container bg-light min-vh-100">
-  <div class="container-fluid py-4">
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-8 col-xl-6">
-        <mat-card class="shadow-sm border-0">
-          <mat-card-header class="pb-3">
-            <div class="d-flex align-items-center w-100">
-              <mat-icon class="me-3 text-primary">pets</mat-icon>
-              <mat-card-title class="mb-0">
-                {{ isEditMode() ? 'Modifier ' + pet?.name : 'Ajouter un animal' }}
-              </mat-card-title>
-            </div>
-          </mat-card-header>
+<form [formGroup]="petForm" (ngSubmit)="onSubmit()" novalidate class="pet-form">
+  <!-- Section informations de base -->
+  <div class="form-section">
+    <h3 class="section-title">
+      <mat-icon>pets</mat-icon>
+      Informations de base
+    </h3>
 
-          <mat-card-content>
-            <form [formGroup]="petForm" (ngSubmit)="onSubmit()" novalidate>
-              <!-- Informations de base -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <h6 class="fw-bold text-muted mb-3">
-                    <mat-icon class="me-2" style="font-size: 1.1rem">info</mat-icon>
-                    Informations de base
-                  </h6>
-                </div>
+    <!-- Nom et Type -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Nom de l'animal *</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: Rex" autocomplete="off" />
+        <mat-icon matSuffix>pets</mat-icon>
+        @if (getFieldError('name')) {
+          <mat-error>{{ getFieldError('name') }}</mat-error>
+        }
+      </mat-form-field>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Nom de l'animal</mat-label>
-                    <input matInput formControlName="name" placeholder="Ex: Rex" />
-                    <mat-icon matSuffix>pets</mat-icon>
-                    @if (getFieldError('name')) {
-                      <mat-error>{{ getFieldError('name') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Type d'animal *</mat-label>
+        <mat-select formControlName="type">
+          @for (type of petTypes; track type) {
+            <mat-option [value]="type">
+              {{ petTypeLabels[type] }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>category</mat-icon>
+        @if (getFieldError('type')) {
+          <mat-error>{{ getFieldError('type') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Type d'animal</mat-label>
-                    <mat-select formControlName="type">
-                      @for (type of petTypes; track type) {
-                        <mat-option [value]="type">
-                          {{ petTypeLabels[type] }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                    @if (getFieldError('type')) {
-                      <mat-error>{{ getFieldError('type') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+    <!-- Race et Âge -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Race *</mat-label>
+        <input matInput formControlName="breed" placeholder="Ex: Labrador" autocomplete="off" />
+        <mat-icon matSuffix>info</mat-icon>
+        @if (getFieldError('breed')) {
+          <mat-error>{{ getFieldError('breed') }}</mat-error>
+        }
+      </mat-form-field>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Race</mat-label>
-                    <input matInput formControlName="breed" placeholder="Ex: Labrador" />
-                    @if (getFieldError('breed')) {
-                      <mat-error>{{ getFieldError('breed') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Âge (années) *</mat-label>
+        <input matInput type="number" formControlName="age" min="0" max="30" />
+        <mat-icon matSuffix>cake</mat-icon>
+        @if (getFieldError('age')) {
+          <mat-error>{{ getFieldError('age') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Âge (années)</mat-label>
-                    <input matInput type="number" formControlName="age" min="0" max="30" />
-                    @if (getFieldError('age')) {
-                      <mat-error>{{ getFieldError('age') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+    <!-- Couleur et Sexe -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Couleur *</mat-label>
+        <input matInput formControlName="color" placeholder="Ex: Marron et blanc" autocomplete="off" />
+        <mat-icon matSuffix>palette</mat-icon>
+        @if (getFieldError('color')) {
+          <mat-error>{{ getFieldError('color') }}</mat-error>
+        }
+      </mat-form-field>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Poids (kg) - Optionnel</mat-label>
-                    <input matInput type="number" formControlName="weight" min="0" step="0.1" />
-                    @if (getFieldError('weight')) {
-                      <mat-error>{{ getFieldError('weight') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Sexe *</mat-label>
+        <mat-select formControlName="gender">
+          @for (gender of petGenders; track gender) {
+            <mat-option [value]="gender">
+              {{ petGenderLabels[gender] }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>wc</mat-icon>
+        @if (getFieldError('gender')) {
+          <mat-error>{{ getFieldError('gender') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Couleur</mat-label>
-                    <input matInput formControlName="color" placeholder="Ex: Marron et blanc" />
-                    @if (getFieldError('color')) {
-                      <mat-error>{{ getFieldError('color') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
+    <!-- Poids -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Poids (kg)</mat-label>
+      <input matInput type="number" formControlName="weight" min="0" step="0.1" placeholder="Optionnel" />
+      <mat-icon matSuffix>monitor_weight</mat-icon>
+      @if (getFieldError('weight')) {
+        <mat-error>{{ getFieldError('weight') }}</mat-error>
+      }
+    </mat-form-field>
 
-                <div class="col-12 col-md-6 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Sexe</mat-label>
-                    <mat-select formControlName="gender">
-                      @for (gender of petGenders; track gender) {
-                        <mat-option [value]="gender">
-                          {{ petGenderLabels[gender] }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                    @if (getFieldError('gender')) {
-                      <mat-error>{{ getFieldError('gender') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-
-                <div class="col-12 mb-3">
-                  <mat-checkbox formControlName="isNeutered" class="text-muted">
-                    Animal stérilisé/castré
-                  </mat-checkbox>
-                </div>
-              </div>
-
-              <!-- Informations supplémentaires -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <h6 class="fw-bold text-muted mb-3">
-                    <mat-icon class="me-2" style="font-size: 1.1rem">medical_services</mat-icon>
-                    Informations supplémentaires
-                  </h6>
-                </div>
-
-                <div class="col-12 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Numéro de puce électronique - Optionnel</mat-label>
-                    <input
-                      matInput
-                      formControlName="microchipNumber"
-                      placeholder="Ex: 123456789012345" />
-                    <mat-icon matSuffix>memory</mat-icon>
-                    @if (getFieldError('microchipNumber')) {
-                      <mat-error>{{ getFieldError('microchipNumber') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-
-                <div class="col-12 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Notes médicales - Optionnel</mat-label>
-                    <textarea
-                      matInput
-                      formControlName="medicalNotes"
-                      rows="3"
-                      placeholder="Allergies, traitements en cours, historique médical..."></textarea>
-                    @if (getFieldError('medicalNotes')) {
-                      <mat-error>{{ getFieldError('medicalNotes') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-
-                <div class="col-12 mb-3">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Besoins spéciaux - Optionnel</mat-label>
-                    <textarea
-                      matInput
-                      formControlName="specialNeeds"
-                      rows="3"
-                      placeholder="Régime alimentaire spécial, exercices particuliers, anxiété..."></textarea>
-                    @if (getFieldError('specialNeeds')) {
-                      <mat-error>{{ getFieldError('specialNeeds') }}</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-              </div>              
-
-              <!-- Section Vaccinations -->
-              <div class="vaccinations-section mb-4">
-                <app-vaccination-list
-                  [vaccinations]="vaccinations()"
-                  [canAdd]="true"
-                  [canEdit]="true"
-                  [canDelete]="true"
-                  (addVaccination)="onAddVaccination()"
-                  (editVaccination)="onEditVaccination($event)"
-                  (deleteVaccination)="onDeleteVaccination($event)" />
-              </div>
-
-              <!-- Actions -->
-              <div class="d-flex justify-content-end gap-3 mt-4">
-                <button
-                  type="button"
-                  mat-stroked-button
-                  (click)="onCancel()"
-                  [disabled]="isLoading">
-                  <mat-icon class="me-2">close</mat-icon>
-                  Annuler
-                </button>
-                <button type="submit" mat-raised-button color="primary" [disabled]="isLoading">
-                  @if (isLoading) {
-                    <mat-spinner diameter="20" class="me-2"></mat-spinner>
-                  } @else {
-                    <mat-icon class="me-2">save</mat-icon>
-                  }
-                  {{ isEditMode() ? 'Modifier' : 'Ajouter' }}
-                </button>
-              </div>
-            </form>
-          </mat-card-content>
-        </mat-card>
-      </div>
+    <!-- Animal stérilisé -->
+    <div class="checkbox-field">
+      <mat-checkbox formControlName="isNeutered">
+        Animal stérilisé/castré
+      </mat-checkbox>
     </div>
   </div>
 
-  <!-- Overlay pour le formulaire de vaccination -->
-  @if (showVaccinationForm()) {
-    <div class="vaccination-form-overlay" (click)="onVaccinationFormCancel()">
-      <div class="vaccination-form-container" (click)="$event.stopPropagation()">
-        <app-vaccination-form
-          [vaccination]="editingVaccination()"
-          [isLoading]="false"
-          (formSubmit)="onVaccinationFormSubmit($event)"
-          (formCancel)="onVaccinationFormCancel()" />
-      </div>
+  <!-- Section informations médicales -->
+  <div class="form-section">
+    <h3 class="section-title">
+      <mat-icon>medical_services</mat-icon>
+      Informations médicales
+    </h3>
+
+    <!-- Puce électronique -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro de puce électronique</mat-label>
+      <input matInput formControlName="microchipNumber" placeholder="Ex: 123456789012345" autocomplete="off" />
+      <mat-icon matSuffix>memory</mat-icon>
+      @if (getFieldError('microchipNumber')) {
+        <mat-error>{{ getFieldError('microchipNumber') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Notes médicales -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes médicales</mat-label>
+      <textarea
+        matInput
+        formControlName="medicalNotes"
+        rows="3"
+        placeholder="Allergies, traitements en cours, historique médical..."></textarea>
+      <mat-icon matSuffix>health_and_safety</mat-icon>
+      @if (getFieldError('medicalNotes')) {
+        <mat-error>{{ getFieldError('medicalNotes') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Besoins spéciaux -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Besoins spéciaux</mat-label>
+      <textarea
+        matInput
+        formControlName="specialNeeds"
+        rows="3"
+        placeholder="Régime alimentaire spécial, exercices particuliers, anxiété..."></textarea>
+      <mat-icon matSuffix>star</mat-icon>
+      @if (getFieldError('specialNeeds')) {
+        <mat-error>{{ getFieldError('specialNeeds') }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- Section contact d'urgence -->
+  <div class="form-section" formGroupName="emergencyContact">
+    <h3 class="section-title">
+      <mat-icon>emergency</mat-icon>
+      Contact d'urgence
+    </h3>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Nom du contact</mat-label>
+        <input matInput formControlName="name" placeholder="Nom complet" autocomplete="name" />
+        <mat-icon matSuffix>person</mat-icon>
+        @if (getEmergencyContactError('name')) {
+          <mat-error>{{ getEmergencyContactError('name') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="phone" placeholder="06 12 34 56 78" autocomplete="tel" />
+        <mat-icon matSuffix>phone</mat-icon>
+        @if (getEmergencyContactError('phone')) {
+          <mat-error>{{ getEmergencyContactError('phone') }}</mat-error>
+        }
+      </mat-form-field>
     </div>
-  }
-</div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Relation</mat-label>
+      <input matInput formControlName="relationship" placeholder="Ex: Voisin, Ami, Famille..." autocomplete="off" />
+      <mat-icon matSuffix>people</mat-icon>
+      @if (getEmergencyContactError('relationship')) {
+        <mat-error>{{ getEmergencyContactError('relationship') }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- Section Vaccinations -->
+  <div class="form-section">
+    <h3 class="section-title">
+      <mat-icon>vaccines</mat-icon>
+      Vaccinations
+    </h3>
+    <app-vaccination-list
+      [vaccinations]="vaccinations()"
+      [canAdd]="true"
+      [canEdit]="true"
+      [canDelete]="true"
+      (addVaccination)="onAddVaccination()"
+      (editVaccination)="onEditVaccination($event)"
+      (deleteVaccination)="onDeleteVaccination($event)" />
+  </div>
+
+  <!-- Boutons d'action -->
+  <div class="form-actions">
+    <button
+      mat-stroked-button
+      type="button"
+      class="action-button cancel-button"
+      (click)="onCancel()"
+      [disabled]="isLoading">
+      <mat-icon>arrow_back</mat-icon>
+      Annuler
+    </button>
+
+    <button
+      mat-raised-button
+      type="submit"
+      class="action-button submit-button"
+      [disabled]="!petForm.valid || isLoading">
+      @if (isLoading) {
+        <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      {{ isEditMode() ? 'Sauvegarder les modifications' : 'Ajouter l\'animal' }}
+    </button>
+  </div>
+</form>
+
+<!-- Overlay pour le formulaire de vaccination -->
+@if (showVaccinationForm()) {
+  <div class="vaccination-form-overlay" (click)="onVaccinationFormCancel()">
+    <div class="vaccination-form-container" (click)="$event.stopPropagation()">
+      <app-vaccination-form
+        [vaccination]="editingVaccination()"
+        [isLoading]="false"
+        (formSubmit)="onVaccinationFormSubmit($event)"
+        (formCancel)="onVaccinationFormCancel()" />
+    </div>
+  </div>
+}

@@ -45,6 +45,7 @@ import { Vaccination } from '../../vaccinations/models/vaccination';
 export class PetFormComponent implements OnInit {
   @Input() pet?: Pet; // Pour l'édition
   @Input() isLoading = false;
+  @Input() compatibleType?: PetType; // Type d'animal compatible pour les réservations
   @Output() formSubmit = new EventEmitter<PetFormData>();
   @Output() formCancel = new EventEmitter<void>();
 
@@ -72,7 +73,7 @@ export class PetFormComponent implements OnInit {
   private initializeForm(): void {
     this.petForm = this.fb.group({
       name: [this.pet?.name || '', [Validators.required, Validators.minLength(2)]],
-      type: [this.pet?.type || '', Validators.required],
+      type: [this.pet?.type || this.compatibleType || '', Validators.required],
       breed: [this.pet?.breed || '', [Validators.required, Validators.minLength(2)]],
       age: [this.pet?.age || '', [Validators.required, Validators.min(0), Validators.max(30)]],
       weight: [this.pet?.weight || ''],

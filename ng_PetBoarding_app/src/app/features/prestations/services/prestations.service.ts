@@ -16,13 +16,19 @@ export interface CategoryInfo {
   color: string;
 }
 
-import { switchMap } from 'rxjs';
+// Mapping des types d'animaux entre backend (TypeAnimal enum) et frontend (PetType enum)
+// Attention : les données SQL utilisent des valeurs inconsistantes (0 au lieu de 1 pour Chien)
+const FrontendPetTypeMap = {
+  0: PetType.DOG,    // Dans les données SQL: 0 = Chien (devrait être 1 selon l'enum)
+  1: PetType.CAT,    // Dans les données SQL: 1 = Chat (devrait être 2 selon l'enum)
+  2: PetType.CAT,    // Mapping correct selon l'enum C#
+  3: PetType.BIRD,
+  4: PetType.RABBIT,
+  5: PetType.HAMSTER,
+  99: PetType.DOG    // TypeAnimal.Autre -> par défaut Chien
+} as const;
 
-export interface CategoryInfo {
-  label: string;
-  icon: string;
-  color: string;
-}
+import { switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,12 +42,19 @@ export class PrestationsService {
   private isLoading = signal<boolean>(false);
   private error = signal<string | null>(null);
 
+  private mapBackendPetType(backendType: any): PetType {
+    console.log('mapBackendPetType - input:', backendType, typeof backendType);
+    const mapped = FrontendPetTypeMap[backendType as keyof typeof FrontendPetTypeMap] || backendType;
+    console.log('mapBackendPetType - output:', mapped);
+    return mapped;
+  }
+
   private mapDtoToPrestation(dto: PrestationDto): Prestation {
     return {
       id: dto.id,
       libelle: dto.libelle,
       description: dto.description,
-      categorieAnimal: dto.categorieAnimal,
+      categorieAnimal: this.mapBackendPetType(dto.categorieAnimal),
       prix: dto.prix,
       duree: dto.dureeEnMinutes,
       disponible: dto.estDisponible
@@ -300,8 +313,9 @@ export class PrestationsService {
           color: '#9c27b0'
         };
       default:
+        console.warn('Type d\'animal non reconnu:', category, typeof category);
         return {
-          label: category,
+          label: String(category),
           icon: 'fas fa-paw',
           color: '#666666'
         };

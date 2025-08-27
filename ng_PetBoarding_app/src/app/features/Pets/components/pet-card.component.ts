@@ -4,10 +4,14 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
 import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.model';
+import { PetService } from '../services/pet.service';
 
 @Component({
   selector: 'app-pet-card',
@@ -25,7 +29,10 @@ import { Pet, PetGenderLabels, PetType, PetTypeLabels } from '../models/pet.mode
   styleUrl: './pet-card.component.scss'
 })
 export class PetCardComponent {
-  private router = inject(Router);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly petService = inject(PetService);
 
   // Inputs
   pet = input.required<Pet>();
@@ -40,7 +47,43 @@ export class PetCardComponent {
   }
 
   onDelete(): void {
-    // TODO: Implémenter la suppression avec confirmation
+    const pet = this.pet();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Supprimer un animal',
+        message: `Êtes-vous sûr de vouloir supprimer ${pet.name} ? Cette action est irréversible.`,
+        confirmButtonText: 'Supprimer',
+        confirmButtonColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.deletePet();
+      }
+    });
+  }
+
+  private deletePet(): void {
+    const pet = this.pet();
+    this.petService.deletePet(pet.id).subscribe({
+      next: (success) => {
+        if (success) {
+          this.snackBar.open(`${pet.name} a été supprimé avec succès`, 'Fermer', {
+            duration: 5000
+          });
+        } else {
+          this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+            duration: 5000
+          });
+        }
+      },
+      error: () => {
+        this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
   }
 
   onViewDetails(): void {
