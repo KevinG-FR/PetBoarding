@@ -27,7 +27,7 @@ public sealed class EmergencyContact : ValueObject
     public string Phone { get; }
     public string Relationship { get; }
 
-    public override IEnumerable<object> GetEqualityComponents()
+    public override IEnumerable<object> GetAtomicValues()
     {
         yield return Name;
         yield return Phone;

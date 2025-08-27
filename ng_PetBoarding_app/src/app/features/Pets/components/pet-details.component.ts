@@ -78,8 +78,14 @@ export class PetDetailsComponent {
 
         // S'assurer que les animaux sont chargés d'abord
         if (this.petService.pets().length === 0) {
-          this.petService.loadUserPets();
-          this.loadPetDetails(petId, isEditRoute);
+          this.petService.loadUserPets().subscribe({
+            next: () => {
+              this.loadPetDetails(petId, isEditRoute);
+            },
+            error: () => {
+              this.handleLoadError();
+            }
+          });
         } else {
           this.loadPetDetails(petId, isEditRoute);
         }
@@ -118,18 +124,37 @@ export class PetDetailsComponent {
   }
 
   private loadPetDetails(petId: string, isEditRoute: boolean): void {
-    const pet = this.petService.getPetById(petId);
-    if (pet) {
-      this.pet.set(pet);
-      this.initializeForm(pet);
+    // Essayer d'abord depuis le cache
+    const cachedPet = this.petService.getPetByIdFromCache(petId);
+    if (cachedPet) {
+      this.pet.set(cachedPet);
+      this.initializeForm(cachedPet);
       this.viewMode.set({
         isEditing: isEditRoute,
         hasUnsavedChanges: false
       });
+      this.loading.set(false);
     } else {
-      this.router.navigate(['/profile']);
+      // Si pas trouvé dans le cache, charger depuis l'API
+      this.petService.getPetById(petId).subscribe({
+        next: (pet) => {
+          if (pet) {
+            this.pet.set(pet);
+            this.initializeForm(pet);
+            this.viewMode.set({
+              isEditing: isEditRoute,
+              hasUnsavedChanges: false
+            });
+          } else {
+            this.router.navigate(['/profile']);
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.handleLoadError();
+        }
+      });
     }
-    this.loading.set(false);
   }
   private handleLoadError(): void {
     this.snackBar.open("Erreur lors du chargement de l'animal", 'Fermer', {
@@ -181,14 +206,32 @@ export class PetDetailsComponent {
     if (this.petForm.valid && this.pet()) {
       const petId = this.pet()!.id;
       const formValue = this.petForm.value;
+      
+      this.loading.set(true);
 
-      const updatedPet = this.petService.updatePet(petId, formValue);
-      this.pet.set(updatedPet);
-      this.originalFormValue.set(this.petForm.value);
-      this.viewMode.set({ isEditing: false, hasUnsavedChanges: false });
+      this.petService.updatePet(petId, formValue).subscribe({
+        next: (updatedPet) => {
+          if (updatedPet) {
+            this.pet.set(updatedPet);
+            this.originalFormValue.set(this.petForm.value);
+            this.viewMode.set({ isEditing: false, hasUnsavedChanges: false });
 
-      this.snackBar.open('Modifications sauvegardées avec succès', 'Fermer', {
-        duration: 3000
+            this.snackBar.open('Modifications sauvegardées avec succès', 'Fermer', {
+              duration: 3000
+            });
+          } else {
+            this.snackBar.open('Erreur lors de la sauvegarde', 'Fermer', {
+              duration: 3000
+            });
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la sauvegarde des modifications', 'Fermer', {
+            duration: 3000
+          });
+          this.loading.set(false);
+        }
       });
     } else {
       this.snackBar.open('Veuillez corriger les erreurs dans le formulaire', 'Fermer', {

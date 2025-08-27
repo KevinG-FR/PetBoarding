@@ -20,7 +20,7 @@ public sealed class GetPetByIdQueryHandler : IQueryHandler<GetPetByIdQuery, Pet>
 
         if (pet is null)
         {
-            return Result.Fail(new EntityNotFoundError(nameof(Pet), request.PetId.Value));
+            return Result.Fail("Pet not found");
         }
 
         return Result.Ok(pet);

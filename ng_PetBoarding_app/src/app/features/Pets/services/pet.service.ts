@@ -1,187 +1,259 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, catchError, map, of, tap } from 'rxjs';
+import { PetApiService } from '../../../shared/services/pet-api.service';
+import { PetDto, CreatePetRequest, UpdatePetRequest } from '../../../shared/contracts/pets/pet.dto';
 import { Pet, PetGender, PetType } from '../models/pet.model';
+import { PetFormData } from '../models/pet-form.model';
+
+// Mappers pour convertir entre les enums frontend (strings) et backend (integers)
+const BackendPetTypeMap = {
+  [PetType.DOG]: 1,    // Chien
+  [PetType.CAT]: 2,    // Chat  
+  [PetType.BIRD]: 3,   // Oiseau
+  [PetType.RABBIT]: 4, // Lapin
+  [PetType.HAMSTER]: 5 // Hamster
+} as const;
+
+const FrontendPetTypeMap = {
+  1: PetType.DOG,
+  2: PetType.CAT,
+  3: PetType.BIRD,
+  4: PetType.RABBIT,
+  5: PetType.HAMSTER
+} as const;
+
+const BackendPetGenderMap = {
+  [PetGender.MALE]: 1,
+  [PetGender.FEMALE]: 2
+} as const;
+
+const FrontendPetGenderMap = {
+  1: PetGender.MALE,
+  2: PetGender.FEMALE
+} as const;
 
 @Injectable({
   providedIn: 'root'
 })
 export class PetService {
+  private readonly petApiService = inject(PetApiService);
+
+  // Signaux pour stocker les pets en cache local
   private readonly _pets = signal<Pet[]>([]);
   private readonly _isLoading = signal(false);
+  private readonly _error = signal<string | null>(null);
 
+  // Getters publics readonly
   pets = this._pets.asReadonly();
   isLoading = this._isLoading.asReadonly();
+  error = this._error.asReadonly();
 
-  loadUserPets(): void {
-    this._isLoading.set(true);
-
-    const mockPets: Pet[] = [
-      {
-        id: '1',
-        name: 'Max',
-        type: PetType.DOG,
-        breed: 'Golden Retriever',
-        age: 3,
-        weight: 28,
-        color: 'Doré',
-        gender: PetGender.MALE,
-        isNeutered: true,
-        microchipNumber: '982000123456789',
-        medicalNotes: 'Allergie aux puces. Traitement mensuel requis.',
-        specialNeeds: "Très actif, a besoin de beaucoup d'exercice",
-        photoUrl: 'assets/images/pets/max-golden.jpg',
-        vaccinations: [
-          {
-            id: 'v1',
-            name: 'Vaccin CHPPI',
-            date: new Date('2024-03-15'),
-            expiryDate: new Date('2025-03-15'),
-            veterinarian: 'Dr. Martin - Clinique Vétérinaire du Parc'
-          },
-          {
-            id: 'v2',
-            name: 'Vaccin Rage',
-            date: new Date('2024-03-15'),
-            expiryDate: new Date('2027-03-15'),
-            veterinarian: 'Dr. Martin - Clinique Vétérinaire du Parc'
-          }
-        ],
-        emergencyContact: {
-          name: 'Dr. Martin',
-          phone: '01 23 45 67 89',
-          relationship: 'Vétérinaire'
-        },
-        createdAt: new Date('2022-01-15'),
-        updatedAt: new Date('2024-03-15')
-      },
-      {
-        id: '2',
-        name: 'Luna',
-        type: PetType.CAT,
-        breed: 'Maine Coon',
-        age: 2,
-        weight: 4.5,
-        color: 'Gris et blanc',
-        gender: PetGender.FEMALE,
-        isNeutered: true,
-        microchipNumber: '982000987654321',
-        medicalNotes: 'Aucun problème médical connu.',
-        specialNeeds: 'Timide avec les étrangers, préfère les environnements calmes',
-        photoUrl: 'assets/images/pets/luna-mainecoon.jpg',
-        vaccinations: [
-          {
-            id: 'v3',
-            name: 'Vaccin TCL',
-            date: new Date('2024-02-10'),
-            expiryDate: new Date('2025-02-10'),
-            veterinarian: 'Dr. Leroy - Cabinet Vétérinaire des Tilleuls'
-          },
-          {
-            id: 'v4',
-            name: 'Vaccin Leucose',
-            date: new Date('2024-02-10'),
-            expiryDate: new Date('2025-02-10'),
-            veterinarian: 'Dr. Leroy - Cabinet Vétérinaire des Tilleuls'
-          }
-        ],
-        emergencyContact: {
-          name: 'Dr. Leroy',
-          phone: '01 34 56 78 90',
-          relationship: 'Vétérinaire'
-        },
-        createdAt: new Date('2023-06-20'),
-        updatedAt: new Date('2024-02-10')
-      },
-      {
-        id: '3',
-        name: 'Charlie',
-        type: PetType.RABBIT,
-        breed: 'Lapin Nain',
-        age: 1,
-        weight: 1.2,
-        color: 'Blanc avec taches marron',
-        gender: PetGender.MALE,
-        isNeutered: false,
-        medicalNotes: 'Jeune lapin en bonne santé.',
-        specialNeeds: 'Régime alimentaire strict - légumes verts uniquement',
-        photoUrl: 'assets/images/pets/charlie-rabbit.jpg',
-        vaccinations: [
-          {
-            id: 'v5',
-            name: 'Vaccin Myxomatose',
-            date: new Date('2024-07-01'),
-            expiryDate: new Date('2024-12-01'),
-            veterinarian: 'Dr. Dubois - Clinique NAC Plus'
-          }
-        ],
-        emergencyContact: {
-          name: 'Famille Dubois',
-          phone: '01 45 67 89 01',
-          relationship: 'Famille'
-        },
-        createdAt: new Date('2024-05-10'),
-        updatedAt: new Date('2024-07-01')
-      }
-    ];
-
-    this._pets.set(mockPets);
-    this._isLoading.set(false);
+  /**
+   * Convertit un PetDto en Pet
+   */
+  private mapDtoToPet(dto: PetDto): Pet {
+    return {
+      id: dto.id,
+      name: dto.name,
+      type: FrontendPetTypeMap[dto.type as keyof typeof FrontendPetTypeMap],
+      breed: dto.breed,
+      age: dto.age,
+      weight: dto.weight,
+      color: dto.color,
+      gender: FrontendPetGenderMap[dto.gender as keyof typeof FrontendPetGenderMap],
+      isNeutered: dto.isNeutered,
+      microchipNumber: dto.microchipNumber,
+      medicalNotes: dto.medicalNotes,
+      specialNeeds: dto.specialNeeds,
+      photoUrl: dto.photoUrl,
+      emergencyContact: dto.emergencyContact ? {
+        name: dto.emergencyContact.name,
+        phone: dto.emergencyContact.phone,
+        relationship: dto.emergencyContact.relationship
+      } : undefined,
+      // Pour l'instant, pas de vaccinations dans l'API - on met un tableau vide
+      vaccinations: [],
+      createdAt: new Date(dto.createdAt),
+      updatedAt: new Date(dto.updatedAt)
+    };
   }
 
+  /**
+   * Convertit un PetFormData en CreatePetRequest
+   */
+  private mapFormDataToCreateRequest(formData: PetFormData): CreatePetRequest {
+    return {
+      name: formData.name,
+      type: BackendPetTypeMap[formData.type],
+      breed: formData.breed,
+      age: formData.age,
+      weight: formData.weight,
+      color: formData.color,
+      gender: BackendPetGenderMap[formData.gender],
+      isNeutered: formData.isNeutered,
+      microchipNumber: formData.microchipNumber,
+      medicalNotes: formData.medicalNotes,
+      specialNeeds: formData.specialNeeds,
+      photoUrl: formData.photoUrl,
+      emergencyContactName: formData.emergencyContact?.name,
+      emergencyContactPhone: formData.emergencyContact?.phone,
+      emergencyContactRelationship: formData.emergencyContact?.relationship
+    };
+  }
+
+  /**
+   * Convertit des updates Pet en UpdatePetRequest
+   */
+  private mapPetToUpdateRequest(pet: Pet): UpdatePetRequest {
+    return {
+      name: pet.name,
+      type: BackendPetTypeMap[pet.type],
+      breed: pet.breed,
+      age: pet.age,
+      weight: pet.weight,
+      color: pet.color,
+      gender: BackendPetGenderMap[pet.gender],
+      isNeutered: pet.isNeutered,
+      microchipNumber: pet.microchipNumber,
+      medicalNotes: pet.medicalNotes,
+      specialNeeds: pet.specialNeeds,
+      photoUrl: pet.photoUrl,
+      emergencyContactName: pet.emergencyContact?.name,
+      emergencyContactPhone: pet.emergencyContact?.phone,
+      emergencyContactRelationship: pet.emergencyContact?.relationship
+    };
+  }
+
+  /**
+   * Charge tous les pets de l'utilisateur connecté depuis l'API
+   */
+  loadUserPets(filters?: { type?: PetType }): Observable<Pet[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.petApiService.getPets(filters).pipe(
+      map((response) => response.pets.map((dto) => this.mapDtoToPet(dto))),
+      tap((pets) => {
+        this._pets.set(pets);
+        this._isLoading.set(false);
+      }),
+      catchError((error) => {
+        this._error.set('Erreur lors du chargement des animaux');
+        this._isLoading.set(false);
+        console.error('Erreur lors du chargement des pets:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Récupère tous les pets (depuis le cache local ou charge depuis l'API)
+   */
   getPets(): Pet[] {
     if (this._pets().length === 0) {
-      this.loadUserPets();
+      // Si pas de données en cache, charge depuis l'API
+      this.loadUserPets().subscribe();
     }
     return this._pets();
   }
 
-  getPetById(id: string): Pet | null {
+  /**
+   * Récupère un pet par son ID depuis l'API
+   */
+  getPetById(id: string): Observable<Pet | null> {
+    return this.petApiService.getPetById(id).pipe(
+      map((response) => this.mapDtoToPet(response.pet)),
+      catchError((error) => {
+        console.error('Erreur lors de la récupération du pet:', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Version synchrone pour récupérer un pet depuis le cache
+   */
+  getPetByIdFromCache(id: string): Pet | null {
     return this._pets().find((p) => p.id === id) || null;
   }
 
+  /**
+   * Récupère les pets par type depuis le cache local
+   */
   getPetsByType(type: PetType): Pet[] {
     return this._pets().filter((p) => p.type === type);
   }
 
-  updatePet(petId: string, updates: Partial<Pet>): Pet {
-    const pets = this._pets();
-    const petIndex = pets.findIndex((p) => p.id === petId);
+  /**
+   * Crée un nouveau pet
+   */
+  addPet(petData: PetFormData): Observable<Pet | null> {
+    const request = this.mapFormDataToCreateRequest(petData);
 
-    if (petIndex === -1) {
-      throw new Error('Animal non trouvé');
+    return this.petApiService.createPet(request).pipe(
+      tap((response) => {
+        if (response.pet) {
+          // Recharge les pets après création
+          this.loadUserPets().subscribe();
+        }
+      }),
+      map((response) => response.pet ? this.mapDtoToPet(response.pet) : null),
+      catchError((error) => {
+        console.error('Erreur lors de la création du pet:', error);
+        this._error.set('Erreur lors de la création de l\'animal');
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Met à jour un pet existant
+   */
+  updatePet(petId: string, updates: Partial<Pet>): Observable<Pet | null> {
+    // Récupérer le pet actuel pour créer la requête complète
+    const currentPet = this.getPetByIdFromCache(petId);
+    if (!currentPet) {
+      this._error.set('Animal non trouvé');
+      return of(null);
     }
 
-    const updatedPet = {
-      ...pets[petIndex],
-      ...updates,
-      updatedAt: new Date()
-    };
+    // Appliquer les mises à jour
+    const updatedPet = { ...currentPet, ...updates };
+    const request = this.mapPetToUpdateRequest(updatedPet);
 
-    const updatedPets = [...pets];
-    updatedPets[petIndex] = updatedPet;
-
-    this._pets.set(updatedPets);
-
-    return updatedPet;
+    return this.petApiService.updatePet(petId, request).pipe(
+      tap((response) => {
+        if (response.pet) {
+          // Recharge les pets après mise à jour
+          this.loadUserPets().subscribe();
+        }
+      }),
+      map((response) => response.pet ? this.mapDtoToPet(response.pet) : null),
+      catchError((error) => {
+        console.error('Erreur lors de la mise à jour du pet:', error);
+        this._error.set('Erreur lors de la mise à jour de l\'animal');
+        return of(null);
+      })
+    );
   }
 
-  addPet(petData: Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>): Pet {
-    const newPet: Pet = {
-      ...petData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    const pets = [...this._pets(), newPet];
-    this._pets.set(pets);
-
-    return newPet;
-  }
-
-  deletePet(petId: string): boolean {
-    const pets = this._pets().filter((p) => p.id !== petId);
-    this._pets.set(pets);
-
-    return true;
+  /**
+   * Supprime un pet
+   */
+  deletePet(petId: string): Observable<boolean> {
+    return this.petApiService.deletePet(petId).pipe(
+      tap((response) => {
+        if (response.success) {
+          // Recharge les pets après suppression
+          this.loadUserPets().subscribe();
+        }
+      }),
+      map((response) => response.success),
+      catchError((error) => {
+        console.error('Erreur lors de la suppression du pet:', error);
+        this._error.set('Erreur lors de la suppression de l\'animal');
+        return of(false);
+      })
+    );
   }
 }

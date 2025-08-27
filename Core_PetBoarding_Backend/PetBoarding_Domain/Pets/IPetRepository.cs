@@ -5,7 +5,7 @@ namespace PetBoarding_Domain.Pets;
 
 public interface IPetRepository : IBaseRepository<Pet, PetId>
 {
-    Task<IEnumerable<Pet>> GetAllAsync(
+    new Task<IEnumerable<Pet>> GetAllAsync(
         CancellationToken cancellationToken = default);
     
     Task<IEnumerable<Pet>> GetByOwnerIdAsync(

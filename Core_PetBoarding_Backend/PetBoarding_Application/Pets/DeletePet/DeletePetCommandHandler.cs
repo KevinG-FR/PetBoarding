@@ -6,7 +6,7 @@ using PetBoarding_Domain.Pets;
 
 namespace PetBoarding_Application.Pets.DeletePet;
 
-public sealed class DeletePetCommandHandler : ICommandHandler<DeletePetCommand>
+public sealed class DeletePetCommandHandler : ICommandHandler<DeletePetCommand, bool>
 {
     private readonly IPetRepository _petRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -17,18 +17,18 @@ public sealed class DeletePetCommandHandler : ICommandHandler<DeletePetCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result> Handle(DeletePetCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(DeletePetCommand request, CancellationToken cancellationToken)
     {
         var pet = await _petRepository.GetByIdAsync(request.PetId, cancellationToken);
         
         if (pet is null)
         {
-            return Result.Fail(new EntityNotFoundError(nameof(Pet), request.PetId.Value));
+            return Result.Fail<bool>("Pet not found");
         }
 
-        _petRepository.Remove(pet);
+        var deleteResult = await _petRepository.DeleteAsync(pet, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok();
+        return Result.Ok(deleteResult > 0);
     }
 }

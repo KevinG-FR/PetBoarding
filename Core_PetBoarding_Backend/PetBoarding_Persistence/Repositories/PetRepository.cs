@@ -11,7 +11,7 @@ internal sealed class PetRepository : BaseRepository<Pet, PetId>, IPetRepository
     {
     }
 
-    public async Task<IEnumerable<Pet>> GetAllAsync(CancellationToken cancellationToken = default)
+    public new async Task<IEnumerable<Pet>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .Include(p => p.Owner)

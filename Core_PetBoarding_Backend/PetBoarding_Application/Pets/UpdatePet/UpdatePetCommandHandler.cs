@@ -25,7 +25,7 @@ public sealed class UpdatePetCommandHandler : ICommandHandler<UpdatePetCommand, 
             
             if (pet is null)
             {
-                return Result.Fail(new EntityNotFoundError(nameof(Pet), request.PetId.Value));
+                return Result.Fail("Pet not found");
             }
 
             // Mettre à jour les informations de base
@@ -52,10 +52,13 @@ public sealed class UpdatePetCommandHandler : ICommandHandler<UpdatePetCommand, 
             }
             pet.UpdateEmergencyContact(emergencyContact);
 
-            _petRepository.Update(pet);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var updatedPet = await _petRepository.UpdateAsync(pet, cancellationToken);
+            if (updatedPet is null)
+            {
+                return Result.Fail("Error occurred while updating the pet");
+            }
 
-            return Result.Ok(pet);
+            return Result.Ok(updatedPet);
         }
         catch (ArgumentException ex)
         {

@@ -20,7 +20,7 @@ public static partial class PetsEndpoints
         var result = await mediator.Send(command, cancellationToken);
 
         return result.GetHttpResult(
-            () => new { PetId = id },
+            success => new { PetId = id },
             PetResponseMapper.ToDeletePetResponse);
     }
 }

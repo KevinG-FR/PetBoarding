@@ -60,6 +60,17 @@ public sealed class Pet : Entity<PetId>, IAuditableEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // Constructeur pour Entity Framework
+    private Pet() : base(new PetId(Guid.Empty))
+    {
+        Name = string.Empty;
+        Type = PetType.Chien;
+        Breed = string.Empty;
+        Color = string.Empty;
+        Gender = PetGender.Male;
+        OwnerId = new UserId(Guid.Empty);
+    }
+
     // Propriétés principales
     public string Name { get; private set; }
     public PetType Type { get; private set; }
