@@ -1,57 +1,58 @@
 namespace PetBoarding_Domain.Planning;
 
 using PetBoarding_Domain.Abstractions;
+using PetBoarding_Domain.Prestations;
 
 /// <summary>
 /// Entité représentant un planning avec des créneaux disponibles pour les prestations
 /// </summary>
 public sealed class Planning : Entity<PlanningId>
 {
-    private readonly List<CreneauDisponible> _creneaux = new();
+    private readonly List<AvailableSlot> _slots = new();
 
-    public Planning(PlanningId id, string prestationId, string nom, string? description = null) 
+    public Planning(PlanningId id, PrestationId prestationId, string label, string? description = null) 
         : base(id)
     {
         PrestationId = prestationId;
-        Nom = nom;
+        Label = label;
         Description = description;
-        EstActif = true;
+        IsActive = true;
         DateCreation = DateTime.UtcNow;
     }
 
-    public string PrestationId { get; private set; }
-    public string Nom { get; private set; }
+    public PrestationId PrestationId { get; private set; }
+    public string Label { get; private set; }
     public string? Description { get; private set; }
-    public bool EstActif { get; private set; }
+    public bool IsActive { get; private set; }
     public DateTime DateCreation { get; private set; }
     public DateTime? DateModification { get; private set; }
 
-    public IReadOnlyList<CreneauDisponible> Creneaux => _creneaux.AsReadOnly();
+    public IReadOnlyList<AvailableSlot> Creneaux => _slots.AsReadOnly();
 
-    public void AjouterCreneau(CreneauDisponible creneau)
+    public void AjouterCreneau(AvailableSlot creneau)
     {
-        if (_creneaux.Any(c => c.Date.Date == creneau.Date.Date))
+        if (_slots.Any(c => c.Date.Date == creneau.Date.Date))
         {
             throw new InvalidOperationException($"Un créneau existe déjà pour la date {creneau.Date.Date:yyyy-MM-dd}");
         }
 
-        _creneaux.Add(creneau);
+        _slots.Add(creneau);
         DateModification = DateTime.UtcNow;
     }
 
-    public void SupprimerCreneau(DateTime date)
+    public void DeleteSlot(DateTime date)
     {
-        var creneau = _creneaux.FirstOrDefault(c => c.Date.Date == date.Date);
+        var creneau = _slots.FirstOrDefault(c => c.Date.Date == date.Date);
         if (creneau != null)
         {
-            _creneaux.Remove(creneau);
+            _slots.Remove(creneau);
             DateModification = DateTime.UtcNow;
         }
     }
 
     public void ModifierNom(string nouveauNom)
     {
-        Nom = nouveauNom;
+        Label = nouveauNom;
         DateModification = DateTime.UtcNow;
     }
 
@@ -61,34 +62,34 @@ public sealed class Planning : Entity<PlanningId>
         DateModification = DateTime.UtcNow;
     }
 
-    public void Activer()
+    public void Enable()
     {
-        EstActif = true;
+        IsActive = true;
         DateModification = DateTime.UtcNow;
     }
 
-    public void Desactiver()
+    public void Disable()
     {
-        EstActif = false;
+        IsActive = false;
         DateModification = DateTime.UtcNow;
     }
 
-    public CreneauDisponible? ObtenirCreneauPour(DateTime date)
+    public AvailableSlot? GetSlotForDate(DateTime date)
     {
-        return _creneaux.FirstOrDefault(c => c.Date.Date == date.Date);
+        return _slots.FirstOrDefault(c => c.Date.Date == date.Date);
     }
 
-    public bool EstDisponiblePour(DateTime date, int quantiteDemandee = 1)
+    public bool IsAvailableForDate(DateTime date, int quantiteDemandee = 1)
     {
-        if (!EstActif) return false;
+        if (!IsActive) return false;
 
-        var creneau = ObtenirCreneauPour(date);
-        return creneau?.EstDisponible(quantiteDemandee) ?? false;
+        var creneau = GetSlotForDate(date);
+        return creneau?.IsAvailable(quantiteDemandee) ?? false;
     }
 
-    public void ReserverCreneau(DateTime date, int quantite = 1)
+    public void ReserveSlot(DateTime date, int quantite = 1)
     {
-        var creneau = ObtenirCreneauPour(date);
+        var creneau = GetSlotForDate(date);
         if (creneau == null)
         {
             throw new InvalidOperationException($"Aucun créneau disponible pour la date {date.Date:yyyy-MM-dd}");
@@ -98,15 +99,15 @@ public sealed class Planning : Entity<PlanningId>
         DateModification = DateTime.UtcNow;
     }
 
-    public void AnnulerReservation(DateTime date, int quantite = 1)
+    public void CancelReservation(DateTime date, int quantite = 1)
     {
-        var creneau = ObtenirCreneauPour(date);
+        var creneau = GetSlotForDate(date);
         if (creneau == null)
         {
             throw new InvalidOperationException($"Aucun créneau trouvé pour la date {date.Date:yyyy-MM-dd}");
         }
 
-        creneau.AnnulerReservation(quantite);
+        creneau.CancelReservation(quantite);
         DateModification = DateTime.UtcNow;
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Pets;
+using PetBoarding_Domain.Planning;
 using PetBoarding_Domain.Prestations;
 using PetBoarding_Domain.Reservations;
 using PetBoarding_Domain.Users;
@@ -40,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<IReservationRepository, ReservationRepository>();
         services.AddScoped<IPrestationRepository, PrestationRepository>();
         services.AddScoped<IPetRepository, PetRepository>();
+        services.AddScoped<IPlanningRepository, PlanningRepository>();
 
         // Enregistrement de l'UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();

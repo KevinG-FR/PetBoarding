@@ -3,9 +3,9 @@ namespace PetBoarding_Domain.Planning;
 /// <summary>
 /// Value object représentant un créneau disponible pour une date donnée
 /// </summary>
-public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
+public sealed class AvailableSlot : IEquatable<AvailableSlot>
 {
-    public CreneauDisponible(DateTime date, int capaciteMax, int capaciteReservee = 0)
+    public AvailableSlot(DateTime date, int capaciteMax, int capaciteReservee = 0)
     {
         if (capaciteMax <= 0)
         {
@@ -23,19 +23,19 @@ public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
         }
 
         Date = date.Date; // On ne garde que la partie date
-        CapaciteMax = capaciteMax;
+        MaxCapacity = capaciteMax;
         CapaciteReservee = capaciteReservee;
     }
 
     public DateTime Date { get; }
-    public int CapaciteMax { get; }
+    public int MaxCapacity { get; }
     public int CapaciteReservee { get; private set; }
 
-    public int CapaciteDisponible => CapaciteMax - CapaciteReservee;
+    public int AvailableCapacity => MaxCapacity - CapaciteReservee;
 
-    public bool EstDisponible(int quantiteDemandee = 1)
+    public bool IsAvailable(int quantiteDemandee = 1)
     {
-        return CapaciteDisponible >= quantiteDemandee && Date.Date >= DateTime.Today;
+        return AvailableCapacity >= quantiteDemandee && Date.Date >= DateTime.Today;
     }
 
     public void Reserver(int quantite)
@@ -45,15 +45,15 @@ public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
             throw new ArgumentException("La quantité à réserver doit être supérieure à 0", nameof(quantite));
         }
 
-        if (!EstDisponible(quantite))
+        if (!IsAvailable(quantite))
         {
-            throw new InvalidOperationException($"Capacité insuffisante. Disponible: {CapaciteDisponible}, Demandée: {quantite}");
+            throw new InvalidOperationException($"Capacité insuffisante. Disponible: {AvailableCapacity}, Demandée: {quantite}");
         }
 
         CapaciteReservee += quantite;
     }
 
-    public void AnnulerReservation(int quantite)
+    public void CancelReservation(int quantite)
     {
         if (quantite <= 0)
         {
@@ -68,13 +68,13 @@ public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
         CapaciteReservee -= quantite;
     }
 
-    public CreneauDisponible AvecNouvelleCapacite(int nouvelleCapaciteMax)
+    public AvailableSlot AvecNouvelleCapacite(int nouvelleCapaciteMax)
     {
-        return new CreneauDisponible(Date, nouvelleCapaciteMax, Math.Min(CapaciteReservee, nouvelleCapaciteMax));
+        return new AvailableSlot(Date, nouvelleCapaciteMax, Math.Min(CapaciteReservee, nouvelleCapaciteMax));
     }
 
     // Implémentation de IEquatable
-    public bool Equals(CreneauDisponible? other)
+    public bool Equals(AvailableSlot? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -83,7 +83,7 @@ public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
 
     public override bool Equals(object? obj)
     {
-        return Equals(obj as CreneauDisponible);
+        return Equals(obj as AvailableSlot);
     }
 
     public override int GetHashCode()
@@ -91,18 +91,18 @@ public sealed class CreneauDisponible : IEquatable<CreneauDisponible>
         return Date.Date.GetHashCode();
     }
 
-    public static bool operator ==(CreneauDisponible? left, CreneauDisponible? right)
+    public static bool operator ==(AvailableSlot? left, AvailableSlot? right)
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(CreneauDisponible? left, CreneauDisponible? right)
+    public static bool operator !=(AvailableSlot? left, AvailableSlot? right)
     {
         return !Equals(left, right);
     }
 
     public override string ToString()
     {
-        return $"Créneau {Date:yyyy-MM-dd} - {CapaciteDisponible}/{CapaciteMax} disponible";
+        return $"Créneau {Date:yyyy-MM-dd} - {AvailableCapacity}/{MaxCapacity} disponible";
     }
 }
