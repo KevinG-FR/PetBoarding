@@ -29,6 +29,18 @@ public sealed class Planning : Entity<PlanningId>
 
     public IReadOnlyList<AvailableSlot> Creneaux => _slots.AsReadOnly();
 
+    public void AjouterCreneau(DateTime date, int capaciteMax)
+    {
+        if (_slots.Any(c => c.Date.Date == date.Date))
+        {
+            throw new InvalidOperationException($"Un créneau existe déjà pour la date {date.Date:yyyy-MM-dd}");
+        }
+
+        var nouveauCreneau = AvailableSlot.Create(Id, date, capaciteMax);
+        _slots.Add(nouveauCreneau);
+        DateModification = DateTime.UtcNow;
+    }
+
     public void AjouterCreneau(AvailableSlot creneau)
     {
         if (_slots.Any(c => c.Date.Date == creneau.Date.Date))
@@ -36,6 +48,7 @@ public sealed class Planning : Entity<PlanningId>
             throw new InvalidOperationException($"Un créneau existe déjà pour la date {creneau.Date.Date:yyyy-MM-dd}");
         }
 
+        creneau.AssignToPlanning(Id);
         _slots.Add(creneau);
         DateModification = DateTime.UtcNow;
     }
@@ -48,6 +61,18 @@ public sealed class Planning : Entity<PlanningId>
             _slots.Remove(creneau);
             DateModification = DateTime.UtcNow;
         }
+    }
+
+    public void UpdateSlotCapacity(DateTime date, int nouvelleCapacite)
+    {
+        var creneau = GetSlotForDate(date);
+        if (creneau == null)
+        {
+            throw new InvalidOperationException($"Aucun créneau trouvé pour la date {date.Date:yyyy-MM-dd}");
+        }
+
+        creneau.UpdateCapacity(nouvelleCapacite);
+        DateModification = DateTime.UtcNow;
     }
 
     public void ModifierNom(string nouveauNom)

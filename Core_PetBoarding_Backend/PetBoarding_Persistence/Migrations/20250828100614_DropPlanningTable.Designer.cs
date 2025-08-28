@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetBoarding_Persistence;
@@ -11,9 +12,11 @@ using PetBoarding_Persistence;
 namespace PetBoarding_Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250828100614_DropPlanningTable")]
+    partial class DropPlanningTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,89 +142,6 @@ namespace PetBoarding_Persistence.Migrations
                     b.HasIndex("OwnerId", "Type");
 
                     b.ToTable("Pets", "PetBoarding");
-                });
-
-            modelBuilder.Entity("PetBoarding_Domain.Planning.AvailableSlot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CapaciteReservee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PlanningId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Date")
-                        .HasDatabaseName("IX_AvailableSlots_Date");
-
-                    b.HasIndex("PlanningId", "Date")
-                        .IsUnique()
-                        .HasDatabaseName("IX_AvailableSlots_Planning_Date");
-
-                    b.HasIndex("Date", "MaxCapacity", "CapaciteReservee")
-                        .HasDatabaseName("IX_AvailableSlots_Availability");
-
-                    b.ToTable("AvailableSlots", "PetBoarding");
-                });
-
-            modelBuilder.Entity("PetBoarding_Domain.Planning.Planning", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("DateCreation")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DateModification")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("PrestationId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_Plannings_IsActive");
-
-                    b.HasIndex("PrestationId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Plannings_PrestationId");
-
-                    b.HasIndex("IsActive", "PrestationId")
-                        .HasDatabaseName("IX_Plannings_Active_Prestation");
-
-                    b.ToTable("Plannings", "PetBoarding");
                 });
 
             modelBuilder.Entity("PetBoarding_Domain.Prestations.Prestation", b =>
@@ -554,15 +474,6 @@ namespace PetBoarding_Persistence.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("PetBoarding_Domain.Planning.AvailableSlot", b =>
-                {
-                    b.HasOne("PetBoarding_Domain.Planning.Planning", null)
-                        .WithMany("Creneaux")
-                        .HasForeignKey("PlanningId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("PetBoarding_Domain.Users.RolePermission", b =>
                 {
                     b.HasOne("PetBoarding_Domain.Users.Permission", null)
@@ -601,11 +512,6 @@ namespace PetBoarding_Persistence.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("PetBoarding_Domain.Planning.Planning", b =>
-                {
-                    b.Navigation("Creneaux");
                 });
 #pragma warning restore 612, 618
         }

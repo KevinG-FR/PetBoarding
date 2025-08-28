@@ -15,14 +15,14 @@ public static partial class PlanningEndpoints
             request.DateFin,
             request.Quantite);
 
-        var success = await sender.Send(command);
+        var result = await sender.Send(command);
 
         var response = new ReservationResponse
         {
-            Success = success,
-            Message = success ? "Créneaux réservés avec succès" : "Échec de la réservation"
+            Success = result.Value,
+            Message = result.Value ? "Créneaux réservés avec succès" : "Échec de la réservation"
         };
 
-        return success ? Results.Ok(response) : Results.BadRequest(response);
+        return result.Value ? Results.Ok(response) : Results.BadRequest(response);
     }
 }

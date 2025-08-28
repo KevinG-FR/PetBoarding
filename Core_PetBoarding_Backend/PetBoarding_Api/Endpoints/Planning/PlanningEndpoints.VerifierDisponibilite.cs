@@ -19,16 +19,16 @@ public static partial class PlanningEndpoints
 
         var response = new DisponibiliteResponse
         {
-            PrestationId = result.PrestationId,
-            IsAvailable = result.IsAvailable,
-            AvailableSlots = result.AvailableSlots.Select(slot => new CreneauDisponibleDto
+            PrestationId = result.Value.PrestationId,
+            IsAvailable = result.Value.IsAvailable,
+            AvailableSlots = result.Value.AvailableSlots.Select(slot => new CreneauDisponibleDto
             {
                 Date = slot.Date,
                 CapaciteMax = slot.CapaciteMax,
                 CapaciteReservee = slot.CapaciteReservee,
                 CapaciteDisponible = slot.CapaciteDisponible
             }).ToList(),
-            Message = result.Message
+            Message = result.Value.Message
         };
 
         return Results.Ok(response);

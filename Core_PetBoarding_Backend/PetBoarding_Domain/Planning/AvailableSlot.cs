@@ -1,11 +1,17 @@
 namespace PetBoarding_Domain.Planning;
 
+using PetBoarding_Domain.Abstractions;
+
 /// <summary>
-/// Value object représentant un créneau disponible pour une date donnée
+/// Entité représentant un créneau disponible pour une date donnée
 /// </summary>
-public sealed class AvailableSlot : IEquatable<AvailableSlot>
+public sealed class AvailableSlot : Entity<AvailableSlotId>
 {
-    public AvailableSlot(DateTime date, int capaciteMax, int capaciteReservee = 0)
+    // Constructeur privé pour EF Core
+    private AvailableSlot() : base(default!) { }
+
+    public AvailableSlot(AvailableSlotId id, PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
+        : base(id)
     {
         if (capaciteMax <= 0)
         {
@@ -22,14 +28,19 @@ public sealed class AvailableSlot : IEquatable<AvailableSlot>
             throw new ArgumentException("La capacité réservée ne peut pas dépasser la capacité maximale", nameof(capaciteReservee));
         }
 
+        PlanningId = planningId;
         Date = date.Date; // On ne garde que la partie date
         MaxCapacity = capaciteMax;
         CapaciteReservee = capaciteReservee;
+        CreatedAt = DateTime.UtcNow;
     }
 
-    public DateTime Date { get; }
-    public int MaxCapacity { get; }
+    public PlanningId PlanningId { get; private set; }
+    public DateTime Date { get; private set; }
+    public int MaxCapacity { get; private set; }
     public int CapaciteReservee { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? ModifiedAt { get; private set; }
 
     public int AvailableCapacity => MaxCapacity - CapaciteReservee;
 
@@ -51,6 +62,7 @@ public sealed class AvailableSlot : IEquatable<AvailableSlot>
         }
 
         CapaciteReservee += quantite;
+        ModifiedAt = DateTime.UtcNow;
     }
 
     public void CancelReservation(int quantite)
@@ -66,43 +78,39 @@ public sealed class AvailableSlot : IEquatable<AvailableSlot>
         }
 
         CapaciteReservee -= quantite;
+        ModifiedAt = DateTime.UtcNow;
     }
 
-    public AvailableSlot AvecNouvelleCapacite(int nouvelleCapaciteMax)
+    public void UpdateCapacity(int nouvelleCapaciteMax)
     {
-        return new AvailableSlot(Date, nouvelleCapaciteMax, Math.Min(CapaciteReservee, nouvelleCapaciteMax));
+        if (nouvelleCapaciteMax <= 0)
+        {
+            throw new ArgumentException("La capacité maximale doit être supérieure à 0", nameof(nouvelleCapaciteMax));
+        }
+
+        MaxCapacity = nouvelleCapaciteMax;
+        // Ajuster la capacité réservée si elle dépasse la nouvelle capacité max
+        if (CapaciteReservee > nouvelleCapaciteMax)
+        {
+            CapaciteReservee = nouvelleCapaciteMax;
+        }
+        ModifiedAt = DateTime.UtcNow;
     }
 
-    // Implémentation de IEquatable
-    public bool Equals(AvailableSlot? other)
+    internal void AssignToPlanning(PlanningId planningId)
     {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return Date.Date == other.Date.Date;
+        PlanningId = planningId;
+        ModifiedAt = DateTime.UtcNow;
     }
 
-    public override bool Equals(object? obj)
+    // Factory method pour créer un nouveau slot
+    public static AvailableSlot Create(PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
     {
-        return Equals(obj as AvailableSlot);
-    }
-
-    public override int GetHashCode()
-    {
-        return Date.Date.GetHashCode();
-    }
-
-    public static bool operator ==(AvailableSlot? left, AvailableSlot? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(AvailableSlot? left, AvailableSlot? right)
-    {
-        return !Equals(left, right);
+        return new AvailableSlot(AvailableSlotId.New(), planningId, date, capaciteMax, capaciteReservee);
     }
 
     public override string ToString()
     {
-        return $"Créneau {Date:yyyy-MM-dd} - {AvailableCapacity}/{MaxCapacity} disponible";
+        return $"Créneau {Date:yyyy-MM-dd} - {AvailableCapacity}/{MaxCapacity} disponible (Planning: {PlanningId})";
     }
 }

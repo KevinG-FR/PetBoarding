@@ -12,16 +12,16 @@ public static partial class PlanningEndpoints
         try
         {
             var command = new CreatePlanningCommand(request.PrestationId, request.Nom, request.Description);
-            var planningId = await sender.Send(command);
+            var result = await sender.Send(command);
 
             var response = new CreatePlanningResponse
             {
                 Success = true,
-                PlanningId = planningId,
+                PlanningId = result.Value,
                 Message = "Planning créé avec succès"
             };
 
-            return Results.Created($"/api/v1/planning/{planningId}", response);
+            return Results.Created($"/api/v1/planning/{result.Value}", response);
         }
         catch (ArgumentException ex)
         {

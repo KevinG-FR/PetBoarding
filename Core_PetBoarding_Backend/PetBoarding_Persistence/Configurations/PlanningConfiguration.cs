@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PetBoarding_Domain.Planning;
 using PetBoarding_Domain.Prestations;
-using System.Text.Json;
 
 public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
 {
@@ -14,7 +13,7 @@ public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
 
         // Configuration de la clé primaire
         builder.HasKey(p => p.Id);
-        
+
         builder.Property(p => p.Id)
             .HasConversion(
                 id => id.Value,
@@ -44,39 +43,17 @@ public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
 
         builder.Property(p => p.DateModification);
 
-        // Configuration de la collection de créneaux en JSON
-        builder.Property(p => p.Creneaux)
-            .HasConversion(
-                creneaux => JsonSerializer.Serialize(
-                    creneaux.Select(c => new
-                    {
-                        Date = c.Date,
-                        CapaciteMax = c.MaxCapacity,
-                        CapaciteReservee = c.CapaciteReservee
-                    }),
-                    (JsonSerializerOptions?)null),
-                json => JsonSerializer.Deserialize<SlotData[]>(json, (JsonSerializerOptions?)null) != null
-                    ? JsonSerializer.Deserialize<SlotData[]>(json, (JsonSerializerOptions?)null)!
-                        .Select(data => new AvailableSlot(data.Date, data.CapaciteMax, data.CapaciteReservee))
-                        .ToList()
-                    : new List<AvailableSlot>())
-            .HasColumnType("json");
-
         // Index sur PrestationId pour optimiser les recherches
         builder.HasIndex(p => p.PrestationId)
             .IsUnique()
             .HasDatabaseName("IX_Plannings_PrestationId");
 
-        // Index sur EstActif pour optimiser les recherches des plannings actifs
+        // Index sur IsActive pour optimiser les recherches des plannings actifs
         builder.HasIndex(p => p.IsActive)
-            .HasDatabaseName("IX_Plannings_EstActif");
-    }
+            .HasDatabaseName("IX_Plannings_IsActive");
 
-    // Classe helper pour la sérialisation JSON
-    private sealed class SlotData
-    {
-        public DateTime Date { get; set; }
-        public int CapaciteMax { get; set; }
-        public int CapaciteReservee { get; set; }
+        // Index composite pour requêtes courantes
+        builder.HasIndex(p => new { p.IsActive, p.PrestationId })
+            .HasDatabaseName("IX_Plannings_Active_Prestation");
     }
 }

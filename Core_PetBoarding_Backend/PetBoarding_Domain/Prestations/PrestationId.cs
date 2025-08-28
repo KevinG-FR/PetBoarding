@@ -8,5 +8,5 @@ public sealed record PrestationId : EntityIdentifier
     {
     }
 
-    public static PrestationId New() => new(Guid.NewGuid());
+    public static PrestationId New() => new(Guid.CreateVersion7());
 }

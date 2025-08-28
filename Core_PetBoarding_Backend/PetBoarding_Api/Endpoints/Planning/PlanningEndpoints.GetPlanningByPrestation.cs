@@ -10,9 +10,9 @@ public static partial class PlanningEndpoints
     public static async Task<IResult> GetPlanningByPrestation(string prestationId, ISender sender)
     {
         var query = new GetPlanningByPrestationIdQuery(prestationId);
-        var planning = await sender.Send(query);
+        var result = await sender.Send(query);
 
-        if (planning == null)
+        if (result.IsFailed)
         {
             return Results.NotFound(new GetPlanningResponse
             {
@@ -25,7 +25,7 @@ public static partial class PlanningEndpoints
         var response = new GetPlanningResponse
         {
             Success = true,
-            Data = PlanningMapper.ToDto(planning),
+            Data = PlanningMapper.ToDto(result.Value),
             Message = "Planning trouvé"
         };
 

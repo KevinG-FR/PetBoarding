@@ -15,12 +15,12 @@ public static partial class PlanningEndpoints
             request.DateFin,
             request.Quantite);
 
-        var success = await sender.Send(command);
+        var result = await sender.Send(command);
 
         var response = new ReservationResponse
         {
-            Success = success,
-            Message = success ? "Réservations annulées avec succès" : "Échec de l'annulation"
+            Success = result.Value,
+            Message = result.Value ? "Réservations annulées avec succès" : "Échec de l'annulation"
         };
 
         return Results.Ok(response);

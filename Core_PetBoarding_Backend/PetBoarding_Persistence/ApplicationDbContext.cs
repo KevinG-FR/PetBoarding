@@ -19,6 +19,7 @@ namespace PetBoarding_Persistence
         public DbSet<Prestation> Prestations { get; set; }
         public DbSet<Pet> Pets { get; set; }
         public DbSet<Planning> Plannings { get; set; }
+        public DbSet<AvailableSlot> AvailableSlots { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
