@@ -104,6 +104,11 @@ public sealed class Planning : Entity<PlanningId>
         return _slots.FirstOrDefault(c => c.Date.Date == date.Date);
     }
 
+    public AvailableSlot? GetSlotById(AvailableSlotId slotId)
+    {
+        return _slots.FirstOrDefault(c => c.Id == slotId);
+    }
+
     public bool IsAvailableForDate(DateTime date, int quantiteDemandee = 1)
     {
         if (!IsActive) return false;

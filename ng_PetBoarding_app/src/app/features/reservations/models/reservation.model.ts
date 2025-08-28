@@ -11,6 +11,8 @@ export interface Reservation {
   commentaires?: string;
   dateCreation: Date;
   dateReservation: Date;
+  paymentExpiryAt?: Date; // Date d'expiration pour le paiement (20 min)
+  paidAt?: Date; // Date de paiement
 }
 
 export interface ReservationAvecPlanning {
@@ -33,11 +35,20 @@ export interface ReservationAvecPlanning {
 }
 
 export enum StatutReservation {
-  EN_ATTENTE = 'EN_ATTENTE',
-  CONFIRMEE = 'CONFIRMEE',
-  EN_COURS = 'EN_COURS',
-  TERMINEE = 'TERMINEE',
-  ANNULEE = 'ANNULEE'
+  // Nouveaux statuts avec gestion temporelle
+  CREATED = 'CREATED',           // Créée, créneaux temporairement réservés (20 min max)
+  VALIDATED = 'VALIDATED',       // Payée et validée, créneaux définitivement réservés
+  CANCEL_AUTO = 'CANCEL_AUTO',   // Annulation automatique après expiration
+  CANCEL = 'CANCEL',             // Annulation manuelle par le client
+  IN_PROGRESS = 'IN_PROGRESS',   // Service en cours
+  COMPLETED = 'COMPLETED',       // Service terminé
+  
+  // Anciens statuts pour compatibilité
+  EN_ATTENTE = 'CREATED',        // @deprecated - Utiliser CREATED
+  CONFIRMEE = 'VALIDATED',       // @deprecated - Utiliser VALIDATED
+  EN_COURS = 'IN_PROGRESS',      // @deprecated - Utiliser IN_PROGRESS
+  TERMINEE = 'COMPLETED',        // @deprecated - Utiliser COMPLETED
+  ANNULEE = 'CANCEL'             // @deprecated - Utiliser CANCEL
 }
 
 export interface ReservationFilters {
@@ -58,4 +69,9 @@ export interface CreerReservationRequest {
 export interface PeriodeReservation {
   dateDebut: Date;
   dateFin: Date;
+}
+
+export interface ValidatePaymentRequest {
+  amountPaid: number;
+  paymentMethod?: string;
 }

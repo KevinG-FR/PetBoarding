@@ -24,4 +24,10 @@ public interface IReservationRepository : IBaseRepository<Reservation, Reservati
         DateTime startDate,
         DateTime endDate,
         CancellationToken cancellationToken = default);
+        
+    /// <summary>
+    /// Récupère toutes les réservations avec statut Created qui ont expiré (PaymentExpiryAt dépassé)
+    /// </summary>
+    Task<IEnumerable<Reservation>> GetExpiredCreatedReservationsAsync(
+        CancellationToken cancellationToken = default);
 }

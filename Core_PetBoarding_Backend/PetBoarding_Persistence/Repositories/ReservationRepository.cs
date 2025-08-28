@@ -82,4 +82,12 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
                 (r.EndDate == null || r.EndDate >= startDate || r.StartDate >= startDate))
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<Reservation>> GetExpiredCreatedReservationsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(r => r.Status == ReservationStatus.Created && r.PaymentExpiryAt < DateTime.UtcNow)
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -46,5 +46,13 @@ public static partial class ReservationsEndpoints
             .Produces(204)
             .Produces(400)
             .Produces(404);
+
+        group.MapPost("/{id}/validate-payment", ValidatePayment)
+            .WithName("ValidatePayment")
+            .WithSummary("Validate payment for a reservation")
+            .WithDescription("Confirms payment and changes reservation status from Created to Validated.")
+            .Produces(200)
+            .Produces(400)
+            .Produces(404);
     }
 }
