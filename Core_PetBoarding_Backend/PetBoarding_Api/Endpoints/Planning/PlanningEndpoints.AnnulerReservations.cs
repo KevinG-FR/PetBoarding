@@ -7,7 +7,7 @@ using PetBoarding_Application.Planning.AnnulerReservations;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; AnnulerReservations(ReserverCreneauxRequest request, ISender sender)
+    public static async Task<IResult> AnnulerReservations(ReserverCreneauxRequest request, ISender sender)
     {
         var command = new AnnulerReservationsCommand(
             request.PrestationId,

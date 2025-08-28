@@ -5,15 +5,15 @@ using PetBoarding_Domain.Planning;
 
 public static class PlanningMapper
 {
-    public static PlanningDto ToDto(Domain.Planning.Planning planning)
+    public static PlanningDto ToDto(PetBoarding_Domain.Planning.Planning planning)
     {
         return new PlanningDto
         {
             Id = planning.Id.Value.ToString(),
             PrestationId = planning.PrestationId.Value.ToString(),
-            Nom = planning.Nom,
+            Nom = planning.Label,
             Description = planning.Description,
-            EstActif = planning.EstActif,
+            EstActif = planning.IsActive,
             DateCreation = planning.DateCreation,
             DateModification = planning.DateModification,
             Creneaux = planning.Creneaux.Select(ToDto).ToList()

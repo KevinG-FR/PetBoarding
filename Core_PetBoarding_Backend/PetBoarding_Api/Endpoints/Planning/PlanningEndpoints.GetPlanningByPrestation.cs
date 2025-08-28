@@ -7,7 +7,7 @@ using PetBoarding_Application.Planning.GetPlanningByPrestationId;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; GetPlanningByPrestation(string prestationId, ISender sender)
+    public static async Task<IResult> GetPlanningByPrestation(string prestationId, ISender sender)
     {
         var query = new GetPlanningByPrestationIdQuery(prestationId);
         var planning = await sender.Send(query);

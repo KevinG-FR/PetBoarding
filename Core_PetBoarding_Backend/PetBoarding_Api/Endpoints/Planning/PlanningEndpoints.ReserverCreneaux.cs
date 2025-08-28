@@ -7,7 +7,7 @@ using PetBoarding_Application.Planning.ReserverCreneaux;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; ReserverCreneaux(ReserverCreneauxRequest request, ISender sender)
+    public static async Task<IResult> ReserverCreneaux(ReserverCreneauxRequest request, ISender sender)
     {
         var command = new ReserverCreneauxCommand(
             request.PrestationId,

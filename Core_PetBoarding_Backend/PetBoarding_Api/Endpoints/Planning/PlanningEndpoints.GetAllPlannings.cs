@@ -8,7 +8,7 @@ using PetBoarding_Application.Planning.GetAllPlannings;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; GetAllPlannings(ISender sender)
+    public static async Task<IResult> GetAllPlannings(ISender sender)
     {
         var query = new GetAllPlanningsQuery();
         var plannings = await sender.Send(query);

@@ -7,7 +7,7 @@ using PetBoarding_Application.Planning.VerifierDisponibilite;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; VerifierDisponibilite(DisponibiliteQueryDto request, ISender sender)
+    public static async Task<IResult> VerifierDisponibilite(DisponibiliteQueryDto request, ISender sender)
     {
         var query = new VerifierDisponibiliteQuery(
             request.PrestationId,
@@ -21,7 +21,7 @@ public static partial class PlanningEndpoints
         {
             PrestationId = result.PrestationId,
             IsAvailable = result.IsAvailable,
-            AvailableSlots = result.AvailableSlots.Select(slot =&gt; new CreneauDisponibleDto
+            AvailableSlots = result.AvailableSlots.Select(slot => new CreneauDisponibleDto
             {
                 Date = slot.Date,
                 CapaciteMax = slot.CapaciteMax,

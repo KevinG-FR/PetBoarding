@@ -7,7 +7,7 @@ using PetBoarding_Application.Planning.CreatePlanning;
 
 public static partial class PlanningEndpoints
 {
-    public static async Task&lt;IResult&gt; CreatePlanning(CreatePlanningRequest request, ISender sender)
+    public static async Task<IResult> CreatePlanning(CreatePlanningRequest request, ISender sender)
     {
         try
         {

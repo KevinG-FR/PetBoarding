@@ -55,9 +55,11 @@ public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
                         CapaciteReservee = c.CapaciteReservee
                     }),
                     (JsonSerializerOptions?)null),
-                json => JsonSerializer.Deserialize<CreneauData[]>(json, (JsonSerializerOptions?)null)?
-                    .Select(data => new AvailableSlot(data.Date, data.CapaciteMax, data.CapaciteReservee))
-                    .ToList() ?? new List<AvailableSlot>())
+                json => JsonSerializer.Deserialize<SlotData[]>(json, (JsonSerializerOptions?)null) != null
+                    ? JsonSerializer.Deserialize<SlotData[]>(json, (JsonSerializerOptions?)null)!
+                        .Select(data => new AvailableSlot(data.Date, data.CapaciteMax, data.CapaciteReservee))
+                        .ToList()
+                    : new List<AvailableSlot>())
             .HasColumnType("json");
 
         // Index sur PrestationId pour optimiser les recherches
@@ -71,7 +73,7 @@ public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
     }
 
     // Classe helper pour la sérialisation JSON
-    private sealed class CreneauData
+    private sealed class SlotData
     {
         public DateTime Date { get; set; }
         public int CapaciteMax { get; set; }
