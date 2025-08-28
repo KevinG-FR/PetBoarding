@@ -12,12 +12,14 @@ public sealed class PlanningRepository : BaseRepository<Planning, PlanningId>, I
     public async Task<Planning?> GetByPrestationIdAsync(PrestationId prestationId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(p => p.Creneaux)
             .FirstOrDefaultAsync(p => p.PrestationId == prestationId, cancellationToken);
     }
 
     public async Task<List<Planning>> GetAllActiveAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(p => p.Creneaux)
             .Where(p => p.IsActive)
             .ToListAsync(cancellationToken);
     }

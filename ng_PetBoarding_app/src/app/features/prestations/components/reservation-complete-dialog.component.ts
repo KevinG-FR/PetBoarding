@@ -57,15 +57,8 @@ export class ReservationCompleteDialogComponent {
   // Computed signal pour filtrer les animaux compatibles depuis le service
   pets = computed(() => {
     const allPets = this.petService.pets();
-    const filteredPets = allPets.filter(pet => pet.type === this.prestation.categorieAnimal);
-    if (filteredPets.length === 0 && allPets.length > 0) {
-      console.log('DEBUG - No compatible pets found:', {
-        allPetsCount: allPets.length,
-        prestationType: this.prestation.categorieAnimal,
-        allPetsTypes: allPets.map(p => p.type),
-        filteredCount: filteredPets.length
-      });
-    }
+    const filteredPets = allPets.filter((pet) => pet.type === this.prestation.categorieAnimal);
+
     return filteredPets;
   });
   isLoading = computed(() => this.petService.isLoading());
@@ -171,9 +164,7 @@ export class ReservationCompleteDialogComponent {
   }
 
   getCategoryInfo(): CategoryInfo {
-    console.log('getCategoryInfo - prestation.categorieAnimal:', this.prestation.categorieAnimal, typeof this.prestation.categorieAnimal);
     const categoryInfo = this.prestationsService.getCategoryInfo(this.prestation.categorieAnimal);
-    console.log('getCategoryInfo - result:', categoryInfo);
     return categoryInfo;
   }
 

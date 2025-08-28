@@ -8,8 +8,6 @@ using PetBoarding_Domain.Prestations;
 /// </summary>
 public sealed class Planning : Entity<PlanningId>
 {
-    private readonly List<AvailableSlot> _slots = new();
-
     public Planning(PlanningId id, PrestationId prestationId, string label, string? description = null) 
         : base(id)
     {
@@ -18,6 +16,13 @@ public sealed class Planning : Entity<PlanningId>
         Description = description;
         IsActive = true;
         DateCreation = DateTime.UtcNow;
+        Creneaux = new List<AvailableSlot>();
+    }
+
+    // Constructeur privé pour EF Core
+    private Planning() : base(default!)
+    {
+        Creneaux = new List<AvailableSlot>();
     }
 
     public PrestationId PrestationId { get; private set; }
@@ -27,38 +32,38 @@ public sealed class Planning : Entity<PlanningId>
     public DateTime DateCreation { get; private set; }
     public DateTime? DateModification { get; private set; }
 
-    public IReadOnlyList<AvailableSlot> Creneaux => _slots.AsReadOnly();
+    public List<AvailableSlot> Creneaux { get; set; }
 
     public void AjouterCreneau(DateTime date, int capaciteMax)
     {
-        if (_slots.Any(c => c.Date.Date == date.Date))
+        if (Creneaux.Any(c => c.Date.Date == date.Date))
         {
             throw new InvalidOperationException($"Un créneau existe déjà pour la date {date.Date:yyyy-MM-dd}");
         }
 
         var nouveauCreneau = AvailableSlot.Create(Id, date, capaciteMax);
-        _slots.Add(nouveauCreneau);
+        Creneaux.Add(nouveauCreneau);
         DateModification = DateTime.UtcNow;
     }
 
     public void AjouterCreneau(AvailableSlot creneau)
     {
-        if (_slots.Any(c => c.Date.Date == creneau.Date.Date))
+        if (Creneaux.Any(c => c.Date.Date == creneau.Date.Date))
         {
             throw new InvalidOperationException($"Un créneau existe déjà pour la date {creneau.Date.Date:yyyy-MM-dd}");
         }
 
         creneau.AssignToPlanning(Id);
-        _slots.Add(creneau);
+        Creneaux.Add(creneau);
         DateModification = DateTime.UtcNow;
     }
 
     public void DeleteSlot(DateTime date)
     {
-        var creneau = _slots.FirstOrDefault(c => c.Date.Date == date.Date);
+        var creneau = Creneaux.FirstOrDefault(c => c.Date.Date == date.Date);
         if (creneau != null)
         {
-            _slots.Remove(creneau);
+            Creneaux.Remove(creneau);
             DateModification = DateTime.UtcNow;
         }
     }
@@ -101,12 +106,12 @@ public sealed class Planning : Entity<PlanningId>
 
     public AvailableSlot? GetSlotForDate(DateTime date)
     {
-        return _slots.FirstOrDefault(c => c.Date.Date == date.Date);
+        return Creneaux.FirstOrDefault(c => c.Date.Date == date.Date);
     }
 
     public AvailableSlot? GetSlotById(AvailableSlotId slotId)
     {
-        return _slots.FirstOrDefault(c => c.Id == slotId);
+        return Creneaux.FirstOrDefault(c => c.Id == slotId);
     }
 
     public bool IsAvailableForDate(DateTime date, int quantiteDemandee = 1)

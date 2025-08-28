@@ -55,5 +55,11 @@ public sealed class PlanningConfiguration : IEntityTypeConfiguration<Planning>
         // Index composite pour requêtes courantes
         builder.HasIndex(p => new { p.IsActive, p.PrestationId })
             .HasDatabaseName("IX_Plannings_Active_Prestation");
+
+        // Configuration de la relation avec AvailableSlots
+        builder.HasMany(p => p.Creneaux)
+            .WithOne()
+            .HasForeignKey(s => s.PlanningId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
