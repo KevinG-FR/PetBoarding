@@ -16,6 +16,7 @@ namespace PetBoarding_Persistence
         public DbSet<Address> Addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ReservationSlot> ReservationSlots { get; set; }
         public DbSet<Prestation> Prestations { get; set; }
         public DbSet<Pet> Pets { get; set; }
         public DbSet<Planning> Plannings { get; set; }

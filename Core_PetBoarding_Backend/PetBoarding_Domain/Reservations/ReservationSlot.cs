@@ -8,6 +8,11 @@ using PetBoarding_Domain.Abstractions;
 /// </summary>
 public sealed class ReservationSlot : Entity<ReservationSlotId>
 {
+    // Constructeur privé pour Entity Framework Core
+    private ReservationSlot() : base(default!)
+    {
+    }
+
     public ReservationSlot(
         ReservationId reservationId,
         Guid availableSlotId) : base(new ReservationSlotId(Guid.CreateVersion7()))
