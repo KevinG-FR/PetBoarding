@@ -33,20 +33,32 @@ export class ReservationItemComponent {
 
   getDureeSejourEnJours(): number {
     const debut = new Date(this.reservation().dateDebut);
-    const fin = new Date(this.reservation().dateFin);
+    const dateFin = this.reservation().dateFin;
+    if (!dateFin) return 1;
+    
+    const fin = new Date(dateFin);
     const diffTime = Math.abs(fin.getTime() - debut.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays === 0 ? 1 : diffDays; // Minimum 1 jour
   }
 
   isPast(): boolean {
-    return new Date(this.reservation().dateFin) < new Date();
+    const dateFin = this.reservation().dateFin;
+    if (!dateFin) return false;
+    return new Date(dateFin) < new Date();
   }
 
   isCurrent(): boolean {
     const now = new Date();
     const debut = new Date(this.reservation().dateDebut);
-    const fin = new Date(this.reservation().dateFin);
+    const dateFin = this.reservation().dateFin;
+    
+    if (!dateFin) {
+      // Pour les réservations d'une journée, vérifie si c'est aujourd'hui
+      return debut.toDateString() === now.toDateString();
+    }
+    
+    const fin = new Date(dateFin);
     return debut <= now && now <= fin;
   }
 

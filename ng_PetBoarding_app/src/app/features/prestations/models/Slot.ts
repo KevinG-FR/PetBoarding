@@ -15,6 +15,6 @@ export interface DisponibiliteQuery {
 export interface DisponibiliteResponse {
   prestationId: string;
   isAvailable: boolean;
-  availablesSlots: AvailableSlot[];
+  availableSlots: AvailableSlot[];
   message?: string;
 }

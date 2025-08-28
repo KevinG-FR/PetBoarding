@@ -66,7 +66,7 @@ export class PlanningService {
       map(response => ({
         prestationId: response.prestationId,
         isAvailable: response.isAvailable,
-        availablesSlots: response.availableSlots.map(dto => this.convertCreneauDtoToModel(dto)),
+        availableSlots: response.availableSlots.map(dto => this.convertCreneauDtoToModel(dto)),
         message: response.message
       }))
     );

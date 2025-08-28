@@ -1,18 +1,22 @@
 export interface Reservation {
   id: string;
+  userId: string;
+  animalId: string;
   animalNom: string;
   animalType: 'CHIEN' | 'CHAT';
   prestationId: string;
   prestationLibelle: string;
   dateDebut: Date;
-  dateFin: Date;
-  prix: number;
+  dateFin?: Date;
+  prix?: number;
   statut: StatutReservation;
   commentaires?: string;
   dateCreation: Date;
-  dateReservation: Date;
+  dateModification?: Date;
   paymentExpiryAt?: Date; // Date d'expiration pour le paiement (20 min)
   paidAt?: Date; // Date de paiement
+  // Champs liés aux créneaux
+  slotsReserves?: ReservationSlot[];
 }
 
 export interface ReservationAvecPlanning {
@@ -59,7 +63,9 @@ export interface ReservationFilters {
 }
 
 export interface CreerReservationRequest {
+  userId: string;
   animalId: string;
+  animalName: string;
   prestationId: string;
   dateDebut: Date;
   dateFin?: Date;
@@ -74,4 +80,32 @@ export interface PeriodeReservation {
 export interface ValidatePaymentRequest {
   amountPaid: number;
   paymentMethod?: string;
+}
+
+// Modèles liés aux nouveaux concepts de slots
+export interface ReservationSlot {
+  id: string;
+  reservationId: string;
+  availableSlotId: string;
+  reservedAt: Date;
+  releasedAt?: Date;
+  isActive: boolean;
+}
+
+// Interface pour l'intégration avec le planning
+export interface ReservationAvecSlots {
+  reservation: Reservation;
+  slots: ReservationSlot[];
+  totalPrice: number;
+  numberOfDays: number;
+}
+
+// Statuts alignés avec le backend
+export interface ReservationStatus {
+  CREATED: 'CREATED';
+  VALIDATED: 'VALIDATED';
+  CANCEL_AUTO: 'CANCEL_AUTO';
+  CANCEL: 'CANCEL';
+  IN_PROGRESS: 'IN_PROGRESS';
+  COMPLETED: 'COMPLETED';
 }
