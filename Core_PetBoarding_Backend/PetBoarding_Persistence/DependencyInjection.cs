@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PetBoarding_Domain.Abstractions;
+using PetBoarding_Domain.Baskets;
+using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Pets;
 using PetBoarding_Domain.Planning;
 using PetBoarding_Domain.Prestations;
@@ -42,6 +44,8 @@ public static class DependencyInjection
         services.AddScoped<IPrestationRepository, PrestationRepository>();
         services.AddScoped<IPetRepository, PetRepository>();
         services.AddScoped<IPlanningRepository, PlanningRepository>();
+        services.AddScoped<IBasketRepository, BasketRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         // Enregistrement de l'UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();

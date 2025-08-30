@@ -7,7 +7,7 @@ using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Reservations;
 
 /// <summary>
-/// Handler pour valider le paiement d'une réservation et confirmer définitivement les créneaux
+/// Handler pour marquer une réservation comme payée (appelé par le système de panier)
 /// </summary>
 internal sealed class ValidatePaymentHandler : ICommandHandler<ValidatePaymentCommand, Reservation>
 {
@@ -45,15 +45,10 @@ internal sealed class ValidatePaymentHandler : ICommandHandler<ValidatePaymentCo
                 return Result.Fail($"Reservation with ID {request.ReservationId} not found");
             }
 
-            // 2. Vérifier que la réservation peut être payée
+            // 2. Vérifier que la réservation peut être marquée comme payée
             if (reservation.Status != ReservationStatus.Created)
             {
-                return Result.Fail($"Cannot validate payment for reservation with status {reservation.Status}");
-            }
-
-            if (reservation.IsExpired())
-            {
-                return Result.Fail("Payment period has expired (20 minutes limit exceeded)");
+                return Result.Fail($"Cannot mark as paid a reservation with status {reservation.Status}");
             }
 
             // 3. Valider le montant (optionnel pour le moment)
@@ -62,8 +57,8 @@ internal sealed class ValidatePaymentHandler : ICommandHandler<ValidatePaymentCo
                 return Result.Fail("Amount paid cannot be negative");
             }
 
-            // 4. Valider le paiement (confirme définitivement les créneaux)
-            reservation.ValidatePayment();
+            // 4. Marquer la réservation comme payée
+            reservation.MarkAsPaid();
             
             if (request.AmountPaid > 0)
             {
@@ -74,7 +69,7 @@ internal sealed class ValidatePaymentHandler : ICommandHandler<ValidatePaymentCo
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(
-                "Payment validated for reservation {ReservationId}. Amount: {Amount}, Method: {Method}",
+                "Reservation marked as paid {ReservationId}. Amount: {Amount}, Method: {Method}",
                 request.ReservationId, request.AmountPaid, request.PaymentMethod);
 
             return Result.Ok(reservation);

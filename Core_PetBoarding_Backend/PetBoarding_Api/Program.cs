@@ -6,6 +6,8 @@ using Microsoft.OpenApi.Models;
 
 using PetBoarding_Api.Endpoints;
 using PetBoarding_Api.Endpoints.Authentication;
+using PetBoarding_Api.Endpoints.Baskets;
+using PetBoarding_Api.Endpoints.Payments;
 using PetBoarding_Api.Endpoints.Pets;
 using PetBoarding_Api.Endpoints.Planning;
 using PetBoarding_Api.Endpoints.Prestations;
@@ -119,6 +121,8 @@ app.MapReservationsEndpoints();
 app.MapPrestationsEndpoints();
 app.MapPetsEndpoints();
 app.MapPlanningEndpoints();
+app.MapBasketsEndpoints();
+app.MapPaymentsEndpoints();
 
 // Configure the HTTP request pipeline.
 

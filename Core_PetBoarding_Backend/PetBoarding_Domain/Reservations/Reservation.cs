@@ -37,7 +37,6 @@ public sealed class Reservation : Entity<ReservationId>
         Comments = comments;
         Status = ReservationStatus.Created;
         CreatedAt = DateTime.UtcNow;
-        PaymentExpiryAt = DateTime.UtcNow.AddMinutes(20);
     }
 
     public string UserId { get; private set; }
@@ -51,7 +50,6 @@ public sealed class Reservation : Entity<ReservationId>
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public decimal? TotalPrice { get; private set; }
-    public DateTime PaymentExpiryAt { get; private set; }
     public DateTime? PaidAt { get; private set; }
     
     /// <summary>
@@ -114,40 +112,19 @@ public sealed class Reservation : Entity<ReservationId>
     }
 
     /// <summary>
-    /// Valide le paiement et confirme définitivement la réservation
+    /// Marks the reservation as paid when the basket payment is successful
     /// </summary>
-    public void ValidatePayment()
+    public void MarkAsPaid()
     {
         if (Status != ReservationStatus.Created)
-            throw new InvalidOperationException($"Cannot validate payment for a reservation with status {Status}");
-
-        if (DateTime.UtcNow > PaymentExpiryAt)
-            throw new InvalidOperationException("Payment period has expired");
+            throw new InvalidOperationException($"Cannot mark as paid a reservation with status {Status}");
 
         Status = ReservationStatus.Validated;
         PaidAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Vérifie si la réservation a expiré (20 minutes écoulées)
-    /// </summary>
-    public bool IsExpired()
-    {
-        return Status == ReservationStatus.Created && DateTime.UtcNow > PaymentExpiryAt;
-    }
 
-    /// <summary>
-    /// Marque la réservation comme expirée automatiquement
-    /// </summary>
-    public void MarkAsAutoExpired()
-    {
-        if (Status != ReservationStatus.Created)
-            throw new InvalidOperationException($"Cannot auto-cancel a reservation with status {Status}");
-
-        Status = ReservationStatus.CancelAuto;
-        UpdatedAt = DateTime.UtcNow;
-    }
 
     public void StartService()
     {

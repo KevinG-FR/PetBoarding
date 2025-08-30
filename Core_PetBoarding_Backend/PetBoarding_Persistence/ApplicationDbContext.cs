@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
+using PetBoarding_Domain.Baskets;
+using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Pets;
 using PetBoarding_Domain.Planning;
 using PetBoarding_Domain.Prestations;
@@ -14,6 +16,9 @@ namespace PetBoarding_Persistence
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<BasketItem> BasketItems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ReservationSlot> ReservationSlots { get; set; }

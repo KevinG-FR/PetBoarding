@@ -47,12 +47,8 @@ internal sealed class ProcessExpiredReservationsHandler : ICommandHandler<Proces
             {
                 try
                 {
-                    // 2. Vérifier que la réservation est bien expirée
-                    if (!reservation.IsExpired())
-                    {
-                        _logger.LogWarning("Reservation {ReservationId} is not expired, skipping", reservation.Id.Value);
-                        continue;
-                    }
+                    // 2. Skip expiry check - payment expiry logic has been removed
+                    // All reservations returned by GetExpiredCreatedReservationsAsync should be processed
                     
                     // 3. Obtenir le planning correspondant
                     if (!Guid.TryParse(reservation.ServiceId, out var serviceGuid))
@@ -105,8 +101,8 @@ internal sealed class ProcessExpiredReservationsHandler : ICommandHandler<Proces
                         }
                     }
                     
-                    // 5. Marquer la réservation comme expirée automatiquement
-                    reservation.MarkAsAutoExpired();
+                    // 5. Marquer la réservation comme annulée (plus d'expiration automatique)
+                    reservation.Cancel();
                     
                     _logger.LogInformation("Processed expired reservation {ReservationId}: released {SlotCount} slots", 
                         reservation.Id.Value, releasedSlots);

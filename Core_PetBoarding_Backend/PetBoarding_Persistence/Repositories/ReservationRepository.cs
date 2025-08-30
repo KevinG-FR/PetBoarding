@@ -86,8 +86,8 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
     public async Task<IEnumerable<Reservation>> GetExpiredCreatedReservationsAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _dbSet
-            .Where(r => r.Status == ReservationStatus.Created && r.PaymentExpiryAt < DateTime.UtcNow)
-            .ToListAsync(cancellationToken);
+        // Payment expiry concept has been removed - reservations no longer expire automatically
+        // Return empty list to maintain interface compatibility
+        return new List<Reservation>();
     }
 }
