@@ -1,47 +1,16 @@
 <mat-card class="basket-item">
   <div class="item-content">
     <div class="item-info" (click)="onPrestationClick()">
-      <h4 class="item-title">{{ item().prestation.libelle }}</h4>
-      <p class="item-description">{{ item().prestation.description }}</p>
-
-      @if (item().pet && petCategoryInfo()) {
-        <div class="pet-info">
-          <i [class]="petCategoryInfo()!.icon" [style.color]="petCategoryInfo()!.color"></i>
-          <span>{{ item().pet!.name }}</span>
-        </div>
-      }
-
-      <div class="item-details">
-        <span class="category">{{ getCategoryLabel(item().prestation.categorieAnimal) }}</span>
-        <span class="duration">{{ formatDuration(item().prestation.duree) }}</span>
-      </div>
+      <h4 class="item-title">{{ item().serviceName }}</h4>
       <div class="item-price">
-        {{ item().prestation.prix | currency: 'EUR' : 'symbol' : '1.2-2' }} / unité
+        {{ item().reservationPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
       </div>
     </div>
 
     <div class="item-actions">
-      <div class="quantity-controls">
-        <button mat-icon-button (click)="decreaseQuantity()" [disabled]="item().quantity <= 1">
-          <mat-icon>remove</mat-icon>
-        </button>
-
-        <mat-form-field appearance="outline" class="quantity-input">
-          <input
-            matInput
-            type="number"
-            min="1"
-            [value]="item().quantity"
-            (change)="onQuantityChange($event)" />
-        </mat-form-field>
-
-        <button mat-icon-button (click)="increaseQuantity()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-
-      <div class="total-price">
-        <strong>{{ getTotalPrice() | currency: 'EUR' : 'symbol' : '1.2-2' }}</strong>
+      <div class="added-date">
+        <mat-icon>schedule</mat-icon>
+        <span>Ajouté le {{ formatDate(item().addedAt) }}</span>
       </div>
 
       <button mat-icon-button color="warn" (click)="onRemove()" class="remove-btn">
@@ -49,30 +18,4 @@
       </button>
     </div>
   </div>
-
-  @if (item().dateDebut && item().dateFin) {
-    <div class="reservation-period">
-      <mat-icon>date_range</mat-icon>
-      <span>
-        Du {{ formatDate(item().dateDebut!) }} au {{ formatDate(item().dateFin!) }}
-        @if (item().nombreJours) {
-          <span class="duration-badge"
-            >{{ item().nombreJours }} jour{{ item().nombreJours! > 1 ? 's' : '' }}</span
-          >
-        }
-      </span>
-    </div>
-  } @else if (item().dateReservation) {
-    <div class="reservation-date">
-      <mat-icon>event</mat-icon>
-      <span>Réservé pour le {{ formatDate(item().dateReservation!) }}</span>
-    </div>
-  }
-
-  @if (item().notes) {
-    <div class="notes">
-      <mat-icon>note</mat-icon>
-      <span>{{ item().notes }}</span>
-    </div>
-  }
 </mat-card>

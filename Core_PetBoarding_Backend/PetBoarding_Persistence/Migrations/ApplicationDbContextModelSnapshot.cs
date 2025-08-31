@@ -172,7 +172,7 @@ namespace PetBoarding_Persistence.Migrations
 
                     b.HasIndex("ExternalTransactionId")
                         .IsUnique()
-                        .HasFilter("[ExternalTransactionId] IS NOT NULL");
+                        .HasFilter("\"ExternalTransactionId\" IS NOT NULL");
 
                     b.HasIndex("Status");
 
@@ -401,13 +401,13 @@ namespace PetBoarding_Persistence.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ServiceId")
                         .IsRequired()
@@ -426,7 +426,7 @@ namespace PetBoarding_Persistence.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
                         .IsRequired()

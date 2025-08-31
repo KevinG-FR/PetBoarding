@@ -19,7 +19,7 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
         var userId = new UserId(request.UserId);
 
         var basket = await _basketRepository.GetByUserIdAsync(userId, cancellationToken);
-        if (basket == null)
+        if (basket is null)
             return Result.Fail("Basket not found");
 
         var clearResult = basket.ClearItems();

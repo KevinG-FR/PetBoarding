@@ -27,7 +27,7 @@ public static partial class BasketsEndpoints
             return Results.BadRequest(result.Errors.Select(e => e.Message));
         }
 
-        if (result.Value == null)
+        if (result.Value is null)
         {
             return Results.NoContent();
         }

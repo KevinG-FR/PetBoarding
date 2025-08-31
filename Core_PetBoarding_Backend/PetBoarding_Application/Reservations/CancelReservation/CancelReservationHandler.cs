@@ -64,7 +64,7 @@ internal sealed class CancelReservationHandler : ICommandHandler<CancelReservati
             var prestationId = new PrestationId(serviceGuid);
             var planning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
             
-            if (planning == null)
+            if (planning is null)
             {
                 _logger.LogError("No planning found for reservation {ReservationId} with ServiceId {ServiceId}", request.Id, reservation.ServiceId);
                 return Result.Fail("Planning not found for this service");
@@ -81,7 +81,7 @@ internal sealed class CancelReservationHandler : ICommandHandler<CancelReservati
                 {
                     // Libérer dans le planning
                     var availableSlot = planning.GetSlotById(new AvailableSlotId(slotId));
-                    if (availableSlot != null)
+                    if (availableSlot is not null)
                     {
                         availableSlot.CancelReservation(1);
                         releasedSlots++;

@@ -33,14 +33,14 @@ internal sealed class CreatePlanningCommandHandler : ICommandHandler<CreatePlann
         
         // Vérifier que la prestation existe
         var prestation = await _prestationRepository.GetByIdAsync(prestationId, cancellationToken);
-        if (prestation == null)
+        if (prestation is null)
         {
             throw new InvalidOperationException("Prestation introuvable");
         }
 
         // Vérifier qu'il n'existe pas déjà un planning pour cette prestation
         var existingPlanning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
-        if (existingPlanning != null)
+        if (existingPlanning is not null)
         {
             throw new InvalidOperationException("Un planning existe déjà pour cette prestation");
         }

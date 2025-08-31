@@ -27,7 +27,7 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
         var paymentId = new PaymentId(request.PaymentId);
 
         var payment = await _paymentRepository.GetByIdAsync(paymentId, cancellationToken);
-        if (payment == null)
+        if (payment is null)
             return Result.Fail("Payment not found");
 
         if (!payment.IsPending())
@@ -40,7 +40,7 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
             var baskets = await _basketRepository.GetAllAsync(cancellationToken);
             var basket = baskets.FirstOrDefault(b => b.PaymentId == paymentId);
             
-            if (basket != null)
+            if (basket is not null)
             {
                 var markPaidResult = basket.MarkAsPaidAndGetReservations();
                 if (markPaidResult.IsSuccess)
@@ -51,7 +51,7 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
                     foreach (var reservationId in markPaidResult.Value)
                     {
                         var reservation = await _reservationRepository.GetByIdAsync(reservationId, cancellationToken);
-                        if (reservation != null)
+                        if (reservation is not null)
                         {
                             reservation.MarkAsPaid();
                             await _reservationRepository.UpdateAsync(reservation, cancellationToken);
@@ -67,7 +67,7 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
             var baskets = await _basketRepository.GetAllAsync(cancellationToken);
             var basket = baskets.FirstOrDefault(b => b.PaymentId == paymentId);
             
-            if (basket != null)
+            if (basket is not null)
             {
                 var failureResult = basket.RecordPaymentFailure();
                 if (failureResult.IsSuccess)

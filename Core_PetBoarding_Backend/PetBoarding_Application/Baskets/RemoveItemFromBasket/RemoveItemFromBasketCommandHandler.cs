@@ -21,7 +21,7 @@ internal sealed class RemoveItemFromBasketCommandHandler : ICommandHandler<Remov
         var reservationId = new ReservationId(request.ReservationId);
 
         var basket = await _basketRepository.GetByUserIdAsync(userId, cancellationToken);
-        if (basket == null)
+        if (basket is null)
             return Result.Fail("Basket not found");
 
         var removeReservationResult = basket.RemoveReservation(reservationId);

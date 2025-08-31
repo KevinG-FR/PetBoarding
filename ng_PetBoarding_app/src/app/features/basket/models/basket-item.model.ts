@@ -1,24 +1,33 @@
-import { Prestation } from '../../../shared/models/prestation.model';
-import { PetType } from '../../pets/models/pet.model';
-
 export interface BasketItem {
   id: string;
-  prestation: Prestation;
-  pet?: {
-    id: string;
-    name: string;
-    type: PetType;
-  };
-  quantity: number;
-  dateDebut?: Date;
-  dateFin?: Date;
-  nombreJours?: number;
-  dateReservation?: Date;
-  notes?: string;
+  reservationId: string;
+  serviceName: string;
+  reservationPrice: number;
+  addedAt: Date;
+}
+
+export interface Basket {
+  id: string;
+  userId: string;
+  status: BasketStatus;
+  totalAmount: number;
+  totalItemCount: number;
+  paymentFailureCount: number;
+  paymentId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  items: BasketItem[];
 }
 
 export interface BasketSummary {
   totalItems: number;
-  totalPrice: number;
-  totalDuration: number;
+  totalAmount: number;
+  isEmpty: boolean;
+}
+
+export enum BasketStatus {
+  Active = 'Active',
+  PendingPayment = 'PendingPayment',
+  Completed = 'Completed',
+  Abandoned = 'Abandoned'
 }

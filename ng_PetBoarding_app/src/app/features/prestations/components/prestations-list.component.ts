@@ -91,15 +91,17 @@ export class PrestationsListComponent implements OnInit {
         const dateDebut = result.dateDebut as Date | undefined;
         const dateFin = result.dateFin as Date | undefined;
 
-        this.basketService.addItem(
-          prestation,
-          1,
-          undefined,
-          undefined,
-          pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined,
-          dateDebut,
-          dateFin
-        );
+        // TODO: Adapter au nouveau workflow avec création de réservation
+        // this.basketService.addItem(
+        //   prestation,
+        //   1,
+        //   undefined,
+        //   undefined,
+        //   pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined,
+        //   dateDebut,
+        //   dateFin
+        // );
+        console.log('Fonctionnalité temporairement désactivée - utiliser les composants prestation-item ou prestation-detail');
 
         const datesText =
           dateDebut && dateFin
@@ -123,19 +125,17 @@ export class PrestationsListComponent implements OnInit {
   }
 
   onReservePrestation(prestation: Prestation): void {
-    this.basketService.addItem(prestation);
+    // TODO: Adapter au nouveau workflow avec création de réservation
+    // this.basketService.addItem(prestation);
+    console.log('Fonctionnalité temporairement désactivée - utiliser les composants prestation-item ou prestation-detail');
 
     const snackBarRef = this.snackBar.open(
-      `Réservation pour "${prestation.libelle}" ajoutée au panier !`,
-      'Voir le panier',
+      `Fonctionnalité temporairement désactivée. Utilisez le bouton "Réserver" sur les cartes de prestations.`,
+      'OK',
       {
         duration: 5000,
-        panelClass: ['success-snackbar']
+        panelClass: ['warning-snackbar']
       }
     );
-
-    snackBarRef.onAction().subscribe(() => {
-      this.router.navigate(['/basket']);
-    });
   }
 }

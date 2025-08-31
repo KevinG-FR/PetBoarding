@@ -25,7 +25,7 @@ internal sealed class CreatePaymentCommandHandler : ICommandHandler<CreatePaymen
         var basketId = new BasketId(request.BasketId);
 
         var basket = await _basketRepository.GetByIdWithItemsAsync(basketId, cancellationToken);
-        if (basket == null)
+        if (basket is null)
             return Result.Fail<Payment>("Basket not found");
 
         if (basket.UserId != userId)
@@ -43,7 +43,7 @@ internal sealed class CreatePaymentCommandHandler : ICommandHandler<CreatePaymen
             _ => null
         };
 
-        if (paymentMethod == null)
+        if (paymentMethod is null)
             return Result.Fail<Payment>("Invalid payment method");
 
         var payment = new Payment(

@@ -40,7 +40,7 @@ internal sealed class ValidatePaymentHandler : ICommandHandler<ValidatePaymentCo
             var reservationId = new ReservationId(reservationGuid);
             var reservation = await _reservationRepository.GetByIdAsync(reservationId, cancellationToken);
 
-            if (reservation == null)
+            if (reservation is null)
             {
                 return Result.Fail($"Reservation with ID {request.ReservationId} not found");
             }

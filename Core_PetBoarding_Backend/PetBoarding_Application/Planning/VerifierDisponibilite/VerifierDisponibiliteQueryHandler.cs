@@ -28,7 +28,7 @@ internal sealed class VerifierDisponibiliteQueryHandler : IQueryHandler<Verifier
         var prestationId = new PrestationId(guidValue);
         var planning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
 
-        if (planning == null || !planning.IsActive)
+        if (planning is null || !planning.IsActive)
         {
             return new VerifierDisponibiliteResult(
                 request.PrestationId,
@@ -49,10 +49,10 @@ internal sealed class VerifierDisponibiliteQueryHandler : IQueryHandler<Verifier
         {
             var creneau = planning.GetSlotForDate(dateCourante);
 
-            if (creneau == null || creneau.AvailableCapacity < quantiteDemandee)
+            if (creneau is null || creneau.AvailableCapacity < quantiteDemandee)
             {
                 isAvailable = false;
-                if (creneau != null)
+                if (creneau is not null)
                 {
                     creneauxDisponibles.Add(new CreneauDisponibleResult(
                         creneau.Date,

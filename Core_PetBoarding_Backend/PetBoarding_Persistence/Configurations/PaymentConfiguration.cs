@@ -55,7 +55,7 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasIndex(x => x.Status);
         builder.HasIndex(x => x.ExternalTransactionId)
             .IsUnique()
-            .HasFilter("[ExternalTransactionId] IS NOT NULL");
+            .HasFilter("\"ExternalTransactionId\" IS NOT NULL");
         builder.HasIndex(x => new { x.Status, x.CreatedAt });
     }
 }

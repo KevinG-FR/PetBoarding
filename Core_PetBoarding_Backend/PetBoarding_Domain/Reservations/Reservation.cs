@@ -202,7 +202,7 @@ public sealed class Reservation : Entity<ReservationId>
         var reservationSlot = _reservedSlots
             .FirstOrDefault(rs => rs.AvailableSlotId == availableSlotId && rs.IsActive);
 
-        if (reservationSlot == null)
+        if (reservationSlot is null)
             throw new InvalidOperationException($"Slot {availableSlotId} is not actively reserved for this reservation");
 
         reservationSlot.MarkAsReleased();

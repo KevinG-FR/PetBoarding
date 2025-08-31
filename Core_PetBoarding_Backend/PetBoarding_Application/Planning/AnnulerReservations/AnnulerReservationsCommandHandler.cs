@@ -27,7 +27,7 @@ internal sealed class AnnulerReservationsCommandHandler : ICommandHandler<Annule
         var prestationId = new PrestationId(guidValue);
         var planning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
 
-        if (planning == null)
+        if (planning is null)
         {
             return false;
         }

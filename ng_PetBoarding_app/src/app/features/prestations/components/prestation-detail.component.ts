@@ -11,8 +11,14 @@ import {
 } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
+import { AuthService } from '../../auth/services/auth.service';
+import { BasketService } from '../../basket/services/basket.service';
 import { Pet, PetType } from '../../pets/models/pet.model';
+import { ReservationsService } from '../../reservations/services/reservations.service';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
 import { ReservationCompleteDialogComponent } from './reservation-complete-dialog.component';
@@ -44,6 +50,11 @@ interface ReservationResult {
 })
 export class PrestationDetailComponent {
   private prestationsService = inject(PrestationsService);
+  private basketService = inject(BasketService);
+  private reservationsService = inject(ReservationsService);
+  private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
   private dialogRef = inject(MatDialogRef<PrestationDetailComponent>);
   private data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialog);
@@ -196,6 +207,7 @@ export class PrestationDetailComponent {
   }
 
   onReserver(): void {
+    console.log('onReserver() called in detail component');
     const prestation = this.prestation;
     const dialogRef = this.dialog.open(ReservationCompleteDialogComponent, {
       data: { prestation },
@@ -205,13 +217,68 @@ export class PrestationDetailComponent {
       maxHeight: '90vh'
     });
 
+    console.log('Setting up detail dialog afterClosed subscription');
+    
     dialogRef.afterClosed().subscribe((result: ReservationResult) => {
+      console.log('Detail dialog closed with result:', result);
+      
       if (result?.action === 'reserve' && result.pet && result.dates) {
-        this.dialogRef.close({
-          action: 'reserve',
-          pet: result.pet,
+        const currentUser = this.authService.currentUser();
+        console.log('Current user:', currentUser);
+        
+        if (!currentUser) {
+          this.snackBar.open('Vous devez être connecté pour faire une réservation', 'Fermer', {
+            duration: 5000
+          });
+          return;
+        }
+
+        const reservationRequest = {
+          userId: currentUser.id,
+          prestationId: prestation.id,
+          animalId: result.pet.id,
+          animalName: result.pet.name,
           dateDebut: result.dates.dateDebut,
-          dateFin: result.dates.dateFin
+          dateFin: result.dates.dateFin,
+          commentaires: ''
+        };
+        
+        console.log('Creating reservation with request:', reservationRequest);
+
+        this.reservationsService.creerReservationAvecPlanning(reservationRequest).pipe(
+          switchMap((reservation) => {
+            console.log('Reservation created:', reservation);
+            if (!reservation) {
+              throw new Error('Impossible de créer la réservation');
+            }
+            
+            console.log('Adding reservation to basket:', reservation.id);
+            return this.basketService.addItemToBasket(reservation.id);
+          })
+        ).subscribe({
+          next: () => {
+            this.dialogRef.close();
+            
+            const snackBarRef = this.snackBar.open(
+              `Réservation créée et ajoutée au panier !`,
+              'Voir le panier',
+              {
+                duration: 5000
+              }
+            );
+
+            snackBarRef.onAction().subscribe(() => {
+              this.router.navigate(['/basket']);
+            });
+          },
+          error: (error) => {
+            console.error('Erreur:', error);
+            this.snackBar.open(
+              error.message || 'Erreur lors de la création de la réservation',
+              'Fermer',
+              { duration: 5000 }
+            );
+          }
         });
       }
     });

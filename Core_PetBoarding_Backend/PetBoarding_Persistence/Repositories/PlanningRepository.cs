@@ -28,7 +28,7 @@ public sealed class PlanningRepository : BaseRepository<Planning, PlanningId>, I
     {
         var planning = await GetByPrestationIdAsync(prestationId, cancellationToken);
         
-        if (planning == null)
+        if (planning is null)
             return new List<AvailableSlot>();
 
         return planning.Creneaux

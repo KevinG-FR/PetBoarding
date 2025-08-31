@@ -61,7 +61,7 @@ internal sealed class ProcessExpiredReservationsHandler : ICommandHandler<Proces
                     var prestationId = new PrestationId(serviceGuid);
                     var planning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
                     
-                    if (planning == null)
+                    if (planning is null)
                     {
                         _logger.LogError("No planning found for reservation {ReservationId} with ServiceId {ServiceId}", 
                             reservation.Id.Value, reservation.ServiceId);
@@ -78,7 +78,7 @@ internal sealed class ProcessExpiredReservationsHandler : ICommandHandler<Proces
                         {
                             // Libérer dans le planning
                             var availableSlot = planning.GetSlotById(new AvailableSlotId(slotId));
-                            if (availableSlot != null)
+                            if (availableSlot is not null)
                             {
                                 availableSlot.CancelReservation(1);
                                 releasedSlots++;

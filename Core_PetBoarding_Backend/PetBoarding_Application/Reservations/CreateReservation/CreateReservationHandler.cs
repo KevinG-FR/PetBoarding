@@ -39,7 +39,7 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
             var prestationId = new PrestationId(serviceGuid);
             var planning = await _planningRepository.GetByPrestationIdAsync(prestationId, cancellationToken);
             
-            if (planning == null)
+            if (planning is null)
             {
                 return Result.Fail("No planning found for this service");
             }
@@ -54,7 +54,7 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
             while (currentDate <= endDate)
             {
                 var availableSlot = planning.GetSlotForDate(currentDate);
-                if (availableSlot == null || !availableSlot.IsAvailable(1))
+                if (availableSlot is null || !availableSlot.IsAvailable(1))
                 {
                     return Result.Fail($"No available slot for date {currentDate:yyyy-MM-dd}");
                 }

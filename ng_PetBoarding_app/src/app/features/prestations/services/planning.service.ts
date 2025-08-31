@@ -79,10 +79,10 @@ export class PlanningService {
     quantite: number = 1
   ): Observable<boolean> {
     const request = {
-      prestationId,
-      startDate: dateDebut.toISOString(),
-      endDate: dateFin?.toISOString(),
-      quantity: quantite
+      PrestationId: prestationId,
+      DateDebut: dateDebut.toISOString(),
+      DateFin: dateFin?.toISOString(),
+      Quantite: quantite
     };
 
     return this.planningApi.reserverCreneaux(request).pipe(
@@ -97,10 +97,10 @@ export class PlanningService {
     quantite: number = 1
   ): Observable<boolean> {
     const request = {
-      prestationId,
-      startDate: dateDebut.toISOString(),
-      endDate: dateFin?.toISOString(),
-      quantity: quantite
+      PrestationId: prestationId,
+      DateDebut: dateDebut.toISOString(),
+      DateFin: dateFin?.toISOString(),
+      Quantite: quantite
     };
 
     return this.planningApi.annulerReservations(request).pipe(

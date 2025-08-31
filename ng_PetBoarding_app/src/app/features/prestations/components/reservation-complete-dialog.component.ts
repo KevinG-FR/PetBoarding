@@ -144,18 +144,26 @@ export class ReservationCompleteDialogComponent {
   }
 
   onConfirm(): void {
+    console.log('onConfirm() called in reservation dialog');
     const pet = this.selectedPet();
     const dates = this.dateSelection();
+    
+    console.log('Selected pet:', pet);
+    console.log('Selected dates:', dates);
 
     if (pet && dates) {
-      this.dialogRef.close({
+      const result = {
         action: 'reserve',
         pet: pet,
         dates: {
           dateDebut: dates.startDate,
           dateFin: dates.endDate
         }
-      });
+      };
+      console.log('Closing dialog with result:', result);
+      this.dialogRef.close(result);
+    } else {
+      console.log('Missing pet or dates, not closing dialog');
     }
   }
 

@@ -61,7 +61,7 @@ public sealed class Planning : Entity<PlanningId>
     public void DeleteSlot(DateTime date)
     {
         var creneau = Creneaux.FirstOrDefault(c => c.Date.Date == date.Date);
-        if (creneau != null)
+        if (creneau is not null)
         {
             Creneaux.Remove(creneau);
             DateModification = DateTime.UtcNow;
@@ -71,7 +71,7 @@ public sealed class Planning : Entity<PlanningId>
     public void UpdateSlotCapacity(DateTime date, int nouvelleCapacite)
     {
         var creneau = GetSlotForDate(date);
-        if (creneau == null)
+        if (creneau is null)
         {
             throw new InvalidOperationException($"Aucun créneau trouvé pour la date {date.Date:yyyy-MM-dd}");
         }
@@ -125,7 +125,7 @@ public sealed class Planning : Entity<PlanningId>
     public void ReserveSlot(DateTime date, int quantite = 1)
     {
         var creneau = GetSlotForDate(date);
-        if (creneau == null)
+        if (creneau is null)
         {
             throw new InvalidOperationException($"Aucun créneau disponible pour la date {date.Date:yyyy-MM-dd}");
         }
@@ -137,7 +137,7 @@ public sealed class Planning : Entity<PlanningId>
     public void CancelReservation(DateTime date, int quantite = 1)
     {
         var creneau = GetSlotForDate(date);
-        if (creneau == null)
+        if (creneau is null)
         {
             throw new InvalidOperationException($"Aucun créneau trouvé pour la date {date.Date:yyyy-MM-dd}");
         }

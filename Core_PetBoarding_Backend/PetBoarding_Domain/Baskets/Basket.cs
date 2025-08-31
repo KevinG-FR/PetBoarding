@@ -44,7 +44,7 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
 
         var existingItem = _items.FirstOrDefault(i => i.ReservationId == reservationId);
         
-        if (existingItem != null)
+        if (existingItem is not null)
             return Result.Fail("Reservation is already in basket");
 
         var newItem = new BasketItem(Id, reservationId);
@@ -60,7 +60,7 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             return Result.Fail($"Cannot remove reservations from basket with status {Status.Name}");
 
         var item = _items.FirstOrDefault(i => i.ReservationId == reservationId);
-        if (item == null)
+        if (item is null)
             return Result.Fail("Reservation not found in basket");
 
         _items.Remove(item);
@@ -117,7 +117,7 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
         if (Status != BasketStatus.Created)
             return Result.Fail($"Cannot mark basket as paid with status {Status.Name}");
 
-        if (PaymentId == null)
+        if (PaymentId is null)
             return Result.Fail("Cannot mark basket as paid without assigned payment");
 
         Status = BasketStatus.Paid;

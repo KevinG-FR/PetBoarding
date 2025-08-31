@@ -8,7 +8,12 @@
 </button>
 
 <mat-menu #basketMenu="matMenu" class="basket-menu">
-  @if (basketService.isEmpty()) {
+  @if (basketService.loading()) {
+    <div class="loading-basket-mini">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement...</p>
+    </div>
+  } @else if (basketService.isEmpty()) {
     <div class="empty-basket-mini">
       <mat-icon>shopping_cart</mat-icon>
       <p>Panier vide</p>
@@ -18,18 +23,17 @@
       @for (item of basketService.items() | slice: 0 : 3; track item.id) {
         <div class="basket-item-mini" (click)="goToBasket()">
           <div class="item-info">
-            <span class="item-name">{{ item.prestation.libelle }}</span>
-            <span class="item-quantity">x{{ item.quantity }}</span>
+            <span class="item-name">{{ item.serviceName }}</span>
           </div>
           <span class="item-price">
-            {{ item.prestation.prix * item.quantity | currency: 'EUR' : 'symbol' : '1.2-2' }}
+            {{ item.reservationPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
           </span>
         </div>
       }
 
       @if (basketService.items().length > 3) {
         <div class="more-items">
-          Et {{ basketService.items().length - 3 }} autre(s) prestation(s)...
+          Et {{ basketService.items().length - 3 }} autre(s) réservation(s)...
         </div>
       }
     </div>
@@ -40,7 +44,7 @@
       <div class="total-row">
         <span>Total :</span>
         <span class="total-amount">
-          {{ basketService.summary().totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+          {{ basketService.summary().totalAmount | currency: 'EUR' : 'symbol' : '1.2-2' }}
         </span>
       </div>
     </div>

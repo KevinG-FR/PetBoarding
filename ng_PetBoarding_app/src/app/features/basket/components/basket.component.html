@@ -7,13 +7,26 @@
       </mat-card-title>
       <mat-card-subtitle>
         @if (!basketService.isEmpty()) {
-          {{ basketService.summary().totalItems }} prestation(s) sélectionnée(s)
+          {{ basketService.summary().totalItems }} réservation(s) dans le panier
         }
       </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
-      @if (basketService.isEmpty()) {
+      @if (basketService.loading()) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Chargement du panier...</p>
+        </div>
+      } @else if (basketService.error()) {
+        <div class="error-container">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ basketService.error() }}</p>
+          <button mat-button (click)="basketService.loadBasket().subscribe()">
+            Réessayer
+          </button>
+        </div>
+      } @else if (basketService.isEmpty()) {
         <div class="empty-basket">
           <mat-icon>shopping_cart</mat-icon>
           <h3>Votre panier est vide</h3>
@@ -28,7 +41,6 @@
           @for (item of basketService.items(); track item.id) {
             <app-basket-item
               [item]="item"
-              (quantityChange)="onQuantityChange($event)"
               (remove)="onRemoveItem($event)"
               (prestationClick)="onPrestationClick($event)">
             </app-basket-item>
@@ -37,17 +49,13 @@
 
         <div class="basket-summary">
           <div class="summary-row">
-            <span>Nombre d'articles :</span>
+            <span>Nombre de réservations :</span>
             <span>{{ basketService.summary().totalItems }}</span>
-          </div>
-          <div class="summary-row">
-            <span>Durée totale :</span>
-            <span>{{ formatDuration(basketService.summary().totalDuration) }}</span>
           </div>
           <div class="summary-row total">
             <span>Total à payer :</span>
             <span class="total-amount">
-              {{ basketService.summary().totalPrice | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              {{ basketService.summary().totalAmount | currency: 'EUR' : 'symbol' : '1.2-2' }}
             </span>
           </div>
         </div>

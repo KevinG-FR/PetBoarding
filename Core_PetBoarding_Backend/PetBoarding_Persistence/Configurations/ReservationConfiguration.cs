@@ -52,16 +52,16 @@ internal sealed class ReservationConfiguration : IEntityTypeConfiguration<Reserv
 
         builder.Property(r => r.CreatedAt)
             .IsRequired()
-            .HasColumnType("datetime2");
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(r => r.UpdatedAt)
-            .HasColumnType("datetime2");
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(r => r.TotalPrice)
             .HasColumnType("decimal(10,2)");
 
         builder.Property(r => r.PaidAt)
-            .HasColumnType("datetime2");
+            .HasColumnType("timestamp with time zone");
 
         // Index for query optimization
         builder.HasIndex(r => r.UserId)

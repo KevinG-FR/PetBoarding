@@ -37,10 +37,10 @@ export interface DisponibiliteResponseDto {
 }
 
 export interface ReserverCreneauxRequest {
-  prestationId: string;
-  startDate: string;
-  endDate?: string;
-  quantity: number;
+  PrestationId: string;
+  DateDebut: string;
+  DateFin?: string;
+  Quantite: number;
 }
 
 export interface ReservationResponse {

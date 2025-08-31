@@ -48,7 +48,7 @@ namespace PetBoarding_Persistence.Migrations
                 name: "PaidAt",
                 schema: "PetBoarding",
                 table: "Reservations",
-                type: "datetime2",
+                type: "timestamp with time zone",
                 nullable: true,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
@@ -98,7 +98,7 @@ namespace PetBoarding_Persistence.Migrations
                 type: "timestamp with time zone",
                 nullable: true,
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2",
+                oldType: "timestamp with time zone",
                 oldNullable: true);
 
             migrationBuilder.AddColumn<DateTime>(

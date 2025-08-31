@@ -17,7 +17,7 @@ public sealed class ReservationSlot : Entity<ReservationSlotId>
         ReservationId reservationId,
         Guid availableSlotId) : base(new ReservationSlotId(Guid.CreateVersion7()))
     {
-        if (reservationId == null)
+        if (reservationId is null)
             throw new ArgumentNullException(nameof(reservationId));
 
         if (availableSlotId == Guid.Empty)
@@ -59,5 +59,5 @@ public sealed class ReservationSlot : Entity<ReservationSlotId>
     /// <summary>
     /// Vérifie si ce créneau est encore actif (non libéré)
     /// </summary>
-    public bool IsActive => ReleasedAt == null;
+    public bool IsActive => ReleasedAt is null;
 }

@@ -143,7 +143,7 @@ namespace PetBoarding_Persistence.Migrations
                 table: "Payments",
                 column: "ExternalTransactionId",
                 unique: true,
-                filter: "[ExternalTransactionId] IS NOT NULL");
+                filter: "\"ExternalTransactionId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_Status",
