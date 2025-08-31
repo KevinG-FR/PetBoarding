@@ -6,7 +6,7 @@ using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Reservations;
 using PetBoarding_Domain.Users;
 
-public sealed class Basket : Entity<BasketId>, IAuditableEntity
+public sealed class Basket : AuditableEntity<BasketId>
 {
     private const int MAX_PAYMENT_FAILURES = 3;
     
@@ -17,8 +17,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
         UserId = userId;
         Status = BasketStatus.Created;
         PaymentFailureCount = 0;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public UserId UserId { get; private set; }
@@ -27,15 +25,8 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
     public PaymentId? PaymentId { get; private set; }
     public Payment? Payment { get; private set; }
     public int PaymentFailureCount { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
 
     public IReadOnlyCollection<BasketItem> Items => _items.AsReadOnly();
-
-    public void UpdateTimestamp()
-    {
-        UpdatedAt = DateTime.UtcNow;
-    }
 
     public Result AddReservation(ReservationId reservationId)
     {
@@ -50,7 +41,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
         var newItem = new BasketItem(Id, reservationId);
         _items.Add(newItem);
 
-        UpdateTimestamp();
         return Result.Ok();
     }
 
@@ -64,9 +54,8 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             return Result.Fail("Reservation not found in basket");
 
         _items.Remove(item);
-        UpdateTimestamp();
 
-        if (!_items.Any())
+        if (_items.Count == 0)
         {
             Cancel();
         }
@@ -80,7 +69,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             return Result.Fail($"Cannot clear basket with status {Status.Name}");
 
         _items.Clear();
-        UpdateTimestamp();
         Cancel();
 
         return Result.Ok();
@@ -107,7 +95,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             return Result.Fail("Cannot assign payment to empty basket");
 
         PaymentId = paymentId;
-        UpdateTimestamp();
 
         return Result.Ok();
     }
@@ -122,7 +109,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
 
         Status = BasketStatus.Paid;
         PaymentFailureCount = 0;
-        UpdateTimestamp();
 
         return Result.Ok();
     }
@@ -143,8 +129,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             Status = BasketStatus.PaymentFailure;
         }
 
-        UpdateTimestamp();
-
         return Result.Ok();
     }
 
@@ -157,7 +141,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             return Result.Fail("Maximum payment failures reached, basket is cancelled");
 
         Status = BasketStatus.Created;
-        UpdateTimestamp();
 
         return Result.Ok();
     }
@@ -168,7 +151,6 @@ public sealed class Basket : Entity<BasketId>, IAuditableEntity
             throw new InvalidOperationException("Cannot cancel paid basket");
 
         Status = BasketStatus.Cancelled;
-        UpdateTimestamp();
     }
 
     public bool CanBeModified() => Status == BasketStatus.Created;

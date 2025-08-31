@@ -11,6 +11,11 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
     {
     }
 
+    public override async Task<Reservation?> GetByIdAsync(ReservationId entityIdentifier, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.Include(x => x.ReservedSlots).FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Reservation>> GetAllAsync(
         string? userId = null,
         string? serviceId = null,
@@ -59,7 +64,7 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
             .Where(r => r.UserId == userId)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(cancellationToken);
-    }
+    }    
 
     public async Task<IEnumerable<Reservation>> GetByServiceIdAsync(
         string serviceId, 
@@ -89,5 +94,5 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
         // Payment expiry concept has been removed - reservations no longer expire automatically
         // Return empty list to maintain interface compatibility
         return new List<Reservation>();
-    }
+    }    
 }

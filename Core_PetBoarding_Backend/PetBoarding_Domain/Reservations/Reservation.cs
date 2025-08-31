@@ -5,7 +5,7 @@ using PetBoarding_Domain.Abstractions;
 /// <summary>
 /// Entity representing a reservation with schedule management
 /// </summary>
-public sealed class Reservation : Entity<ReservationId>
+public sealed class Reservation : AuditableEntity<ReservationId>
 {
     public Reservation(
         string userId,
@@ -36,7 +36,6 @@ public sealed class Reservation : Entity<ReservationId>
         EndDate = endDate?.Date;
         Comments = comments;
         Status = ReservationStatus.Created;
-        CreatedAt = DateTime.UtcNow;
     }
 
     public string UserId { get; private set; }
@@ -47,8 +46,6 @@ public sealed class Reservation : Entity<ReservationId>
     public DateTime? EndDate { get; private set; }
     public string? Comments { get; private set; }
     public ReservationStatus Status { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
     public decimal? TotalPrice { get; private set; }
     public DateTime? PaidAt { get; private set; }
     
@@ -93,13 +90,11 @@ public sealed class Reservation : Entity<ReservationId>
 
         StartDate = newStartDate.Date;
         EndDate = newEndDate?.Date;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateComments(string? newComments)
     {
         Comments = newComments;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void SetTotalPrice(decimal price)
@@ -108,7 +103,6 @@ public sealed class Reservation : Entity<ReservationId>
             throw new ArgumentException("Price cannot be negative", nameof(price));
 
         TotalPrice = price;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -121,7 +115,6 @@ public sealed class Reservation : Entity<ReservationId>
 
         Status = ReservationStatus.Validated;
         PaidAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
 
@@ -132,7 +125,6 @@ public sealed class Reservation : Entity<ReservationId>
             throw new InvalidOperationException($"Cannot start service for a reservation with status {Status}");
 
         Status = ReservationStatus.InProgress;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Complete()
@@ -141,7 +133,6 @@ public sealed class Reservation : Entity<ReservationId>
             throw new InvalidOperationException($"Cannot complete a reservation with status {Status}");
 
         Status = ReservationStatus.Completed;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -151,12 +142,8 @@ public sealed class Reservation : Entity<ReservationId>
     {
         if (Status == ReservationStatus.Completed)
             throw new InvalidOperationException("Cannot cancel a completed reservation");
-        
-        if (Status == ReservationStatus.CancelAuto)
-            throw new InvalidOperationException("Reservation is already auto-cancelled");
 
         Status = ReservationStatus.Cancelled;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -175,8 +162,6 @@ public sealed class Reservation : Entity<ReservationId>
         return Status is ReservationStatus.Created or ReservationStatus.Validated or ReservationStatus.InProgress;
     }
 
-    #region Nouvelle logique de gestion des créneaux
-
     /// <summary>
     /// Ajoute un créneau spécifique à cette réservation
     /// </summary>
@@ -191,7 +176,6 @@ public sealed class Reservation : Entity<ReservationId>
 
         var reservationSlot = new ReservationSlot(Id, availableSlotId);
         _reservedSlots.Add(reservationSlot);
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -206,7 +190,6 @@ public sealed class Reservation : Entity<ReservationId>
             throw new InvalidOperationException($"Slot {availableSlotId} is not actively reserved for this reservation");
 
         reservationSlot.MarkAsReleased();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -219,12 +202,7 @@ public sealed class Reservation : Entity<ReservationId>
         foreach (var slot in activeSlots)
         {
             slot.MarkAsReleased();
-        }
-
-        if (activeSlots.Any())
-        {
-            UpdatedAt = DateTime.UtcNow;
-        }
+        }       
     }
 
     /// <summary>
@@ -252,6 +230,4 @@ public sealed class Reservation : Entity<ReservationId>
     {
         return _reservedSlots.Count(rs => rs.IsActive);
     }
-
-    #endregion
 }

@@ -29,7 +29,7 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
 
         _logger.LogInformation("Clearing basket for user {UserId}", request.UserId);
 
-        var basket = await _basketRepository.GetByUserIdAsync(userId, cancellationToken);
+        var basket = await _basketRepository.GetByUserIdWithItemsAsync(userId, cancellationToken);
         if (basket is null)
             return Result.Fail("Basket not found");
 
@@ -65,9 +65,13 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
                 request.UserId, string.Join("; ", releaseErrors));
         }
 
-        var clearResult = basket.ClearItems();
-        if (clearResult.IsFailed)
-            return clearResult;
+        // On vide les éléments du panier uniquement si il est crée, autrement on le laisse en l'état après avoir libberé les créneaux réservés.
+        if(basket.Status == BasketStatus.Created)
+        {
+            var clearResult = basket.ClearItems();
+            if (clearResult.IsFailed)
+                return clearResult;
+        }        
 
         await _basketRepository.UpdateAsync(basket, cancellationToken);
 

@@ -6,7 +6,7 @@ namespace PetBoarding_Domain.Pets;
 /// <summary>
 /// Entité représentant un animal de compagnie
 /// </summary>
-public sealed class Pet : Entity<PetId>, IAuditableEntity
+public sealed class Pet : AuditableEntity<PetId>
 {
     public Pet(
         string name,
@@ -56,8 +56,6 @@ public sealed class Pet : Entity<PetId>, IAuditableEntity
         SpecialNeeds = specialNeeds?.Trim();
         PhotoUrl = photoUrl?.Trim();
         EmergencyContact = emergencyContact;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     // Constructeur pour Entity Framework
@@ -94,10 +92,6 @@ public sealed class Pet : Entity<PetId>, IAuditableEntity
     // Contact d'urgence
     public EmergencyContact? EmergencyContact { get; private set; }
 
-    // Audit
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-
     // Méthodes de modification
     public void UpdateBasicInfo(string name, string breed, int age, string color)
     {
@@ -117,7 +111,6 @@ public sealed class Pet : Entity<PetId>, IAuditableEntity
         Breed = breed.Trim();
         Age = age;
         Color = color.Trim();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateWeight(decimal? weight)
@@ -126,59 +119,45 @@ public sealed class Pet : Entity<PetId>, IAuditableEntity
             throw new ArgumentException("Le poids de l'animal ne peut pas être négatif", nameof(weight));
 
         Weight = weight;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateType(PetType type)
     {
         Type = type;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateGender(PetGender gender)
     {
         Gender = gender;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateNeuteredStatus(bool isNeutered)
     {
         IsNeutered = isNeutered;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateMicrochipNumber(string? microchipNumber)
     {
         MicrochipNumber = microchipNumber?.Trim();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateMedicalNotes(string? medicalNotes)
     {
         MedicalNotes = medicalNotes?.Trim();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateSpecialNeeds(string? specialNeeds)
     {
         SpecialNeeds = specialNeeds?.Trim();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdatePhotoUrl(string? photoUrl)
     {
         PhotoUrl = photoUrl?.Trim();
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateEmergencyContact(EmergencyContact? emergencyContact)
     {
         EmergencyContact = emergencyContact;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateTimestamp()
-    {
-        UpdatedAt = DateTime.UtcNow;
     }
 }
