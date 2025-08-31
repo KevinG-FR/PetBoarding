@@ -35,6 +35,11 @@
           [(ngModel)]="startDateValue"
           [min]="minDate"
           [matDatepickerFilter]="dateFilter" />
+        @if (startDate()) {
+          <button mat-icon-button matIconSuffix (click)="clearStartDate()" type="button">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
         <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
         <mat-datepicker #startPicker [dateClass]="dateClass"></mat-datepicker>
       </mat-form-field>
@@ -50,6 +55,11 @@
             [min]="startDate() || minDate"
             [disabled]="!startDate()"
             [matDatepickerFilter]="endDateFilter" />
+          @if (endDate()) {
+            <button mat-icon-button matIconSuffix (click)="clearEndDate()" type="button">
+              <mat-icon>clear</mat-icon>
+            </button>
+          }
           <mat-datepicker-toggle
             matIconSuffix
             [for]="endPicker"

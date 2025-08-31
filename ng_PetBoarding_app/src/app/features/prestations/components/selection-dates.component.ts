@@ -359,8 +359,14 @@ export class DateSelectionComponent implements OnInit {
           this.endDateValue = null;
         }
       } else {
-        this.startDateValue = date;
-        this.endDateValue = null;
+        // Si les deux dates sont déjà sélectionnées, on permet de changer la date de fin
+        // si la nouvelle date est après la date de début, sinon on recommence la sélection
+        if (date >= start) {
+          this.endDateValue = date;
+        } else {
+          this.startDateValue = date;
+          this.endDateValue = null;
+        }
       }
     }
 
@@ -459,5 +465,14 @@ export class DateSelectionComponent implements OnInit {
     }
 
     return date >= start && date <= end;
+  }
+
+  clearStartDate(): void {
+    this.startDateValue = null;
+    this.endDateValue = null;
+  }
+
+  clearEndDate(): void {
+    this.endDateValue = null;
   }
 }
