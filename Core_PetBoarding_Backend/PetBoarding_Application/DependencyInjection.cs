@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 using PetBoarding_Application.Account;
+using PetBoarding_Application.Planning.ReleaseSlots;
 
 using PetBoarding_Domain.Accounts;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IReleaseSlotService, ReleaseSlotService>();
 
         return services;
     }

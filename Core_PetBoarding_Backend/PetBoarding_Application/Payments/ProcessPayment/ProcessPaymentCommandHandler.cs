@@ -1,7 +1,9 @@
 namespace PetBoarding_Application.Payments.ProcessPayment;
 
 using FluentResults;
+using Microsoft.Extensions.Logging;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Planning.ReleaseSlots;
 using PetBoarding_Domain.Baskets;
 using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Reservations;
@@ -11,15 +13,21 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
     private readonly IPaymentRepository _paymentRepository;
     private readonly IBasketRepository _basketRepository;
     private readonly IReservationRepository _reservationRepository;
+    private readonly IReleaseSlotService _releaseSlotService;
+    private readonly ILogger<ProcessPaymentCommandHandler> _logger;
 
     public ProcessPaymentCommandHandler(
         IPaymentRepository paymentRepository,
         IBasketRepository basketRepository,
-        IReservationRepository reservationRepository)
+        IReservationRepository reservationRepository,
+        IReleaseSlotService releaseSlotService,
+        ILogger<ProcessPaymentCommandHandler> logger)
     {
         _paymentRepository = paymentRepository;
         _basketRepository = basketRepository;
         _reservationRepository = reservationRepository;
+        _releaseSlotService = releaseSlotService;
+        _logger = logger;
     }
 
     public async Task<Result> Handle(ProcessPaymentCommand request, CancellationToken cancellationToken)
@@ -69,10 +77,39 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
             
             if (basket is not null)
             {
+                // Vérifier si c'est le dernier échec qui va causer l'annulation
+                var wasBasketCancelled = basket.PaymentFailureCount + 1 >= 3; // MAX_PAYMENT_FAILURES
+                
                 var failureResult = basket.RecordPaymentFailure();
                 if (failureResult.IsSuccess)
                 {
                     await _basketRepository.UpdateAsync(basket, cancellationToken);
+                    
+                    // Si le panier a été annulé à cause de trop d'échecs, libérer tous les créneaux
+                    if (wasBasketCancelled && basket.Status == BasketStatus.Cancelled)
+                    {
+                        _logger.LogWarning("Basket {BasketId} was cancelled due to payment failures. Releasing all slots.", basket.Id.Value);
+                        
+                        var reservationIds = basket.GetReservationIds().ToList();
+                        var totalReleasedSlots = 0;
+                        
+                        foreach (var reservationId in reservationIds)
+                        {
+                            var releaseResult = await _releaseSlotService.ReleaseReservationSlotsAsync(reservationId, cancellationToken);
+                            if (releaseResult.IsSuccess)
+                            {
+                                totalReleasedSlots += releaseResult.Value;
+                            }
+                            else
+                            {
+                                _logger.LogError("Failed to release slots for reservation {ReservationId} from cancelled basket {BasketId}: {Errors}",
+                                    reservationId.Value, basket.Id.Value, string.Join(", ", releaseResult.Errors.Select(e => e.Message)));
+                            }
+                        }
+                        
+                        _logger.LogInformation("Released {SlotCount} slots from cancelled basket {BasketId}", 
+                            totalReleasedSlots, basket.Id.Value);
+                    }
                 }
             }
         }
