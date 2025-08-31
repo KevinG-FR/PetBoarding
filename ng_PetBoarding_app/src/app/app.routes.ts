@@ -63,7 +63,8 @@ export const routes: Routes = [
   {
     path: 'basket',
     loadComponent: () =>
-      import('./features/basket/components/basket.component').then((m) => m.BasketComponent)
+      import('./features/basket/components/basket.component').then((m) => m.BasketComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'reservations',
