@@ -8,9 +8,9 @@
     </div>
 
     <div class="item-actions">
-      <div class="added-date">
-        <mat-icon>schedule</mat-icon>
-        <span>Ajouté le {{ formatDate(item().addedAt) }}</span>
+      <div class="reservation-dates">
+        <mat-icon>event</mat-icon>
+        <span>{{ item().reservationDates }}</span>
       </div>
 
       <button mat-icon-button color="warn" (click)="onRemove()" class="remove-btn">

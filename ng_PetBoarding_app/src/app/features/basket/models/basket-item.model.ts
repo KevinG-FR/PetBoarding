@@ -3,7 +3,7 @@ export interface BasketItem {
   reservationId: string;
   serviceName: string;
   reservationPrice: number;
-  addedAt: Date;
+  reservationDates: string;
 }
 
 export interface Basket {

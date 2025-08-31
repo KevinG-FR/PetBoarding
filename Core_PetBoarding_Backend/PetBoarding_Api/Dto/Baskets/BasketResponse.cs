@@ -18,5 +18,5 @@ public sealed record BasketItemResponse(
     Guid ReservationId,
     string ServiceName,
     decimal ReservationPrice,
-    DateTime AddedAt
+    string ReservationDates
 );

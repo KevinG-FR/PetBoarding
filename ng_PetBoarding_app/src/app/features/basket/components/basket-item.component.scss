@@ -107,6 +107,24 @@
       color: #1976d2;
     }
 
+    .reservation-dates {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      color: #666;
+      border-left: 3px solid #4caf50;
+
+      mat-icon {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+
     .remove-btn {
       color: #f44336;
     }

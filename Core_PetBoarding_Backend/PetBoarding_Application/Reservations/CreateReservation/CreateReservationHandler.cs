@@ -45,13 +45,13 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
             }
 
             // 2. Récupérer et vérifier la disponibilité des créneaux spécifiques
-            var startDate = request.StartDate.Date;
-            var endDate = request.EndDate?.Date ?? startDate;
+            var startDate = ParseDateSafely(request.StartDate);
+            var endDateForSlots = request.EndDate.HasValue ? ParseDateSafely(request.EndDate.Value) : startDate;
             var currentDate = startDate;
             var slotsToReserve = new List<(DateTime Date, Guid SlotId)>();
             
             // Identifier tous les créneaux spécifiques à réserver
-            while (currentDate <= endDate)
+            while (currentDate <= endDateForSlots)
             {
                 var availableSlot = planning.GetSlotForDate(currentDate);
                 if (availableSlot is null || !availableSlot.IsAvailable(1))
@@ -90,8 +90,8 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
                 request.AnimalId,
                 request.AnimalName,
                 request.ServiceId,
-                request.StartDate,
-                request.EndDate,
+                startDate,
+                request.EndDate.HasValue ? ParseDateSafely(request.EndDate.Value) : null,
                 request.Comments);
 
             // 5. Ajouter les créneaux spécifiques à la réservation
@@ -110,5 +110,15 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
         {
             return Result.Fail($"Error creating reservation: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Parse une date de façon sécurisée en évitant les problèmes de timezone
+    /// </summary>
+    private static DateTime ParseDateSafely(DateTime dateTime)
+    {
+        // Si la date a été parsée par ASP.NET Core avec une timezone,
+        // on force l'extraction de la partie date sans conversion timezone
+        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, DateTimeKind.Unspecified);
     }
 }

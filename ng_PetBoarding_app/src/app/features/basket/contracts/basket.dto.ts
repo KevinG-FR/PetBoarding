@@ -16,11 +16,11 @@ export interface BasketItemResponse {
   reservationId: string;
   serviceName: string;
   reservationPrice: number;
-  addedAt: Date;
+  reservationDates: string;
 }
 
 export interface AddItemToBasketRequest {
-  reservationId: string;
+  ReservationId: string;
 }
 
 export interface UpdateBasketItemRequest {

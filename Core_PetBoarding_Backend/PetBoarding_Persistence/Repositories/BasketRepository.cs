@@ -22,6 +22,20 @@ public sealed class BasketRepository : BaseRepository<Basket, BasketId>, IBasket
             .FirstOrDefaultAsync(b => b.UserId == userId, cancellationToken);
     }
 
+    public async Task<Basket?> GetActiveBasketByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Status == BasketStatus.Created, cancellationToken);
+    }
+
+    public async Task<Basket?> GetActiveBasketByUserIdWithItemsAsync(UserId userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Reservation)
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Status == BasketStatus.Created, cancellationToken);
+    }
+
     public async Task<Basket?> GetByIdWithItemsAsync(BasketId basketId, CancellationToken cancellationToken = default)
     {
         return await _dbSet

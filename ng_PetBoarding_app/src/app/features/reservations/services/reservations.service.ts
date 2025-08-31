@@ -145,8 +145,8 @@ export class ReservationsService {
               animalId: request.animalId,
               animalName: request.animalName,
               serviceId: request.prestationId,
-              startDate: request.dateDebut.toISOString(),
-              endDate: request.dateFin?.toISOString(),
+              startDate: this.formatDateForApi(request.dateDebut),
+              endDate: request.dateFin ? this.formatDateForApi(request.dateFin) : undefined,
               comments: request.commentaires
             };
 
@@ -408,5 +408,16 @@ export class ReservationsService {
     return this.reservations()
       .filter((r) => r.statut === StatutReservation.COMPLETED)
       .reduce((total, r) => total + (r.prix || 0), 0);
+  }
+
+  /**
+   * Formate une date pour l'API en évitant les problèmes de timezone
+   * Retourne une date au format YYYY-MM-DD
+   */
+  private formatDateForApi(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

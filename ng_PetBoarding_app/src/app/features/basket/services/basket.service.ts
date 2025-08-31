@@ -64,7 +64,7 @@ export class BasketService {
     this._loading.set(true);
     this._error.set(null);
 
-    const request: AddItemToBasketRequest = { reservationId };
+    const request: AddItemToBasketRequest = { ReservationId: reservationId };
 
     return this.basketApiService.addItemToBasket(request).pipe(
       tap(() => {
@@ -156,7 +156,7 @@ export class BasketService {
         reservationId: item.reservationId,
         serviceName: item.serviceName,
         reservationPrice: item.reservationPrice,
-        addedAt: new Date(item.addedAt)
+        reservationDates: item.reservationDates
       }))
     };
   }

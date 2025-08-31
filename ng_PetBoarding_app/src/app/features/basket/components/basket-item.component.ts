@@ -30,13 +30,4 @@ export class BasketItemComponent {
   onPrestationClick(): void {
     this.prestationClick.emit(this.item().reservationId);
   }
-
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(date);
-  }
 }

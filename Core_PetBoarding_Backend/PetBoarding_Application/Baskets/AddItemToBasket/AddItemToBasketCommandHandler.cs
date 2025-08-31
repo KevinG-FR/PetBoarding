@@ -31,7 +31,7 @@ internal sealed class AddItemToBasketCommandHandler : ICommandHandler<AddItemToB
         if (reservation.UserId != request.UserId.ToString())
             return Result.Fail("Reservation does not belong to the user");
 
-        var basket = await _basketRepository.GetByUserIdAsync(userId, cancellationToken);
+        var basket = await _basketRepository.GetActiveBasketByUserIdAsync(userId, cancellationToken);
         
         if (basket is null)
         {

@@ -18,7 +18,7 @@ internal sealed class GetUserBasketQueryHandler : IQueryHandler<GetUserBasketQue
     {
         var userId = new UserId(request.UserId);
 
-        var basket = await _basketRepository.GetByUserIdWithItemsAsync(userId, cancellationToken);
+        var basket = await _basketRepository.GetActiveBasketByUserIdWithItemsAsync(userId, cancellationToken);
         
         return Result.Ok(basket);
     }
