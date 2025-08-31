@@ -18,5 +18,6 @@
         "titleBar.inactiveBackground": "#00640099",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#006400"
+    "peacock.color": "#006400",
+    "markdown-preview-enhanced.plantumlJarPath": "${workspaceFolder}/tools/plantuml.jar"
 }
