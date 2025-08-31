@@ -126,15 +126,20 @@ export class BasketService {
     this._loading.set(true);
     this._error.set(null);
 
-    // Si le panier est déjà annulé, on le vide juste côté frontend sans appeler l'API
     const currentBasket = this._basket();
-    if (currentBasket && currentBasket.status === BasketStatus.Cancelled) {
+    if (!currentBasket) {
+      this._loading.set(false);
+      return of();
+    }
+
+    // Si le panier est déjà annulé, on le vide juste côté frontend sans appeler l'API
+    if (currentBasket.status === BasketStatus.Cancelled) {
       this._basket.set(null);
       this._loading.set(false);
       return of();
     }
 
-    return this.basketApiService.clearBasket().pipe(
+    return this.basketApiService.clearBasket(currentBasket.id).pipe(
       tap(() => {
         this._basket.set(null);
         this._loading.set(false);

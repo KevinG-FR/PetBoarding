@@ -31,7 +31,7 @@ export class BasketApiService {
     return this.http.delete<void>(`${this.baseUrl}/items/${prestationId}`);
   }
 
-  clearBasket(): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/clear`);
+  clearBasket(basketId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${basketId}/clear`);
   }
 }

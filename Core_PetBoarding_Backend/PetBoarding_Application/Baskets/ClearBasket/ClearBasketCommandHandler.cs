@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using PetBoarding_Application.Abstractions;
 using PetBoarding_Application.Planning.ReleaseSlots;
 using PetBoarding_Domain.Baskets;
-using PetBoarding_Domain.Users;
 
 internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCommand>
 {
@@ -25,11 +24,11 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
 
     public async Task<Result> Handle(ClearBasketCommand request, CancellationToken cancellationToken)
     {
-        var userId = new UserId(request.UserId);
+        var basketId = new BasketId(request.BasketId);
 
-        _logger.LogInformation("Clearing basket for user {UserId}", request.UserId);
+        _logger.LogInformation("Clearing basket {BasketId}", request.BasketId);
 
-        var basket = await _basketRepository.GetByUserIdWithItemsAsync(userId, cancellationToken);
+        var basket = await _basketRepository.GetByIdWithItemsAsync(basketId, cancellationToken);
         if (basket is null)
             return Result.Fail("Basket not found");
 
@@ -38,8 +37,8 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
         var totalReleasedSlots = 0;
         var releaseErrors = new List<string>();
 
-        _logger.LogInformation("Releasing slots for {ReservationCount} reservations in basket for user {UserId}", 
-            reservationIds.Count, request.UserId);
+        _logger.LogInformation("Releasing slots for {ReservationCount} reservations in basket {BasketId}", 
+            reservationIds.Count, request.BasketId);
 
         foreach (var reservationId in reservationIds)
         {
@@ -61,8 +60,8 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
         // Si il y a eu des erreurs lors de la libération, on log mais on continue quand même
         if (releaseErrors.Any())
         {
-            _logger.LogWarning("Some slots could not be released while clearing basket for user {UserId}. Errors: {Errors}", 
-                request.UserId, string.Join("; ", releaseErrors));
+            _logger.LogWarning("Some slots could not be released while clearing basket {BasketId}. Errors: {Errors}", 
+                request.BasketId, string.Join("; ", releaseErrors));
         }
 
         // On vide les éléments du panier uniquement si il est crée, autrement on le laisse en l'état après avoir libberé les créneaux réservés.
@@ -75,8 +74,8 @@ internal sealed class ClearBasketCommandHandler : ICommandHandler<ClearBasketCom
 
         await _basketRepository.UpdateAsync(basket, cancellationToken);
 
-        _logger.LogInformation("Successfully cleared basket for user {UserId}. Released {SlotCount} slots total.", 
-            request.UserId, totalReleasedSlots);
+        _logger.LogInformation("Successfully cleared basket {BasketId}. Released {SlotCount} slots total.", 
+            request.BasketId, totalReleasedSlots);
 
         return Result.Ok();
     }

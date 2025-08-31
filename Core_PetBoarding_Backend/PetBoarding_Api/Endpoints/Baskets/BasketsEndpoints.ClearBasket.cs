@@ -1,23 +1,21 @@
 namespace PetBoarding_Api.Endpoints.Baskets;
 
-using System.Security.Claims;
 using MediatR;
 using PetBoarding_Application.Baskets.ClearBasket;
 
 public static partial class BasketsEndpoints
 {
     private static async Task<IResult> ClearBasket(
-        ClaimsPrincipal user,
+        string basketId,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+        if (!Guid.TryParse(basketId, out var basketGuid))
         {
-            return Results.Unauthorized();
+            return Results.BadRequest("Invalid basket ID format");
         }
 
-        var command = new ClearBasketCommand(userId);
+        var command = new ClearBasketCommand(basketGuid);
         var result = await sender.Send(command, cancellationToken);
 
         if (result.IsFailed)
