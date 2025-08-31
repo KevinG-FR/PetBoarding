@@ -1,8 +1,12 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BasketResponse, AddItemToBasketRequest, UpdateBasketItemRequest } from '../../features/basket/contracts/basket.dto';
+import {
+  AddItemToBasketRequest,
+  BasketResponse,
+  UpdateBasketItemRequest
+} from '../../features/basket/contracts/basket.dto';
 
 @Injectable({
   providedIn: 'root'

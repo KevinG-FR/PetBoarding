@@ -1,8 +1,12 @@
-import { Injectable, computed, signal, inject } from '@angular/core';
-import { Observable, BehaviorSubject, tap, catchError, of, map } from 'rxjs';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, catchError, map, of, tap } from 'rxjs';
 import { BasketApiService } from '../../../shared/services/basket-api.service';
-import { Basket, BasketItem, BasketSummary, BasketStatus } from '../models/basket-item.model';
-import { BasketResponse, AddItemToBasketRequest, UpdateBasketItemRequest } from '../contracts/basket.dto';
+import {
+  AddItemToBasketRequest,
+  BasketResponse,
+  UpdateBasketItemRequest
+} from '../contracts/basket.dto';
+import { Basket, BasketItem, BasketStatus, BasketSummary } from '../models/basket-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +28,7 @@ export class BasketService {
     if (!basket) {
       return { totalItems: 0, totalAmount: 0, isEmpty: true };
     }
-    
+
     return {
       totalItems: basket.totalItemCount,
       totalAmount: basket.totalAmount,
@@ -39,7 +43,7 @@ export class BasketService {
     this._error.set(null);
 
     return this.basketApiService.getMyBasket().pipe(
-      map(response => {
+      map((response) => {
         if (response) {
           const basket = this.mapResponseToBasket(response);
           this._basket.set(basket);
@@ -51,7 +55,7 @@ export class BasketService {
           return null;
         }
       }),
-      catchError(error => {
+      catchError((error) => {
         this._error.set('Erreur lors du chargement du panier');
         this._loading.set(false);
         console.error('Error loading basket:', error);
@@ -71,8 +75,8 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError(error => {
-        this._error.set('Erreur lors de l\'ajout au panier');
+      catchError((error) => {
+        this._error.set("Erreur lors de l'ajout au panier");
         this._loading.set(false);
         console.error('Error adding item to basket:', error);
         return of();
@@ -91,7 +95,7 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError(error => {
+      catchError((error) => {
         this._error.set('Erreur lors de la mise à jour du panier');
         this._loading.set(false);
         console.error('Error updating basket item:', error);
@@ -109,8 +113,8 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError(error => {
-        this._error.set('Erreur lors de la suppression de l\'élément');
+      catchError((error) => {
+        this._error.set("Erreur lors de la suppression de l'élément");
         this._loading.set(false);
         console.error('Error removing item from basket:', error);
         return of();
@@ -122,12 +126,27 @@ export class BasketService {
     this._loading.set(true);
     this._error.set(null);
 
+    // Si le panier est déjà annulé, on le vide juste côté frontend sans appeler l'API
+    const currentBasket = this._basket();
+    if (currentBasket && currentBasket.status === BasketStatus.Cancelled) {
+      this._basket.set(null);
+      this._loading.set(false);
+      return of();
+    }
+
     return this.basketApiService.clearBasket().pipe(
       tap(() => {
         this._basket.set(null);
         this._loading.set(false);
       }),
-      catchError(error => {
+      catchError((error) => {
+        // Si l'erreur indique que le panier est déjà annulé, on le vide côté frontend
+        if (error?.error?.includes?.('Cannot clear basket with status Cancelled')) {
+          this._basket.set(null);
+          this._loading.set(false);
+          return of();
+        }
+
         this._error.set('Erreur lors de la suppression du panier');
         this._loading.set(false);
         console.error('Error clearing basket:', error);
@@ -137,7 +156,7 @@ export class BasketService {
   }
 
   getBasketItem(itemId: string): BasketItem | undefined {
-    return this.items().find(item => item.id === itemId);
+    return this.items().find((item) => item.id === itemId);
   }
 
   private mapResponseToBasket(response: BasketResponse): Basket {
@@ -151,7 +170,7 @@ export class BasketService {
       paymentId: response.paymentId,
       createdAt: new Date(response.createdAt),
       updatedAt: new Date(response.updatedAt),
-      items: response.items.map(item => ({
+      items: response.items.map((item) => ({
         id: item.id,
         reservationId: item.reservationId,
         serviceName: item.serviceName,
@@ -163,11 +182,16 @@ export class BasketService {
 
   private mapStringToBasketStatus(status: string): BasketStatus {
     switch (status) {
-      case 'Active': return BasketStatus.Active;
-      case 'PendingPayment': return BasketStatus.PendingPayment;
-      case 'Completed': return BasketStatus.Completed;
-      case 'Abandoned': return BasketStatus.Abandoned;
-      default: return BasketStatus.Active;
+      case 'Created':
+        return BasketStatus.Created;
+      case 'Cancelled':
+        return BasketStatus.Cancelled;
+      case 'PaymentFailure':
+        return BasketStatus.PaymentFailure;
+      case 'Paid':
+        return BasketStatus.Paid;
+      default:
+        return BasketStatus.Created;
     }
   }
 }

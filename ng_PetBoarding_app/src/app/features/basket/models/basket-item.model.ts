@@ -26,8 +26,8 @@ export interface BasketSummary {
 }
 
 export enum BasketStatus {
-  Active = 'Active',
-  PendingPayment = 'PendingPayment',
-  Completed = 'Completed',
-  Abandoned = 'Abandoned'
+  Created = 'Created',
+  Cancelled = 'Cancelled',
+  PaymentFailure = 'PaymentFailure',
+  Paid = 'Paid'
 }
