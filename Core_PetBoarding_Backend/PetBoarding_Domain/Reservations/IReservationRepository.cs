@@ -30,4 +30,11 @@ public interface IReservationRepository : IBaseRepository<Reservation, Reservati
     /// </summary>
     Task<IEnumerable<Reservation>> GetExpiredCreatedReservationsAsync(
         CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Récupère les réservations d'un utilisateur avec les statuts affichables dans l'interface (Validated, InProgress, Completed)
+    /// </summary>
+    Task<IEnumerable<Reservation>> GetUserDisplayedReservationsAsync(
+        string userId,
+        CancellationToken cancellationToken = default);
 }

@@ -122,6 +122,13 @@ export class ReservationsApiService {
   }
 
   /**
+   * Récupère les réservations affichées d'un utilisateur (Validated, InProgress, Completed uniquement)
+   */
+  getUserDisplayedReservations(userId: string): Observable<GetAllReservationsResponse> {
+    return this.http.get<GetAllReservationsResponse>(`${this.baseUrl}/user/${userId}/displayed`);
+  }
+
+  /**
    * Récupère les réservations par statut
    */
   getReservationsByStatus(status: string): Observable<GetAllReservationsResponse> {

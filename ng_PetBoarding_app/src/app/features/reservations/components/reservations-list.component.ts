@@ -41,6 +41,8 @@ export class ReservationsListComponent {
 
   // Données de base
   allReservations = this.reservationsService.getAllReservations();
+  loading = this.reservationsService.getLoading();
+  error = this.reservationsService.getError();
 
   // Réservations filtrées basées sur les filtres reçus
   filteredReservations = computed(() => {
@@ -72,4 +74,9 @@ export class ReservationsListComponent {
   isFiltered = computed(() => this.filteredReservations().length < this.allReservations().length);
   resultCount = computed(() => this.filteredReservations().length);
   totalCount = computed(() => this.allReservations().length);
+
+  retryLoad() {
+    // Déclencher un nouveau chargement depuis le composant parent
+    window.location.reload();
+  }
 }

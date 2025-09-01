@@ -94,5 +94,22 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
         // Payment expiry concept has been removed - reservations no longer expire automatically
         // Return empty list to maintain interface compatibility
         return new List<Reservation>();
-    }    
+    }
+
+    public async Task<IEnumerable<Reservation>> GetUserDisplayedReservationsAsync(
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var displayedStatuses = new[] 
+        {
+            ReservationStatus.Validated,
+            ReservationStatus.InProgress,
+            ReservationStatus.Completed
+        };
+
+        return await _dbSet
+            .Where(r => r.UserId == userId && displayedStatuses.Contains(r.Status))
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

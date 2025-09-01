@@ -1,37 +1,56 @@
 <div class="reservations-list-container">
-  <!-- Informations sur les résultats et contrôles de pagination -->
-  <div class="results-info mb-3">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-      <div class="results-text">
+  <!-- État de chargement -->
+  @if (loading()) {
+    <div class="loading-state text-center py-5">
+      <mat-icon class="loading-icon mb-3 fa-spin">refresh</mat-icon>
+      <h3 class="loading-title">Chargement des réservations...</h3>
+      <p class="loading-subtitle text-muted">Veuillez patienter pendant que nous récupérons vos réservations.</p>
+    </div>
+  } @else if (error()) {
+    <!-- État d'erreur -->
+    <div class="error-state text-center py-5">
+      <mat-icon class="error-icon mb-3">error</mat-icon>
+      <h3 class="error-title">Erreur de chargement</h3>
+      <p class="error-subtitle text-muted">{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="retryLoad()">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </div>
+  } @else {
+    <!-- Informations sur les résultats et contrôles de pagination -->
+    <div class="results-info mb-3">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="results-text">
+          @if (hasResults()) {
+            <span class="text-muted">
+              @if (isFiltered()) {
+                {{ resultCount() }} réservation(s) trouvée(s) sur {{ totalCount() }} au total
+              } @else {
+                {{ totalCount() }} réservation(s) au total
+              }
+            </span>
+          } @else {
+            <span class="text-muted">Aucune réservation trouvée</span>
+          }
+        </div>
+
         @if (hasResults()) {
-          <span class="text-muted">
-            @if (isFiltered()) {
-              {{ resultCount() }} réservation(s) trouvée(s) sur {{ totalCount() }} au total
-            } @else {
-              {{ totalCount() }} réservation(s) au total
-            }
-          </span>
-        } @else {
-          <span class="text-muted">Aucune réservation trouvée</span>
+          <div class="pagination-controls d-flex align-items-center gap-2">
+            <span class="text-muted small">Éléments par page:</span>
+            <mat-form-field appearance="outline" class="pagination-select">
+              <mat-select
+                [value]="pageSize()"
+                (selectionChange)="pageSize.set($event.value); pageIndex.set(0)">
+                @for (size of pageSizeOptions; track size) {
+                  <mat-option [value]="size">{{ size }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
         }
       </div>
-
-      @if (hasResults()) {
-        <div class="pagination-controls d-flex align-items-center gap-2">
-          <span class="text-muted small">Éléments par page:</span>
-          <mat-form-field appearance="outline" class="pagination-select">
-            <mat-select
-              [value]="pageSize()"
-              (selectionChange)="pageSize.set($event.value); pageIndex.set(0)">
-              @for (size of pageSizeOptions; track size) {
-                <mat-option [value]="size">{{ size }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-      }
     </div>
-  </div>
 
   <!-- Liste des réservations -->
   @if (hasResults()) {
@@ -75,14 +94,15 @@
     <!-- Message vide -->
     <div class="empty-state text-center py-5">
       <mat-icon class="empty-icon mb-3">event_busy</mat-icon>
-      <h3 class="empty-title">Aucune réservation trouvée</h3>
+      <h3 class="empty-title">Aucune réservation à afficher</h3>
       <p class="empty-subtitle text-muted">
         @if (isFiltered()) {
           Essayez de modifier ou supprimer les filtres pour voir plus de résultats.
         } @else {
-          Il n'y a actuellement aucune réservation dans le système.
+          Vous n'avez aucune réservation validée, en cours ou terminée.
         }
       </p>
     </div>
+  }
   }
 </div>

@@ -40,8 +40,12 @@ export class ReservationFiltersComponent {
   selectedStatut = signal<StatutReservation | null>(null);
   selectedAnimalType = signal<'CHIEN' | 'CHAT' | null>(null);
 
-  // Données pour les sélecteurs
-  statuts = this.reservationsService.getStatuts();
+  // Données pour les sélecteurs - uniquement les statuts affichés
+  statuts = [
+    StatutReservation.VALIDATED,
+    StatutReservation.IN_PROGRESS,
+    StatutReservation.COMPLETED
+  ];
   animalTypes = ['CHIEN', 'CHAT'] as const;
 
   // Signal computed pour les informations de statut

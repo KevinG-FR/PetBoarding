@@ -54,5 +54,12 @@ public static partial class ReservationsEndpoints
             .Produces(200)
             .Produces(400)
             .Produces(404);
+
+        group.MapGet("/user/{userId}/displayed", GetUserDisplayedReservations)
+            .WithName("GetUserDisplayedReservations")
+            .WithSummary("Get displayed reservations for a specific user")
+            .WithDescription("Returns only the reservations with status Validated, InProgress, or Completed for a given user ID.")
+            .Produces<GetAllReservationsResponse>()
+            .Produces(200);
     }
 }
