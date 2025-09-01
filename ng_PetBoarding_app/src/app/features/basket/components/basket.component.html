@@ -66,9 +66,14 @@
             Vider le panier
           </button>
 
-          <button mat-raised-button color="primary" (click)="onProceedToCheckout()">
+          <button mat-raised-button color="primary" (click)="onProcessPaymentSuccess()">
             <mat-icon>payment</mat-icon>
             Procéder au paiement
+          </button>
+
+          <button mat-raised-button color="accent" (click)="onProcessPaymentFailure()">
+            <mat-icon>error</mat-icon>
+            Procéder au paiement (échec)
           </button>
         </div>
       }

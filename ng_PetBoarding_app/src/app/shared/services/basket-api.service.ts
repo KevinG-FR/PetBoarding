@@ -34,4 +34,12 @@ export class BasketApiService {
   clearBasket(basketId: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${basketId}/clear`);
   }
+
+  processPaymentSuccess(basketId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${basketId}/payment/success`, {});
+  }
+
+  processPaymentFailure(basketId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${basketId}/payment/failure`, {});
+  }
 }

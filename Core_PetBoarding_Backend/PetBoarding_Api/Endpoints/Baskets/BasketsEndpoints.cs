@@ -60,5 +60,25 @@ public static partial class BasketsEndpoints
             .Produces(200)
             .Produces(401)
             .Produces(404);
+
+        group.MapPost("/{basketId}/payment/success", ProcessPaymentSuccess)
+            .WithName("ProcessPaymentSuccess")
+            .WithSummary("Process payment success (mock)")
+            .WithDescription("Simulates a successful payment for testing purposes.")
+            .RequireAuthorization()
+            .Produces(200)
+            .Produces(400)
+            .Produces(401)
+            .Produces(404);
+
+        group.MapPost("/{basketId}/payment/failure", ProcessPaymentFailure)
+            .WithName("ProcessPaymentFailure")
+            .WithSummary("Process payment failure (mock)")
+            .WithDescription("Simulates a payment failure for testing purposes.")
+            .RequireAuthorization()
+            .Produces(200)
+            .Produces(400)
+            .Produces(401)
+            .Produces(404);
     }
 }

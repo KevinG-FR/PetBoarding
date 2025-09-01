@@ -34,9 +34,8 @@ export interface CreateReservationResponse {
 }
 
 export interface GetAllReservationsResponse {
-  success: boolean;
-  data: ReservationDto[];
-  message?: string;
+  reservations: ReservationDto[];
+  totalCount: number;
 }
 
 export interface GetReservationResponse {

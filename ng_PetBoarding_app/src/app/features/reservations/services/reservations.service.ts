@@ -54,10 +54,9 @@ export class ReservationsService {
 
     return this.reservationsApi.getAllReservations().pipe(
       map(response => {
-        if (response.success && response.data) {
-          return ReservationMapper.fromDtoArray(response.data);
+        if (response.reservations) {
+          return ReservationMapper.fromDtoArray(response.reservations);
         }
-        // Si success = true mais pas de data, c'est une liste vide (cas normal)
         return [];
       }),
       tap(reservations => {
@@ -82,11 +81,10 @@ export class ReservationsService {
 
     return this.reservationsApi.getUserDisplayedReservations(userId).pipe(
       map(response => {
-        if (response.success && response.data) {
+        if (response.reservations) {
           // Le filtrage des statuts est maintenant fait côté backend
-          return ReservationMapper.fromDtoArray(response.data);
+          return ReservationMapper.fromDtoArray(response.reservations);
         }
-        // Si success = true mais pas de data, c'est une liste vide (cas normal)
         return [];
       }),
       tap(reservations => {

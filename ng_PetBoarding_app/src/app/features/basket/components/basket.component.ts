@@ -59,9 +59,19 @@ export class BasketComponent implements OnInit {
     });
   }
 
-  onProceedToCheckout(): void {
-    this.snackBar.open('Fonctionnalité en cours de développement', 'Fermer', {
-      duration: 3000
+  onProcessPaymentSuccess(): void {
+    this.basketService.processPaymentSuccess().subscribe(() => {
+      this.snackBar.open('Paiement traité avec succès !', 'Fermer', {
+        duration: 3000
+      });
+    });
+  }
+
+  onProcessPaymentFailure(): void {
+    this.basketService.processPaymentFailure().subscribe(() => {
+      this.snackBar.open('Échec de paiement simulé', 'Fermer', {
+        duration: 3000
+      });
     });
   }
 

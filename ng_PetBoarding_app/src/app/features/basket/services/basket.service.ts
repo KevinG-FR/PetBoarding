@@ -164,6 +164,54 @@ export class BasketService {
     return this.items().find((item) => item.id === itemId);
   }
 
+  processPaymentSuccess(): Observable<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    const currentBasket = this._basket();
+    if (!currentBasket) {
+      this._loading.set(false);
+      return of();
+    }
+
+    return this.basketApiService.processPaymentSuccess(currentBasket.id).pipe(
+      tap(() => {
+        this._loading.set(false);
+        this.loadBasket().subscribe();
+      }),
+      catchError((error) => {
+        this._error.set('Erreur lors du traitement du paiement');
+        this._loading.set(false);
+        console.error('Error processing payment success:', error);
+        return of();
+      })
+    );
+  }
+
+  processPaymentFailure(): Observable<void> {
+    this._loading.set(true);
+    this._error.set(null);
+
+    const currentBasket = this._basket();
+    if (!currentBasket) {
+      this._loading.set(false);
+      return of();
+    }
+
+    return this.basketApiService.processPaymentFailure(currentBasket.id).pipe(
+      tap(() => {
+        this._loading.set(false);
+        this.loadBasket().subscribe();
+      }),
+      catchError((error) => {
+        this._error.set('Erreur lors du traitement de l\'échec de paiement');
+        this._loading.set(false);
+        console.error('Error processing payment failure:', error);
+        return of();
+      })
+    );
+  }
+
   private mapResponseToBasket(response: BasketResponse): Basket {
     return {
       id: response.id,
