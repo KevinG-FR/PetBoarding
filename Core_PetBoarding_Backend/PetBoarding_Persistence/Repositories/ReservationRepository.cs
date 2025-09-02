@@ -13,7 +13,7 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
 
     public override async Task<Reservation?> GetByIdAsync(ReservationId entityIdentifier, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.Include(x => x.ReservedSlots).FirstOrDefaultAsync(cancellationToken);
+        return await _dbSet.Include(x => x.ReservedSlots).FirstOrDefaultAsync(x => x.Id == entityIdentifier, cancellationToken);
     }
 
     public async Task<IEnumerable<Reservation>> GetAllAsync(

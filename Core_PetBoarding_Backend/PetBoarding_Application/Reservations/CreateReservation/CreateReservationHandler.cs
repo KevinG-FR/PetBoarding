@@ -12,15 +12,18 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
 {
     private readonly IReservationRepository _reservationRepository;
     private readonly IPlanningRepository _planningRepository;
+    private readonly IPrestationRepository _prestationRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateReservationHandler(
         IReservationRepository reservationRepository,
         IPlanningRepository planningRepository,
+        IPrestationRepository prestationRepository,
         IUnitOfWork unitOfWork)
     {
         _reservationRepository = reservationRepository;
         _planningRepository = planningRepository;
+        _prestationRepository = prestationRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -100,7 +103,23 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
                 reservation.AddReservedSlot(slotId);
             }
 
-            // 6. Persister en base (transaction atomique)
+            // 6. Calculer et définir le prix total de la réservation
+            var prestation = await _prestationRepository.GetByIdAsync(prestationId, cancellationToken);
+            if (prestation is null)
+            {
+                // En cas d'échec, libérer les créneaux réservés
+                foreach (var (date, _) in reservedSlots)
+                {
+                    try { planning.CancelReservation(date, 1); } catch { /* Ignore errors during rollback */ }
+                }
+                return Result.Fail("Prestation not found for calculating reservation price");
+            }
+
+            var numberOfDays = reservation.GetNumberOfDays();
+            var totalPrice = prestation.Prix * numberOfDays;
+            reservation.SetTotalPrice(totalPrice);
+
+            // 7. Persister en base (transaction atomique)
             var createdReservation = await _reservationRepository.AddAsync(reservation, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             

@@ -61,6 +61,12 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
                         var reservation = await _reservationRepository.GetByIdAsync(reservationId, cancellationToken);
                         if (reservation is not null)
                         {
+                            // Le TotalPrice doit maintenant toujours être défini lors de la création de la réservation
+                            if (reservation.TotalPrice == null)
+                            {
+                                _logger.LogWarning("Reservation {ReservationId} has null TotalPrice, this should not happen", reservationId.Value);
+                            }
+
                             reservation.MarkAsPaid();
                             await _reservationRepository.UpdateAsync(reservation, cancellationToken);
                         }

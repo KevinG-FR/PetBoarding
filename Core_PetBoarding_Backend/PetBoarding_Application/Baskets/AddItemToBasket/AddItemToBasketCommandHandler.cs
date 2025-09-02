@@ -3,7 +3,6 @@ namespace PetBoarding_Application.Baskets.AddItemToBasket;
 using FluentResults;
 using PetBoarding_Application.Abstractions;
 using PetBoarding_Domain.Baskets;
-using PetBoarding_Domain.Prestations;
 using PetBoarding_Domain.Reservations;
 using PetBoarding_Domain.Users;
 
@@ -11,16 +10,13 @@ internal sealed class AddItemToBasketCommandHandler : ICommandHandler<AddItemToB
 {
     private readonly IBasketRepository _basketRepository;
     private readonly IReservationRepository _reservationRepository;
-    private readonly IPrestationRepository _prestationRepository;
 
     public AddItemToBasketCommandHandler(
         IBasketRepository basketRepository,
-        IReservationRepository reservationRepository,
-        IPrestationRepository prestationRepository)
+        IReservationRepository reservationRepository)
     {
         _basketRepository = basketRepository;
         _reservationRepository = reservationRepository;
-        _prestationRepository = prestationRepository;
     }
 
     public async Task<Result> Handle(AddItemToBasketCommand request, CancellationToken cancellationToken)
@@ -35,12 +31,10 @@ internal sealed class AddItemToBasketCommandHandler : ICommandHandler<AddItemToB
         if (reservation.UserId != request.UserId.ToString())
             return Result.Fail("Reservation does not belong to the user");
 
-        // Calculer et définir le prix de la réservation si ce n'est pas déjà fait
+        // Le TotalPrice doit maintenant toujours être défini lors de la création de la réservation
         if (reservation.TotalPrice == null)
         {
-            var calculatePriceResult = await CalculateAndSetReservationPrice(reservation, cancellationToken);
-            if (calculatePriceResult.IsFailed)
-                return calculatePriceResult;
+            return Result.Fail("Reservation has no TotalPrice - this should not happen");
         }
 
         var basket = await _basketRepository.GetActiveBasketByUserIdAsync(userId, cancellationToken);
@@ -128,32 +122,4 @@ internal sealed class AddItemToBasketCommandHandler : ICommandHandler<AddItemToB
         return start1 <= end2 && start2 <= end1;
     }
 
-    private async Task<Result> CalculateAndSetReservationPrice(Reservation reservation, CancellationToken cancellationToken)
-    {
-        // Récupérer la prestation associée à la réservation
-        if (!Guid.TryParse(reservation.ServiceId, out var prestationGuid))
-        {
-            return Result.Fail("Invalid ServiceId format in reservation");
-        }
-
-        var prestationId = new PrestationId(prestationGuid);
-        var prestation = await _prestationRepository.GetByIdAsync(prestationId, cancellationToken);
-        
-        if (prestation is null)
-        {
-            return Result.Fail("Prestation not found for reservation");
-        }
-
-        // Calculer le prix total : prix de la prestation × nombre de jours
-        var numberOfDays = reservation.GetNumberOfDays();
-        var totalPrice = prestation.Prix * numberOfDays;
-
-        // Définir le prix sur la réservation
-        reservation.SetTotalPrice(totalPrice);
-
-        // Sauvegarder la réservation mise à jour
-        await _reservationRepository.UpdateAsync(reservation, cancellationToken);
-
-        return Result.Ok();
-    }
 }
