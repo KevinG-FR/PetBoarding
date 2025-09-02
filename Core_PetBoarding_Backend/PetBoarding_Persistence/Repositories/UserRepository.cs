@@ -2,49 +2,48 @@
 
 using PetBoarding_Domain.Users;
 
-namespace PetBoarding_Persistence.Repositories
+namespace PetBoarding_Persistence.Repositories;
+
+public class UserRepository : BaseRepository<User, UserId>, IUserRepository
 {
-    public class UserRepository : BaseRepository<User, UserId>, IUserRepository
+    public UserRepository(ApplicationDbContext context)
+        : base(context)
     {
-        public UserRepository(ApplicationDbContext context)
-            : base(context)
-        {
-        }
+    }
 
-        public override Task<User?> GetByIdAsync(UserId entityIdentifier, CancellationToken cancellationToken = default)
-        {
-            return _dbSet
-                .Include(x => x.Address)
-                .FirstOrDefaultAsync(x => x.Id == entityIdentifier, cancellationToken);
-        }
+    public override Task<User?> GetByIdAsync(UserId entityIdentifier, CancellationToken cancellationToken = default)
+    {
+        return _dbSet
+            .Include(x => x.Address)
+            .FirstOrDefaultAsync(x => x.Id == entityIdentifier, cancellationToken);
+    }
 
-        public async Task<bool> UserEmailAlreadyUsed(string email, CancellationToken cancellationToken)
-        {
-            var emailAlreadyUsed = await _dbSet.AnyAsync(x => x.Email == Email.Create(email).Value, cancellationToken);
+    public async Task<bool> UserEmailAlreadyUsed(string email, CancellationToken cancellationToken)
+    {
+        var emailAlreadyUsed = await _dbSet.AnyAsync(x => x.Email == Email.Create(email).Value, cancellationToken);
 
-            return emailAlreadyUsed;
-        }
+        return emailAlreadyUsed;
+    }
 
-        public async Task<User?> GetUserForAuthentification(string email, string passwordHash, CancellationToken cancellationToken)
-        {
-            var emailDomain = Email.Create(email).Value;
-            var user = await _dbSet
-                        .Include(x => x.Address)
-                        .Where(x => x.Email == emailDomain)
-                        .Where(x => x.PasswordHash == passwordHash)
-                        .FirstOrDefaultAsync(cancellationToken);
+    public async Task<User?> GetUserForAuthentification(string email, string passwordHash, CancellationToken cancellationToken)
+    {
+        var emailDomain = Email.Create(email).Value;
+        var user = await _dbSet
+                    .Include(x => x.Address)
+                    .Where(x => x.Email == emailDomain)
+                    .Where(x => x.PasswordHash == passwordHash)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-            return user;
-        }
+        return user;
+    }
 
-        public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken)
-        {
-            var user = await _dbSet
-                        .Include(x => x.Address)
-                        .Where(x => x.Email == email)
-                        .FirstOrDefaultAsync(cancellationToken);
+    public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken)
+    {
+        var user = await _dbSet
+                    .Include(x => x.Address)
+                    .Where(x => x.Email == email)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-            return user;
-        }
+        return user;
     }
 }
