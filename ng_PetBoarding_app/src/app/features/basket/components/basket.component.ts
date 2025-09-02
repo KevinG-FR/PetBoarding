@@ -10,6 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 
 import { BasketService } from '../services/basket.service';
 import { BasketItemComponent } from './basket-item.component';
+import { PaymentReceiptComponent } from './payment-receipt.component';
 
 @Component({
   selector: 'app-basket',
@@ -23,7 +24,8 @@ import { BasketItemComponent } from './basket-item.component';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     RouterModule,
-    BasketItemComponent
+    BasketItemComponent,
+    PaymentReceiptComponent
   ],
   templateUrl: './basket.component.html',
   styleUrls: ['./basket.component.scss']
@@ -77,5 +79,9 @@ export class BasketComponent implements OnInit {
 
   goToPrestations(): void {
     this.router.navigate(['/prestations']);
+  }
+
+  onDismissReceipt(): void {
+    this.basketService.clearPaymentReceipt();
   }
 }

@@ -1,4 +1,8 @@
 <div class="basket-container">
+  <!-- Reçu de paiement -->
+  @if (basketService.paymentReceipt()) {
+    <app-payment-receipt [receipt]="basketService.paymentReceipt()!" />
+  } @else {
   <mat-card>
     <mat-card-header>
       <mat-card-title>
@@ -79,4 +83,5 @@
       }
     </mat-card-content>
   </mat-card>
+  }
 </div>

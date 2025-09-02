@@ -7,6 +7,7 @@ import {
   UpdateBasketItemRequest
 } from '../contracts/basket.dto';
 import { Basket, BasketItem, BasketStatus, BasketSummary } from '../models/basket-item.model';
+import { PaymentMethod, PaymentReceipt, ReceiptItem } from '../models/payment-receipt.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,12 @@ export class BasketService {
   private readonly _basket = signal<Basket | null>(null);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
+  private readonly _paymentReceipt = signal<PaymentReceipt | null>(null);
 
   readonly basket = this._basket.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
+  readonly paymentReceipt = this._paymentReceipt.asReadonly();
 
   readonly items = computed(() => this._basket()?.items || []);
 
@@ -174,8 +177,12 @@ export class BasketService {
       return of();
     }
 
+    // Créer le reçu avant de traiter le paiement
+    const receipt = this.createPaymentReceipt(currentBasket);
+
     return this.basketApiService.processPaymentSuccess(currentBasket.id).pipe(
       tap(() => {
+        this._paymentReceipt.set(receipt);
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
@@ -246,5 +253,28 @@ export class BasketService {
       default:
         return BasketStatus.Created;
     }
+  }
+
+  private createPaymentReceipt(basket: Basket): PaymentReceipt {
+    const receiptItems: ReceiptItem[] = basket.items.map(item => ({
+      id: item.id,
+      serviceName: item.serviceName,
+      reservationPrice: item.reservationPrice,
+      reservationDates: item.reservationDates
+    }));
+
+    return {
+      basketId: basket.id,
+      totalAmount: basket.totalAmount,
+      totalItems: basket.totalItemCount,
+      paymentMethod: PaymentMethod.Test, // Pour la simulation
+      paymentId: basket.paymentId || `TEST-${Date.now()}`,
+      items: receiptItems,
+      paidAt: new Date()
+    };
+  }
+
+  clearPaymentReceipt(): void {
+    this._paymentReceipt.set(null);
   }
 }
