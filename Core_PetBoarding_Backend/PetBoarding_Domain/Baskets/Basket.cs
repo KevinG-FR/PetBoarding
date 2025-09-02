@@ -44,12 +44,12 @@ public sealed class Basket : AuditableEntity<BasketId>
         return Result.Ok();
     }
 
-    public Result RemoveReservation(ReservationId reservationId)
+    public Result RemoveBasketItem(BasketItemId basketItemId)
     {
         if (Status != BasketStatus.Created)
             return Result.Fail($"Cannot remove reservations from basket with status {Status.Name}");
 
-        var item = _items.FirstOrDefault(i => i.ReservationId == reservationId);
+        var item = _items.FirstOrDefault(i => i.Id == basketItemId);
         if (item is null)
             return Result.Fail("Reservation not found in basket");
 
@@ -57,7 +57,7 @@ public sealed class Basket : AuditableEntity<BasketId>
 
         if (_items.Count == 0)
         {
-            Cancel();
+            Cancel(); // On annule le panier s'il n'y a plus d'items
         }
 
         return Result.Ok();

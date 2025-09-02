@@ -19,7 +19,7 @@ public sealed class BasketRepository : BaseRepository<Basket, BasketId>, IBasket
         return await _dbSet
             .Include(b => b.Items)
             .ThenInclude(i => i.Reservation)
-            .FirstOrDefaultAsync(b => b.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Status == BasketStatus.Created, cancellationToken);
     }
 
     public async Task<Basket?> GetActiveBasketByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)

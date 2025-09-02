@@ -27,8 +27,8 @@ export class BasketApiService {
     return this.http.put<void>(`${this.baseUrl}/items/${prestationId}`, request);
   }
 
-  removeItemFromBasket(prestationId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/items/${prestationId}`);
+  removeItemFromBasket(basketItemId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/items/${basketItemId}`);
   }
 
   clearBasket(basketId: string): Observable<void> {

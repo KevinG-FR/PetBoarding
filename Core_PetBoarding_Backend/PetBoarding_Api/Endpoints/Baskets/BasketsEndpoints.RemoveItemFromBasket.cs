@@ -7,7 +7,7 @@ using PetBoarding_Application.Baskets.RemoveItemFromBasket;
 public static partial class BasketsEndpoints
 {
     private static async Task<IResult> RemoveItemFromBasket(
-        Guid prestationId,
+        Guid basketItemId,
         ClaimsPrincipal user,
         ISender sender,
         CancellationToken cancellationToken)
@@ -18,7 +18,7 @@ public static partial class BasketsEndpoints
             return Results.Unauthorized();
         }
 
-        var command = new RemoveItemFromBasketCommand(userId, prestationId);
+        var command = new RemoveItemFromBasketCommand(userId, basketItemId);
         var result = await sender.Send(command, cancellationToken);
 
         if (result.IsFailed)

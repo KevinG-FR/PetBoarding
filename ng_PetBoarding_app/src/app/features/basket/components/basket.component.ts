@@ -37,6 +37,7 @@ export class BasketComponent implements OnInit {
   basketService = inject(BasketService);
 
   ngOnInit(): void {
+    this.basketService.clearPaymentReceipt();
     this.basketService.loadBasket().subscribe();
   }
 

@@ -107,11 +107,11 @@ export class BasketService {
     );
   }
 
-  removeItemFromBasket(prestationId: string): Observable<void> {
+  removeItemFromBasket(basketItemId: string): Observable<void> {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.basketApiService.removeItemFromBasket(prestationId).pipe(
+    return this.basketApiService.removeItemFromBasket(basketItemId).pipe(
       tap(() => {
         this._loading.set(false);
         this.loadBasket().subscribe();

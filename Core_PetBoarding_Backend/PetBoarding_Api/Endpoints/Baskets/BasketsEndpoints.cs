@@ -42,7 +42,7 @@ public static partial class BasketsEndpoints
             .Produces(401)
             .Produces(404);
 
-        group.MapDelete("/items/{prestationId}", RemoveItemFromBasket)
+        group.MapDelete("/items/{basketItemId}", RemoveItemFromBasket)
             .WithName("RemoveItemFromBasket")
             .WithSummary("Remove item from basket")
             .WithDescription("Removes a specific item from the basket.")

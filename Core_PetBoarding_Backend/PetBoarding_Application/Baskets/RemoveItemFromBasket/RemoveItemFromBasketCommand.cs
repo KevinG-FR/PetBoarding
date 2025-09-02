@@ -4,5 +4,5 @@ using PetBoarding_Application.Abstractions;
 
 public sealed record RemoveItemFromBasketCommand(
     Guid UserId,
-    Guid ReservationId
+    Guid BasketItemId
 ) : ICommand;
