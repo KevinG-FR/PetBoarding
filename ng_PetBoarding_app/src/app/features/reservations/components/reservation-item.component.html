@@ -95,14 +95,10 @@
   <mat-card-actions class="reservation-actions">
     <div class="d-flex justify-content-center w-100">
       <div class="action-buttons">
-        <button mat-button color="primary" class="me-2">
-          <mat-icon>visibility</mat-icon>
-          Détails
-        </button>
-        @if (!isPast()) {
-          <button mat-button color="accent">
-            <mat-icon>edit</mat-icon>
-            Modifier
+        @if (reservation().statut === 'VALIDATED') {
+          <button mat-button color="warn" (click)="annulerReservation()">
+            <mat-icon>cancel</mat-icon>
+            Annuler
           </button>
         }
       </div>

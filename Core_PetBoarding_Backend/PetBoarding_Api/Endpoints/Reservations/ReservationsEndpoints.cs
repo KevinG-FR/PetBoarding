@@ -39,7 +39,7 @@ public static partial class ReservationsEndpoints
             .Produces(400)
             .Produces(404);
 
-        group.MapDelete("/{id}", CancelReservation)
+        group.MapPut("/{id}/cancel", CancelReservation)
             .WithName("CancelReservation")
             .WithSummary("Cancel a reservation")
             .WithDescription("Changes the status of a reservation to 'Cancelled'.")

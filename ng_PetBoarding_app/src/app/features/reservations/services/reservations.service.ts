@@ -198,7 +198,10 @@ export class ReservationsService {
 
     return this.reservationsApi.cancelReservation(reservationId).pipe(
       switchMap((response) => {
-        if (response.success) {
+        // Vérifier le code de statut HTTP 204 (No Content) pour confirmer le succès
+        const isSuccess = response.status === 204;
+        
+        if (isSuccess) {
           // Libérer les créneaux dans le planning
           return this.planningService.annulerReservations(
             reservation.prestationId,

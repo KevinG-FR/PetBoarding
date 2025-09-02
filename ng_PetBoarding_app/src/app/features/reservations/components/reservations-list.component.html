@@ -57,7 +57,9 @@
     <div class="row g-3">
       @for (reservation of paginatedReservations(); track reservation.id) {
         <div class="col-12">
-          <app-reservation-item [reservation]="reservation" />
+          <app-reservation-item 
+            [reservation]="reservation" 
+            (reservationCancelled)="onReservationCancelled($event)" />
         </div>
       }
     </div>

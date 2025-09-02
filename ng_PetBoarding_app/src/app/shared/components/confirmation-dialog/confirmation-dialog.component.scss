@@ -1,0 +1,160 @@
+// Import des variables du projet
+@use '../../../../variables' as *;
+@use 'sass:color';
+
+// Conteneur global de la modal
+:host {
+  --mat-dialog-container-shape: #{$border-radius-lg};
+  --mat-dialog-container-elevation-shadow: #{$box-shadow-lg};
+}
+
+// En-tête de la modal
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  margin: 0 0 $spacing-lg 0;
+  padding: $spacing-lg $spacing-lg 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $text-color;
+  border-bottom: 1px solid $divider-color;
+  padding-bottom: $spacing-md;
+
+  .dialog-icon {
+    margin-right: $spacing-md;
+    font-size: 1.5rem;
+    color: $warning-color;
+    background: $warning-light;
+    border-radius: 50%;
+    padding: $spacing-sm;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Contenu de la modal
+mat-dialog-content {
+  margin: 0;
+  padding: $spacing-md $spacing-lg;
+  color: $text-secondary;
+  font-size: 1rem;
+  line-height: 1.5;
+  
+  p {
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// Actions (boutons)
+mat-dialog-actions {
+  margin: 0;
+  padding: $spacing-md $spacing-lg $spacing-lg;
+  gap: $spacing-md;
+  border-top: 1px solid $divider-color;
+  background: color.adjust($background-color, $lightness: 2%);
+
+  // Bouton annuler/conserver
+  button[mat-button] {
+    --mdc-text-button-label-text-color: #{$text-secondary};
+    --mdc-text-button-hover-state-layer-color: #{$divider-color};
+    border-radius: $border-radius;
+    padding: $spacing-sm $spacing-lg;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: $divider-color;
+      color: $text-color;
+    }
+  }
+
+  // Bouton de confirmation
+  button[mat-raised-button] {
+    border-radius: $border-radius;
+    padding: $spacing-sm $spacing-lg;
+    font-weight: 600;
+    box-shadow: $box-shadow;
+    transition: all 0.2s ease-in-out;
+
+    // Style pour bouton d'avertissement (warn)
+    &.mat-warn {
+      --mdc-protected-button-container-color: #{$error-color};
+      --mdc-protected-button-label-text-color: #{$white};
+      --mdc-protected-button-hover-state-layer-color: rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        box-shadow: $box-shadow-lg;
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: $box-shadow;
+      }
+    }
+
+    // Style pour bouton primaire
+    &.mat-primary {
+      --mdc-protected-button-container-color: #{$primary-color};
+      --mdc-protected-button-label-text-color: #{$white};
+    }
+  }
+}
+
+// Animation d'entrée de la modal
+:host ::ng-deep .mat-mdc-dialog-container {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Responsive pour mobile
+@include mobile {
+  h2[mat-dialog-title] {
+    font-size: 1.125rem;
+    padding: $spacing-md $spacing-md 0;
+    
+    .dialog-icon {
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.25rem;
+    }
+  }
+
+  mat-dialog-content {
+    padding: $spacing-sm $spacing-md;
+    font-size: 0.9rem;
+  }
+
+  mat-dialog-actions {
+    padding: $spacing-sm $spacing-md $spacing-md;
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      margin: 0;
+      
+      &:first-child {
+        order: 2;
+        margin-top: $spacing-sm;
+      }
+      
+      &:last-child {
+        order: 1;
+      }
+    }
+  }
+}

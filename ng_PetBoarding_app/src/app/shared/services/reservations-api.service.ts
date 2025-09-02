@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -101,9 +101,10 @@ export class ReservationsApiService {
 
   /**
    * Annule une réservation
+   * Retourne une HttpResponse pour vérifier le statut HTTP 204
    */
-  cancelReservation(id: string): Observable<ApiResponse> {
-    return this.http.delete<ApiResponse>(`${this.baseUrl}/${id}`);
+  cancelReservation(id: string): Observable<HttpResponse<any>> {
+    return this.http.put(`${this.baseUrl}/${id}/cancel`, {}, { observe: 'response' });
   }
 
   /**
