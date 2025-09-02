@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,10 +7,10 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../auth/services/auth.service';
 import { ReservationFilters } from '../models/reservation.model';
 import { ReservationsService } from '../services/reservations.service';
 import { ReservationItemComponent } from './reservation-item.component';
-import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-reservations-list',
@@ -103,7 +103,6 @@ export class ReservationsListComponent implements OnInit {
    * Gestionnaire pour l'événement d'annulation de réservation
    */
   onReservationCancelled(reservationId: string) {
-    console.log('Réservation annulée:', reservationId);
     // Recharger les réservations après annulation
     this.loadReservations();
   }

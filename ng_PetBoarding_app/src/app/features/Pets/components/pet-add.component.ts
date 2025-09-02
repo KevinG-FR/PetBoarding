@@ -11,12 +11,7 @@ import { PetFormComponent } from './pet-form.component';
 @Component({
   selector: 'app-pet-add',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    PetFormComponent
-  ],
+  imports: [CommonModule, MatCardModule, MatIconModule, PetFormComponent],
   templateUrl: './pet-add.component.html',
   styleUrl: './pet-add.component.scss'
 })
@@ -34,28 +29,19 @@ export class PetAddComponent {
       next: (newPet) => {
         this.isLoading = false;
         if (newPet) {
-          this.snackBar.open(
-            `${newPet.name} a été ajouté avec succès !`,
-            'Fermer',
-            { duration: 5000 }
-          );
+          this.snackBar.open(`${newPet.name} a été ajouté avec succès !`, 'Fermer', {
+            duration: 5000
+          });
           this.router.navigate(['/profile']);
         } else {
-          this.snackBar.open(
-            'Erreur lors de la création de l\'animal',
-            'Fermer',
-            { duration: 5000 }
-          );
+          this.snackBar.open("Erreur lors de la création de l'animal", 'Fermer', {
+            duration: 5000
+          });
         }
       },
-      error: (error) => {
+      error: (_) => {
         this.isLoading = false;
-        console.error('Erreur lors de l\'ajout de l\'animal:', error);
-        this.snackBar.open(
-          'Erreur lors de la création de l\'animal',
-          'Fermer',
-          { duration: 5000 }
-        );
+        this.snackBar.open("Erreur lors de la création de l'animal", 'Fermer', { duration: 5000 });
       }
     });
   }

@@ -207,7 +207,6 @@ export class PrestationDetailComponent {
   }
 
   onReserver(): void {
-    console.log('onReserver() called in detail component');
     const prestation = this.prestation;
     const dialogRef = this.dialog.open(ReservationCompleteDialogComponent, {
       data: { prestation },
@@ -217,15 +216,10 @@ export class PrestationDetailComponent {
       maxHeight: '90vh'
     });
 
-    console.log('Setting up detail dialog afterClosed subscription');
-    
     dialogRef.afterClosed().subscribe((result: ReservationResult) => {
-      console.log('Detail dialog closed with result:', result);
-      
       if (result?.action === 'reserve' && result.pet && result.dates) {
         const currentUser = this.authService.currentUser();
-        console.log('Current user:', currentUser);
-        
+
         if (!currentUser) {
           this.snackBar.open('Vous devez être connecté pour faire une réservation', 'Fermer', {
             duration: 5000
@@ -242,44 +236,42 @@ export class PrestationDetailComponent {
           dateFin: result.dates.dateFin,
           commentaires: ''
         };
-        
-        console.log('Creating reservation with request:', reservationRequest);
 
-        this.reservationsService.creerReservationAvecPlanning(reservationRequest).pipe(
-          switchMap((reservation) => {
-            console.log('Reservation created:', reservation);
-            if (!reservation) {
-              throw new Error('Impossible de créer la réservation');
-            }
-            
-            console.log('Adding reservation to basket:', reservation.id);
-            return this.basketService.addItemToBasket(reservation.id);
-          })
-        ).subscribe({
-          next: () => {
-            this.dialogRef.close();
-            
-            const snackBarRef = this.snackBar.open(
-              `Réservation créée et ajoutée au panier !`,
-              'Voir le panier',
-              {
-                duration: 5000
+        this.reservationsService
+          .creerReservationAvecPlanning(reservationRequest)
+          .pipe(
+            switchMap((reservation) => {
+              if (!reservation) {
+                throw new Error('Impossible de créer la réservation');
               }
-            );
 
-            snackBarRef.onAction().subscribe(() => {
-              this.router.navigate(['/basket']);
-            });
-          },
-          error: (error) => {
-            console.error('Erreur:', error);
-            this.snackBar.open(
-              error.message || 'Erreur lors de la création de la réservation',
-              'Fermer',
-              { duration: 5000 }
-            );
-          }
-        });
+              return this.basketService.addItemToBasket(reservation.id);
+            })
+          )
+          .subscribe({
+            next: () => {
+              this.dialogRef.close();
+
+              const snackBarRef = this.snackBar.open(
+                `Réservation créée et ajoutée au panier !`,
+                'Voir le panier',
+                {
+                  duration: 5000
+                }
+              );
+
+              snackBarRef.onAction().subscribe(() => {
+                this.router.navigate(['/basket']);
+              });
+            },
+            error: (error) => {
+              this.snackBar.open(
+                error.message || 'Erreur lors de la création de la réservation',
+                'Fermer',
+                { duration: 5000 }
+              );
+            }
+          });
       }
     });
   }

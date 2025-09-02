@@ -139,10 +139,9 @@ export class PetService {
         this._pets.set(pets);
         this._isLoading.set(false);
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set('Erreur lors du chargement des animaux');
         this._isLoading.set(false);
-        console.error('Erreur lors du chargement des pets:', error);
         return of([]);
       })
     );
@@ -200,8 +199,7 @@ export class PetService {
         }
       }),
       map((response) => (response.pet ? this.mapDtoToPet(response.pet) : null)),
-      catchError((error) => {
-        console.error('Erreur lors de la création du pet:', error);
+      catchError((_) => {
         this._error.set("Erreur lors de la création de l'animal");
         return of(null);
       })
@@ -231,8 +229,7 @@ export class PetService {
         }
       }),
       map((response) => (response.pet ? this.mapDtoToPet(response.pet) : null)),
-      catchError((error) => {
-        console.error('Erreur lors de la mise à jour du pet:', error);
+      catchError((_) => {
         this._error.set("Erreur lors de la mise à jour de l'animal");
         return of(null);
       })
@@ -251,8 +248,7 @@ export class PetService {
         }
       }),
       map((response) => response.success),
-      catchError((error) => {
-        console.error('Erreur lors de la suppression du pet:', error);
+      catchError((_) => {
         this._error.set("Erreur lors de la suppression de l'animal");
         return of(false);
       })

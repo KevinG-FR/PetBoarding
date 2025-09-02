@@ -9,8 +9,6 @@ export class AppInitService {
   private readonly authService = inject(AuthService);
 
   initializeApp(): Observable<void> | Promise<void> | void {
-    // eslint-disable-next-line no-console
-    console.log('🚀 AppInitService: Initializing application...');
     return this.authService.initializeAuth();
   }
 }

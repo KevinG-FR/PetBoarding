@@ -73,7 +73,6 @@ export class ReservationMapper {
       case 'COMPLETED':
         return StatutReservation.COMPLETED;
       default:
-        console.warn(`Statut inconnu reçu du backend: ${backendStatus}`);
         return StatutReservation.CREATED;
     }
   }

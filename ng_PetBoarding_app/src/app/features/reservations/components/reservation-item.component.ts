@@ -120,8 +120,7 @@ export class ReservationItemComponent {
           this.showErrorMessage("Impossible d'annuler la réservation. Veuillez réessayer.");
         }
       },
-      error: (error) => {
-        console.error("Erreur lors de l'annulation:", error);
+      error: (_) => {
         this.showErrorMessage("Une erreur est survenue lors de l'annulation de la réservation.");
       }
     });

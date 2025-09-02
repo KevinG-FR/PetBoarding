@@ -34,30 +34,20 @@ export class ProfileService {
       const isAuthenticated = this.authService.isAuthenticated();
       const currentUser = this.authService.currentUser();
 
-      // eslint-disable-next-line no-console
-      console.log('🔄 ProfileService effect triggered', { isAuthenticated, currentUser });
-
       if (isAuthenticated && currentUser) {
         // Utilisateur connecté → utiliser les données du AuthService
-        // eslint-disable-next-line no-console
-        console.log('✅ ProfileService: Setting user from AuthService', currentUser);
+        this._currentUser.set(currentUser);
         this._currentUser.set(currentUser);
         this._isLoading.set(false);
       } else if (isAuthenticated) {
         // Utilisateur connecté mais pas de données user → charger depuis l'API
         const token = this.tokenService.getToken();
-        // eslint-disable-next-line no-console
-        console.log(
-          '⚠️ ProfileService: Authenticated but no user data, token:',
-          token ? 'Present' : 'Missing'
-        );
+        this._isLoading.set(true);
         if (token && !this._currentUser()) {
           this.loadUserProfile();
         }
       } else {
         // Utilisateur déconnecté → nettoyer les données
-        // eslint-disable-next-line no-console
-        console.log('🧹 ProfileService: Clearing user data');
         this.clearUserData();
       }
     });

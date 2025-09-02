@@ -58,10 +58,9 @@ export class BasketService {
           return null;
         }
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set('Erreur lors du chargement du panier');
         this._loading.set(false);
-        console.error('Error loading basket:', error);
         return of(null);
       })
     );
@@ -78,10 +77,9 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set("Erreur lors de l'ajout au panier");
         this._loading.set(false);
-        console.error('Error adding item to basket:', error);
         return of();
       })
     );
@@ -98,10 +96,9 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set('Erreur lors de la mise à jour du panier');
         this._loading.set(false);
-        console.error('Error updating basket item:', error);
         return of();
       })
     );
@@ -116,10 +113,9 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set("Erreur lors de la suppression de l'élément");
         this._loading.set(false);
-        console.error('Error removing item from basket:', error);
         return of();
       })
     );
@@ -157,7 +153,6 @@ export class BasketService {
 
         this._error.set('Erreur lors de la suppression du panier');
         this._loading.set(false);
-        console.error('Error clearing basket:', error);
         return of();
       })
     );
@@ -186,10 +181,9 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError((error) => {
+      catchError((_) => {
         this._error.set('Erreur lors du traitement du paiement');
         this._loading.set(false);
-        console.error('Error processing payment success:', error);
         return of();
       })
     );
@@ -210,10 +204,9 @@ export class BasketService {
         this._loading.set(false);
         this.loadBasket().subscribe();
       }),
-      catchError((error) => {
-        this._error.set('Erreur lors du traitement de l\'échec de paiement');
+      catchError((_) => {
+        this._error.set("Erreur lors du traitement de l'échec de paiement");
         this._loading.set(false);
-        console.error('Error processing payment failure:', error);
         return of();
       })
     );
@@ -256,7 +249,7 @@ export class BasketService {
   }
 
   private createPaymentReceipt(basket: Basket): PaymentReceipt {
-    const receiptItems: ReceiptItem[] = basket.items.map(item => ({
+    const receiptItems: ReceiptItem[] = basket.items.map((item) => ({
       id: item.id,
       serviceName: item.serviceName,
       reservationPrice: item.reservationPrice,

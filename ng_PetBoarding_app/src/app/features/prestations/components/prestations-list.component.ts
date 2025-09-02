@@ -91,18 +91,6 @@ export class PrestationsListComponent implements OnInit {
         const dateDebut = result.dateDebut as Date | undefined;
         const dateFin = result.dateFin as Date | undefined;
 
-        // TODO: Adapter au nouveau workflow avec création de réservation
-        // this.basketService.addItem(
-        //   prestation,
-        //   1,
-        //   undefined,
-        //   undefined,
-        //   pet ? { id: pet.id, name: pet.name, type: pet.type } : undefined,
-        //   dateDebut,
-        //   dateFin
-        // );
-        console.log('Fonctionnalité temporairement désactivée - utiliser les composants prestation-item ou prestation-detail');
-
         const datesText =
           dateDebut && dateFin
             ? ` du ${dateDebut.toLocaleDateString()} au ${dateFin.toLocaleDateString()}`
@@ -125,10 +113,6 @@ export class PrestationsListComponent implements OnInit {
   }
 
   onReservePrestation(prestation: Prestation): void {
-    // TODO: Adapter au nouveau workflow avec création de réservation
-    // this.basketService.addItem(prestation);
-    console.log('Fonctionnalité temporairement désactivée - utiliser les composants prestation-item ou prestation-detail');
-
     const snackBarRef = this.snackBar.open(
       `Fonctionnalité temporairement désactivée. Utilisez le bouton "Réserver" sur les cartes de prestations.`,
       'OK',

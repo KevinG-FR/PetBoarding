@@ -1,15 +1,17 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, of, switchMap, catchError, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import {
+  CreateReservationRequest,
+  ReservationsApiService
+} from '../../../shared/services/reservations-api.service';
 import { PlanningService } from '../../prestations/services/planning.service';
 import { PrestationsService } from '../../prestations/services/prestations.service';
-import { ReservationsApiService, CreateReservationRequest } from '../../../shared/services/reservations-api.service';
 import { ReservationMapper } from '../mappers/reservation.mapper';
 import {
   CreerReservationRequest,
   Reservation,
   ReservationFilters,
-  StatutReservation,
-  ReservationAvecSlots
+  StatutReservation
 } from '../models/reservation.model';
 
 export interface StatutInfo {
@@ -26,7 +28,7 @@ export class ReservationsService {
   private planningService = inject(PlanningService);
   private prestationsService = inject(PrestationsService);
   private reservationsApi = inject(ReservationsApiService);
-  
+
   // Signals pour l'état
   private reservations = signal<Reservation[]>([]);
   private loading = signal<boolean>(false);
@@ -53,18 +55,17 @@ export class ReservationsService {
     this.error.set(null);
 
     return this.reservationsApi.getAllReservations().pipe(
-      map(response => {
+      map((response) => {
         if (response.reservations) {
           return ReservationMapper.fromDtoArray(response.reservations);
         }
         return [];
       }),
-      tap(reservations => {
+      tap((reservations) => {
         this.reservations.set(reservations);
         this.loading.set(false);
       }),
-      catchError(error => {
-        console.error('Erreur lors du chargement des réservations:', error);
+      catchError((_) => {
         this.error.set('Impossible de charger les réservations');
         this.loading.set(false);
         return of([]);
@@ -80,19 +81,18 @@ export class ReservationsService {
     this.error.set(null);
 
     return this.reservationsApi.getUserDisplayedReservations(userId).pipe(
-      map(response => {
+      map((response) => {
         if (response.reservations) {
           // Le filtrage des statuts est maintenant fait côté backend
           return ReservationMapper.fromDtoArray(response.reservations);
         }
         return [];
       }),
-      tap(reservations => {
+      tap((reservations) => {
         this.reservations.set(reservations);
         this.loading.set(false);
       }),
-      catchError(error => {
-        console.error('Erreur lors du chargement des réservations utilisateur:', error);
+      catchError((_) => {
         this.error.set('Impossible de charger les réservations');
         this.loading.set(false);
         return of([]);
@@ -105,14 +105,13 @@ export class ReservationsService {
    */
   getReservationById(id: string): Observable<Reservation | null> {
     return this.reservationsApi.getReservationById(id).pipe(
-      map(response => {
+      map((response) => {
         if (response.success && response.data) {
           return ReservationMapper.fromDto(response.data);
         }
         return null;
       }),
-      catchError(error => {
-        console.error('Erreur lors du chargement de la réservation:', error);
+      catchError((_) => {
         return of(null);
       })
     );
@@ -129,56 +128,59 @@ export class ReservationsService {
         }
 
         // Vérifier la disponibilité
-        return this.planningService.verifierDisponibilite({
-          prestationId: request.prestationId,
-          startDate: request.dateDebut,
-          endDate: request.dateFin,
-          quantity: 1
-        }).pipe(
-          switchMap((disponibilite) => {
-            if (!disponibilite.isAvailable) {
-              return throwError(() => new Error('Créneaux non disponibles'));
-            }
-
-            // Créer la réservation via l'API
-            const createRequest: CreateReservationRequest = {
-              userId: request.userId,
-              animalId: request.animalId,
-              animalName: request.animalName,
-              serviceId: request.prestationId,
-              startDate: this.formatDateForApi(request.dateDebut),
-              endDate: request.dateFin ? this.formatDateForApi(request.dateFin) : undefined,
-              comments: request.commentaires
-            };
-
-            return this.reservationsApi.createReservation(createRequest).pipe(
-              switchMap((response) => {
-                const newReservation = ReservationMapper.fromDto(response.reservation);
-                
-                // Réserver les créneaux dans le planning
-                return this.planningService.reserverCreneaux(
-                  request.prestationId,
-                  request.dateDebut,
-                  request.dateFin || null,
-                  1
-                ).pipe(
-                  map((reservationReussie) => {
-                    if (reservationReussie) {
-                      // Mettre à jour le cache local
-                      const reservationsActuelles = this.reservations();
-                      this.reservations.set([...reservationsActuelles, newReservation]);
-                      return newReservation;
-                    }
-                    return null;
-                  })
-                );
-              })
-            );
+        return this.planningService
+          .verifierDisponibilite({
+            prestationId: request.prestationId,
+            startDate: request.dateDebut,
+            endDate: request.dateFin,
+            quantity: 1
           })
-        );
+          .pipe(
+            switchMap((disponibilite) => {
+              if (!disponibilite.isAvailable) {
+                return throwError(() => new Error('Créneaux non disponibles'));
+              }
+
+              // Créer la réservation via l'API
+              const createRequest: CreateReservationRequest = {
+                userId: request.userId,
+                animalId: request.animalId,
+                animalName: request.animalName,
+                serviceId: request.prestationId,
+                startDate: this.formatDateForApi(request.dateDebut),
+                endDate: request.dateFin ? this.formatDateForApi(request.dateFin) : undefined,
+                comments: request.commentaires
+              };
+
+              return this.reservationsApi.createReservation(createRequest).pipe(
+                switchMap((response) => {
+                  const newReservation = ReservationMapper.fromDto(response.reservation);
+
+                  // Réserver les créneaux dans le planning
+                  return this.planningService
+                    .reserverCreneaux(
+                      request.prestationId,
+                      request.dateDebut,
+                      request.dateFin || null,
+                      1
+                    )
+                    .pipe(
+                      map((reservationReussie) => {
+                        if (reservationReussie) {
+                          // Mettre à jour le cache local
+                          const reservationsActuelles = this.reservations();
+                          this.reservations.set([...reservationsActuelles, newReservation]);
+                          return newReservation;
+                        }
+                        return null;
+                      })
+                    );
+                })
+              );
+            })
+          );
       }),
-      catchError(error => {
-        console.error('Erreur lors de la création de la réservation:', error);
+      catchError((error) => {
         this.error.set(error.message || 'Erreur lors de la création de la réservation');
         return of(null);
       })
@@ -200,37 +202,40 @@ export class ReservationsService {
       switchMap((response) => {
         // Vérifier le code de statut HTTP 204 (No Content) pour confirmer le succès
         const isSuccess = response.status === 204;
-        
+
         if (isSuccess) {
           // Libérer les créneaux dans le planning
-          return this.planningService.annulerReservations(
-            reservation.prestationId,
-            reservation.dateDebut,
-            reservation.dateFin || null,
-            1
-          ).pipe(
-            map((annulationReussie) => {
-              if (annulationReussie) {
-                // Mettre à jour le statut local
-                const reservationIndex = reservationsActuelles.findIndex((r) => r.id === reservationId);
-                if (reservationIndex !== -1) {
-                  reservationsActuelles[reservationIndex] = {
-                    ...reservationsActuelles[reservationIndex],
-                    statut: StatutReservation.CANCEL,
-                    dateModification: new Date()
-                  };
-                  this.reservations.set([...reservationsActuelles]);
+          return this.planningService
+            .annulerReservations(
+              reservation.prestationId,
+              reservation.dateDebut,
+              reservation.dateFin || null,
+              1
+            )
+            .pipe(
+              map((annulationReussie) => {
+                if (annulationReussie) {
+                  // Mettre à jour le statut local
+                  const reservationIndex = reservationsActuelles.findIndex(
+                    (r) => r.id === reservationId
+                  );
+                  if (reservationIndex !== -1) {
+                    reservationsActuelles[reservationIndex] = {
+                      ...reservationsActuelles[reservationIndex],
+                      statut: StatutReservation.CANCEL,
+                      dateModification: new Date()
+                    };
+                    this.reservations.set([...reservationsActuelles]);
+                  }
                 }
-              }
-              return annulationReussie;
-            })
-          );
+                return annulationReussie;
+              })
+            );
         }
         return of(false);
       }),
-      catchError(error => {
-        console.error('Erreur lors de l\'annulation:', error);
-        this.error.set('Erreur lors de l\'annulation de la réservation');
+      catchError((_) => {
+        this.error.set("Erreur lors de l'annulation de la réservation");
         return of(false);
       })
     );
@@ -240,35 +245,36 @@ export class ReservationsService {
    * Valide le paiement d'une réservation
    */
   validerPaiement(reservationId: string, amountPaid: number): Observable<Reservation | null> {
-    return this.reservationsApi.validatePayment(reservationId, { 
-      amountPaid,
-      paymentMethod: 'card' 
-    }).pipe(
-      map(response => {
-        if (response.success && response.data) {
-          const updatedReservation = ReservationMapper.fromDto(response.data);
-          
-          // Mettre à jour le cache local
-          const reservationsActuelles = this.reservations();
-          const index = reservationsActuelles.findIndex(r => r.id === reservationId);
-          if (index !== -1) {
-            reservationsActuelles[index] = {
-              ...updatedReservation,
-              paidAt: new Date()
-            };
-            this.reservations.set([...reservationsActuelles]);
-          }
-          
-          return updatedReservation;
-        }
-        return null;
-      }),
-      catchError(error => {
-        console.error('Erreur lors de la validation du paiement:', error);
-        this.error.set('Erreur lors de la validation du paiement');
-        return of(null);
+    return this.reservationsApi
+      .validatePayment(reservationId, {
+        amountPaid,
+        paymentMethod: 'card'
       })
-    );
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            const updatedReservation = ReservationMapper.fromDto(response.data);
+
+            // Mettre à jour le cache local
+            const reservationsActuelles = this.reservations();
+            const index = reservationsActuelles.findIndex((r) => r.id === reservationId);
+            if (index !== -1) {
+              reservationsActuelles[index] = {
+                ...updatedReservation,
+                paidAt: new Date()
+              };
+              this.reservations.set([...reservationsActuelles]);
+            }
+
+            return updatedReservation;
+          }
+          return null;
+        }),
+        catchError((_) => {
+          this.error.set('Erreur lors de la validation du paiement');
+          return of(null);
+        })
+      );
   }
 
   // Méthodes utilitaires (conservées du service original)
@@ -380,7 +386,7 @@ export class ReservationsService {
     if (!reservation.paymentExpiryAt || reservation.statut !== StatutReservation.CREATED) {
       return false;
     }
-    
+
     return new Date() > reservation.paymentExpiryAt;
   }
 
@@ -391,11 +397,11 @@ export class ReservationsService {
     if (!reservation.paymentExpiryAt || reservation.statut !== StatutReservation.CREATED) {
       return 0;
     }
-    
+
     const now = new Date().getTime();
     const expiry = reservation.paymentExpiryAt.getTime();
     const diffMinutes = Math.max(0, Math.floor((expiry - now) / (1000 * 60)));
-    
+
     return diffMinutes;
   }
 

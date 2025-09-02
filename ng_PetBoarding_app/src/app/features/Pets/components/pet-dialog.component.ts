@@ -17,9 +17,9 @@ export interface PetDialogData {
   imports: [MatDialogModule, PetFormComponent],
   template: `
     <h2 mat-dialog-title>
-      {{ data.mode === 'create' ? 'Ajouter un animal' : 'Modifier l\'animal' }}
+      {{ data.mode === 'create' ? 'Ajouter un animal' : 'Modifier l'animal' }}
     </h2>
-    
+
     <mat-dialog-content>
       <app-pet-form
         [pet]="data.pet"
@@ -45,7 +45,7 @@ export class PetDialogComponent {
           }
         },
         error: (error) => {
-          console.error('Erreur lors de la création de l\'animal:', error);
+          console.error("Erreur lors de la création de l'animal:", error);
         }
       });
     } else if (this.data.pet) {
@@ -56,7 +56,7 @@ export class PetDialogComponent {
           }
         },
         error: (error) => {
-          console.error('Erreur lors de la mise à jour de l\'animal:', error);
+          console.error("Erreur lors de la mise à jour de l'animal:", error);
         }
       });
     }

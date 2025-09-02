@@ -7,11 +7,10 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { switchMap, of } from 'rxjs';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
 import { AuthService } from '../../auth/services/auth.service';
 import { BasketService } from '../../basket/services/basket.service';
-import { Pet, PetType } from '../../pets/models/pet.model';
+import { PetType } from '../../pets/models/pet.model';
 import { ReservationsService } from '../../reservations/services/reservations.service';
 import { Prestation } from '../models/prestation.model';
 import { PrestationsService } from '../services/prestations.service';
@@ -36,7 +35,7 @@ export class PrestationItemComponent {
   prestation = input.required<Prestation>();
 
   viewDetails = output<Prestation>();
-  
+
   private isProcessing = false;
 
   private prestationsService = inject(PrestationsService);
@@ -81,8 +80,7 @@ export class PrestationItemComponent {
     if (this.isProcessing) {
       return;
     }
-    
-    console.log('onReserve() called');
+
     const prestation = this.prestation();
     const dialogRef = this.dialog.open(ReservationCompleteDialogComponent, {
       data: { prestation },
@@ -92,16 +90,11 @@ export class PrestationItemComponent {
       maxHeight: '90vh'
     });
 
-    console.log('Setting up dialog afterClosed subscription');
-    
     dialogRef.afterClosed().subscribe((result: any) => {
-      console.log('Dialog closed with result:', result);
-      
       if (result?.action === 'reserve' && result.pet && result.dates) {
         this.isProcessing = true;
         const currentUser = this.authService.currentUser();
-        console.log('Current user:', currentUser);
-        
+
         if (!currentUser) {
           this.snackBar.open('Vous devez être connecté pour faire une réservation', 'Fermer', {
             duration: 5000
@@ -118,19 +111,17 @@ export class PrestationItemComponent {
           dateFin: result.dates.dateFin,
           commentaires: ''
         };
-        
-        console.log('Creating reservation with request:', reservationRequest);
 
         this.reservationsService.creerReservationAvecPlanning(reservationRequest).subscribe({
           next: (reservation) => {
-            console.log('Reservation created:', reservation);
             if (!reservation) {
               this.isProcessing = false;
-              this.snackBar.open('Impossible de créer la réservation', 'Fermer', { duration: 5000 });
+              this.snackBar.open('Impossible de créer la réservation', 'Fermer', {
+                duration: 5000
+              });
               return;
             }
-            
-            console.log('Adding reservation to basket:', reservation.id);
+
             this.basketService.addItemToBasket(reservation.id).subscribe({
               next: () => {
                 this.isProcessing = false;
@@ -146,12 +137,15 @@ export class PrestationItemComponent {
               },
               error: (basketError) => {
                 this.isProcessing = false;
-                console.error('Erreur lors de l\'ajout au panier:', basketError);
-                
+
                 // Gérer spécifiquement les erreurs d'ajout au panier
-                const errorMessage = basketError?.error?.error || basketError?.message || 'Erreur inconnue';
-                
-                if (errorMessage.includes('already in basket') || errorMessage.includes('similaire')) {
+                const errorMessage =
+                  basketError?.error?.error || basketError?.message || 'Erreur inconnue';
+
+                if (
+                  errorMessage.includes('already in basket') ||
+                  errorMessage.includes('similaire')
+                ) {
                   this.snackBar.open(
                     'Une réservation similaire existe déjà dans votre panier',
                     'Fermer',
@@ -159,7 +153,7 @@ export class PrestationItemComponent {
                   );
                 } else {
                   this.snackBar.open(
-                    'Erreur lors de l\'ajout au panier: ' + errorMessage,
+                    "Erreur lors de l'ajout au panier: " + errorMessage,
                     'Fermer',
                     { duration: 5000 }
                   );
@@ -169,7 +163,6 @@ export class PrestationItemComponent {
           },
           error: (error) => {
             this.isProcessing = false;
-            console.error('Erreur:', error);
             this.snackBar.open(
               error.message || 'Erreur lors de la création de la réservation',
               'Fermer',
