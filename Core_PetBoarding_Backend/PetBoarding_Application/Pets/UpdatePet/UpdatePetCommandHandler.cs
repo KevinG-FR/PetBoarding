@@ -1,5 +1,6 @@
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Errors.Entities;
 using PetBoarding_Domain.Pets;
@@ -10,11 +11,13 @@ public sealed class UpdatePetCommandHandler : ICommandHandler<UpdatePetCommand, 
 {
     private readonly IPetRepository _petRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
-    public UpdatePetCommandHandler(IPetRepository petRepository, IUnitOfWork unitOfWork)
+    public UpdatePetCommandHandler(IPetRepository petRepository, IUnitOfWork unitOfWork, ICacheService cacheService)
     {
         _petRepository = petRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<Pet>> Handle(UpdatePetCommand request, CancellationToken cancellationToken)
@@ -57,6 +60,22 @@ public sealed class UpdatePetCommandHandler : ICommandHandler<UpdatePetCommand, 
             {
                 return Result.Fail("Error occurred while updating the pet");
             }
+
+            // Invalidate cache
+           await _cacheService.SetAsync(
+                    CacheKeys.Pets.ById(request.PetId.Value), 
+                    updatedPet, 
+                    TimeSpan.FromHours(1), 
+                    cancellationToken);
+                    
+            // Mettre à jour le cache de la liste du propriétaire
+            var ownerPets = await _petRepository.GetByOwnerIdAsync(updatedPet.OwnerId, cancellationToken);
+            
+            await _cacheService.SetAsync(
+                CacheKeys.Pets.ByOwner(updatedPet.OwnerId.Value),
+                ownerPets.ToList(),
+                TimeSpan.FromMinutes(45),
+                cancellationToken);
 
             return Result.Ok(updatedPet);
         }

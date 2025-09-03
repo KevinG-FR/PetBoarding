@@ -1,5 +1,6 @@
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Pets;
 
@@ -9,11 +10,13 @@ public sealed class CreatePetCommandHandler : ICommandHandler<CreatePetCommand, 
 {
     private readonly IPetRepository _petRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
-    public CreatePetCommandHandler(IPetRepository petRepository, IUnitOfWork unitOfWork)
+    public CreatePetCommandHandler(IPetRepository petRepository, IUnitOfWork unitOfWork, ICacheService cacheService)
     {
         _petRepository = petRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<Pet>> Handle(CreatePetCommand request, CancellationToken cancellationToken)
@@ -51,6 +54,9 @@ public sealed class CreatePetCommandHandler : ICommandHandler<CreatePetCommand, 
 
             await _petRepository.AddAsync(pet, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Invalidate cache
+            await _cacheService.RemoveAsync(CacheKeys.Pets.ByOwner(request.OwnerId.Value), cancellationToken);
 
             return Result.Ok(pet);
         }

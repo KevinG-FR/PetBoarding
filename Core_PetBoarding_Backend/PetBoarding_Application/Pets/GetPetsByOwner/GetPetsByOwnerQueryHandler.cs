@@ -1,5 +1,7 @@
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
+using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Pets;
 
 namespace PetBoarding_Application.Pets.GetPetsByOwner;
@@ -7,28 +9,35 @@ namespace PetBoarding_Application.Pets.GetPetsByOwner;
 public sealed class GetPetsByOwnerQueryHandler : IQueryHandler<GetPetsByOwnerQuery, IEnumerable<Pet>>
 {
     private readonly IPetRepository _petRepository;
+    private readonly ICacheService _cacheService;
 
-    public GetPetsByOwnerQueryHandler(IPetRepository petRepository)
+    public GetPetsByOwnerQueryHandler(IPetRepository petRepository, ICacheService cacheService)
     {
         _petRepository = petRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<IEnumerable<Pet>>> Handle(GetPetsByOwnerQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<Pet> pets;
+        var cacheKey = CacheKeys.Pets.ByOwner(request.OwnerId.Value);
 
-        if (request.Type.HasValue)
+        // Get from cache or create if not exists
+        var pets = await _cacheService.GetOrCreateAsync<List<Pet>>(cacheKey, async () =>
         {
-            pets = await _petRepository.GetByTypeAndOwnerAsync(
-                request.Type.Value, 
-                request.OwnerId, 
-                cancellationToken);
-        }
-        else
+            var petsFromDb = await _petRepository.GetByOwnerIdAsync(request.OwnerId, cancellationToken);
+            return petsFromDb.ToList();
+        }, TimeSpan.FromMinutes(45), cancellationToken);
+
+        if (pets is null || !pets.Any())
         {
-            pets = await _petRepository.GetByOwnerIdAsync(request.OwnerId, cancellationToken);
+            return Result.Ok(Enumerable.Empty<Pet>());
         }
 
-        return Result.Ok(pets);
+        // Apply type filter in memory if specified
+        var filteredPets = request.Type.HasValue 
+            ? pets.Where(p => p.Type == request.Type.Value) 
+            : pets;
+
+        return Result.Ok(filteredPets);
     }
 }
