@@ -2,22 +2,38 @@ namespace PetBoarding_Application.Prestations.GetPrestations;
 
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
+using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Prestations;
 
 public sealed class GetPrestationsQueryHandler : IQueryHandler<GetPrestationsQuery, IEnumerable<Prestation>>
 {
     private readonly IPrestationRepository _prestationRepository;
+    private readonly ICacheService _cacheService;
 
-    public GetPrestationsQueryHandler(IPrestationRepository prestationRepository)
+    public GetPrestationsQueryHandler(IPrestationRepository prestationRepository, ICacheService cacheService)
     {
         _prestationRepository = prestationRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<IEnumerable<Prestation>>> Handle(GetPrestationsQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var prestations = await _prestationRepository.GetAllAsync(cancellationToken);
+            var cacheKey = CacheKeys.Prestations.AllPrestations();
+
+            // Get from cache or create if not exists
+            var prestations = await _cacheService.GetOrCreateAsync<List<Prestation>>(cacheKey, async () =>
+            {
+                var prestationsFromDb = await _prestationRepository.GetAllAsync(cancellationToken);
+                return prestationsFromDb;
+            }, TimeSpan.FromHours(2), cancellationToken);
+
+            if (prestations is null)
+            {
+                return Result.Fail("No prestations found");
+            }
 
             var filteredPrestations = prestations.AsEnumerable();
 

@@ -1,4 +1,5 @@
 using PetBoarding_Domain.Abstractions;
+using Newtonsoft.Json;
 
 namespace PetBoarding_Domain.Pets;
 
@@ -7,6 +8,7 @@ namespace PetBoarding_Domain.Pets;
 /// </summary>
 public sealed class EmergencyContact : ValueObject
 {
+    [JsonConstructor]
     public EmergencyContact(string? name, string? phone, string? relationship = null)
     {
         // Au moins le nom OU le téléphone doit être renseigné pour que le contact soit valide

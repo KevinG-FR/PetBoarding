@@ -2,15 +2,19 @@ namespace PetBoarding_Application.Prestations.GetPrestationById;
 
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
+using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Prestations;
 
 public sealed class GetPrestationByIdQueryHandler : IQueryHandler<GetPrestationByIdQuery, Prestation>
 {
     private readonly IPrestationRepository _prestationRepository;
+    private readonly ICacheService _cacheService;
 
-    public GetPrestationByIdQueryHandler(IPrestationRepository prestationRepository)
+    public GetPrestationByIdQueryHandler(IPrestationRepository prestationRepository, ICacheService cacheService)
     {
         _prestationRepository = prestationRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<Prestation>> Handle(GetPrestationByIdQuery query, CancellationToken cancellationToken)
@@ -22,7 +26,14 @@ public sealed class GetPrestationByIdQueryHandler : IQueryHandler<GetPrestationB
                 return Result.Fail("Invalid prestation ID format");
             }
 
-            var prestation = await _prestationRepository.GetByIdAsync(new PrestationId(prestationId), cancellationToken);
+            var cacheKey = CacheKeys.Prestations.ById(prestationId);
+
+            // Get from cache or create if not exists
+            var prestation = await _cacheService.GetOrCreateAsync<Prestation>(cacheKey, async () =>
+            {
+                var prestationFromDb = await _prestationRepository.GetByIdAsync(new PrestationId(prestationId), cancellationToken);
+                return prestationFromDb;
+            }, TimeSpan.FromHours(2), cancellationToken);
 
             if (prestation is null)
             {

@@ -2,6 +2,7 @@ namespace PetBoarding_Application.Prestations.UpdatePrestation;
 
 using FluentResults;
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Prestations;
 
@@ -9,13 +10,16 @@ public sealed class UpdatePrestationCommandHandler : ICommandHandler<UpdatePrest
 {
     private readonly IPrestationRepository _prestationRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
     public UpdatePrestationCommandHandler(
         IPrestationRepository prestationRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
         _prestationRepository = prestationRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<Prestation>> Handle(UpdatePrestationCommand command, CancellationToken cancellationToken)
@@ -78,6 +82,10 @@ public sealed class UpdatePrestationCommandHandler : ICommandHandler<UpdatePrest
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Update cache
+            await _cacheService.SetAsync(CacheKeys.Prestations.ById(prestationId), updatedPrestation, null, cancellationToken);
+            await _cacheService.RemoveAsync(CacheKeys.Prestations.AllPrestations(), cancellationToken);
 
             return Result.Ok(updatedPrestation);
         }
