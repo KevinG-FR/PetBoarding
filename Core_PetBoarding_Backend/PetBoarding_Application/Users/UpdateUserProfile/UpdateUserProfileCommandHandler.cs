@@ -1,6 +1,8 @@
 using FluentResults;
 
 using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Caching;
+using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Errors;
 using PetBoarding_Domain.Users;
@@ -10,10 +12,12 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
     public class UpdateUserProfileCommandHandler : ICommandHandler<UpdateUserProfileCommand, User>
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICacheService _cacheService;
 
-        public UpdateUserProfileCommandHandler(IUserRepository userRepository)
+        public UpdateUserProfileCommandHandler(IUserRepository userRepository, ICacheService cacheService)
         {
             _userRepository = userRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<Result<User>> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
@@ -105,6 +109,15 @@ namespace PetBoarding_Application.Users.UpdateUserProfile
                 var updatedUser = await _userRepository.UpdateAsync(user, cancellationToken);
                 if (updatedUser is null)
                     return Result.Fail("Error occurred while updating the user");
+
+                // Update cache
+                await _cacheService.SetAsync(CacheKeys.Users.ById(request.UserId.Value), updatedUser, null, cancellationToken);
+
+                // Also refresh by email cache if user has email
+                if (!string.IsNullOrEmpty(updatedUser.Email.Value))
+                {
+                    await _cacheService.SetAsync(CacheKeys.Users.ByEmail(updatedUser.Email.Value), updatedUser, null, cancellationToken);
+                }
 
                 return Result.Ok(updatedUser);
             
