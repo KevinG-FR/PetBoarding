@@ -72,9 +72,6 @@ export class ReservationItemComponent {
     return new Date(this.reservation().dateDebut) > new Date();
   }
 
-  /**
-   * Annule la réservation après confirmation
-   */
   annulerReservation(): void {
     const reservation = this.reservation();
 
@@ -97,9 +94,6 @@ export class ReservationItemComponent {
     });
   }
 
-  /**
-   * Procède à l'annulation de la réservation
-   */
   private proceedWithCancellation(): void {
     const reservation = this.reservation();
 
@@ -114,21 +108,20 @@ export class ReservationItemComponent {
               panelClass: ['success-snackbar']
             }
           );
-          // Émettre l'événement pour informer le parent
-          this.reservationCancelled.emit(reservation.id);
         } else {
           this.showErrorMessage("Impossible d'annuler la réservation. Veuillez réessayer.");
         }
+
+        this.reservationCancelled.emit(reservation.id);
       },
       error: (_) => {
         this.showErrorMessage("Une erreur est survenue lors de l'annulation de la réservation.");
+
+        this.reservationCancelled.emit(reservation.id);
       }
     });
   }
 
-  /**
-   * Affiche un message d'erreur via snackbar
-   */
   private showErrorMessage(message: string): void {
     this.snackBar.open(message, 'Fermer', {
       duration: 5000,
