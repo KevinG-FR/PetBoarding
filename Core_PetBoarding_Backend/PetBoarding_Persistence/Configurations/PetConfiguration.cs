@@ -97,10 +97,17 @@ internal sealed class PetConfiguration : IEntityTypeConfiguration<Pet>
         builder.Property(p => p.UpdatedAt)
             .IsRequired();
 
-        // Index pour optimiser les recherches
-        builder.HasIndex(p => p.OwnerId);
-        builder.HasIndex(p => p.Type);
-        builder.HasIndex(p => new { p.OwnerId, p.Type });
-        builder.HasIndex(p => p.Name);
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite pour les animaux par propriétaire et type
+        builder.HasIndex(p => new { p.OwnerId, p.Type })
+            .HasDatabaseName("idx_pets_owner_type");
+
+        // Index pour recherches par propriétaire seul
+        builder.HasIndex(p => p.OwnerId)
+            .HasDatabaseName("idx_pets_owner_id");
+
+        // Index pour recherches par nom
+        builder.HasIndex(p => p.Name)
+            .HasDatabaseName("idx_pets_name");
     }
 }

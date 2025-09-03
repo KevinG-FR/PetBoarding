@@ -63,20 +63,29 @@ internal sealed class ReservationConfiguration : IEntityTypeConfiguration<Reserv
         builder.Property(r => r.PaidAt)
             .HasColumnType("timestamp with time zone");
 
-        // Index for query optimization
-        builder.HasIndex(r => r.UserId)
-            .HasDatabaseName("IX_Reservations_UserId");
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite le plus critique (requêtes utilisateur)
+        builder.HasIndex(r => new { r.UserId, r.CreatedAt })
+            .HasDatabaseName("idx_reservations_userid_createdat")
+            .IsDescending(false, true); // UserId ASC, CreatedAt DESC
 
-        builder.HasIndex(r => r.ServiceId)
-            .HasDatabaseName("IX_Reservations_ServiceId");
+        // Index composite pour recherches par service
+        builder.HasIndex(r => new { r.ServiceId, r.CreatedAt })
+            .HasDatabaseName("idx_reservations_serviceid_createdat")
+            .IsDescending(false, true); // ServiceId ASC, CreatedAt DESC
 
-        builder.HasIndex(r => r.StartDate)
-            .HasDatabaseName("IX_Reservations_StartDate");
+        // Index composite pour les filtres de statut et dates
+        builder.HasIndex(r => new { r.Status, r.StartDate })
+            .HasDatabaseName("idx_reservations_status_startdate");
 
-        builder.HasIndex(r => r.Status)
-            .HasDatabaseName("IX_Reservations_Status");
-
+        // Index pour les recherches par plage de dates
         builder.HasIndex(r => new { r.StartDate, r.EndDate })
-            .HasDatabaseName("IX_Reservations_DateRange");
+            .HasDatabaseName("idx_reservations_date_range");
+
+        // Index partiel pour les réservations affichées à l'utilisateur
+        builder.HasIndex(r => new { r.UserId, r.Status, r.CreatedAt })
+            .HasDatabaseName("idx_reservations_user_displayed")
+            .HasFilter("\"Status\" IN ('Validated', 'InProgress', 'Completed')")
+            .IsDescending(false, false, true); // UserId ASC, Status ASC, CreatedAt DESC
     }
 }

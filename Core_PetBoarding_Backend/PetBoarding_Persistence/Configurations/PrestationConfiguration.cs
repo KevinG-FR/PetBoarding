@@ -44,9 +44,23 @@ internal sealed class PrestationConfiguration : IEntityTypeConfiguration<Prestat
 
         builder.Property(p => p.DateModification);
 
-        // Index pour optimiser les recherches
-        builder.HasIndex(p => p.CategorieAnimal);
-        builder.HasIndex(p => p.EstDisponible);
-        builder.HasIndex(p => new { p.CategorieAnimal, p.EstDisponible });
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite pour les filtres les plus fréquents
+        builder.HasIndex(p => new { p.EstDisponible, p.CategorieAnimal })
+            .HasDatabaseName("idx_prestations_disponible_categorie");
+
+        // Index pour les recherches par catégorie seule
+        builder.HasIndex(p => new { p.CategorieAnimal, p.Libelle })
+            .HasDatabaseName("idx_prestations_categorie_libelle");
+
+        // Index pour les tris chronologiques (ordre descendant)
+        builder.HasIndex(p => p.DateCreation)
+            .IsDescending()
+            .HasDatabaseName("idx_prestations_date_creation");
+
+        // Index partiel pour la recherche de prestations disponibles
+        builder.HasIndex(p => p.EstDisponible)
+            .HasDatabaseName("idx_prestations_disponible")
+            .HasFilter("\"EstDisponible\" = true");
     }
 }

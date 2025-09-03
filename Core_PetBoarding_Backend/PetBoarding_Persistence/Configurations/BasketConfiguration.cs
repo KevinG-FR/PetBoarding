@@ -61,10 +61,13 @@ internal sealed class BasketConfiguration : IEntityTypeConfiguration<Basket>
             .HasForeignKey(i => i.BasketId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Index pour les requêtes courantes
-        builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => x.PaymentId);
-        builder.HasIndex(x => x.Status);
-        builder.HasIndex(x => new { x.Status, x.CreatedAt });
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite pour les recherches de panier utilisateur par statut
+        builder.HasIndex(x => new { x.UserId, x.Status })
+            .HasDatabaseName("idx_baskets_userid_status");
+
+        // Index pour les requêtes par paiement
+        builder.HasIndex(x => x.PaymentId)
+            .HasDatabaseName("idx_baskets_payment_id");
     }
 }

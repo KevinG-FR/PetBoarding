@@ -51,11 +51,16 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(x => x.UpdatedAt)
             .IsRequired();
 
-        // Index pour les requêtes courantes
-        builder.HasIndex(x => x.Status);
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite pour les paiements par statut et date de création
+        builder.HasIndex(x => new { x.Status, x.CreatedAt })
+            .HasDatabaseName("idx_payments_status_createdat")
+            .IsDescending(false, true); // Status ASC, CreatedAt DESC
+
+        // Index unique pour les transactions externes
         builder.HasIndex(x => x.ExternalTransactionId)
             .IsUnique()
+            .HasDatabaseName("idx_payments_external_transaction")
             .HasFilter("\"ExternalTransactionId\" IS NOT NULL");
-        builder.HasIndex(x => new { x.Status, x.CreatedAt });
     }
 }

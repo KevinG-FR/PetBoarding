@@ -52,6 +52,23 @@ namespace PetBoarding_Persistence.Configurations
                 .WithMany()  // Pas de collection inverse
                 .HasForeignKey(x => x.AddressId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // ===== PERFORMANCE INDEXES =====
+            // Index composite pour l'authentification (le plus critique)
+            builder.HasIndex(x => new { x.Email, x.PasswordHash })
+                .HasDatabaseName("idx_users_email_password");
+
+            // Index pour les recherches par email seul
+            builder.HasIndex(x => x.Email)
+                .HasDatabaseName("idx_users_email");
+
+            // Index pour les filtres par statut et type de profil
+            builder.HasIndex(x => new { x.Status, x.ProfileType })
+                .HasDatabaseName("idx_users_status_profiletype");
+
+            // Index pour les timestamps d'audit
+            builder.HasIndex(x => x.CreatedAt)
+                .HasDatabaseName("idx_users_created_at");
         }
     }
 }

@@ -41,22 +41,19 @@ internal sealed class ReservationSlotConfiguration : IEntityTypeConfiguration<Re
         builder.Property(rs => rs.ReleasedAt)
             .HasColumnType("timestamp with time zone");
 
-        // Index pour optimiser les requêtes
-        builder.HasIndex(rs => rs.ReservationId)
-            .HasDatabaseName("IX_ReservationSlots_ReservationId");
-
-        builder.HasIndex(rs => rs.AvailableSlotId)
-            .HasDatabaseName("IX_ReservationSlots_AvailableSlotId");
-
+        // ===== PERFORMANCE INDEXES =====
+        // Index composite pour les jointures (garde la contrainte unique)
         builder.HasIndex(rs => new { rs.ReservationId, rs.AvailableSlotId })
             .IsUnique()
-            .HasDatabaseName("IX_ReservationSlots_ReservationId_AvailableSlotId");
+            .HasDatabaseName("idx_reservation_slots_reservation_available");
 
-        builder.HasIndex(rs => rs.ReservedAt)
-            .HasDatabaseName("IX_ReservationSlots_ReservedAt");
+        // Index pour chercher par créneau disponible avec statut actif
+        builder.HasIndex(rs => new { rs.AvailableSlotId, rs.ReleasedAt })
+            .HasDatabaseName("idx_reservation_slots_available_active");
 
-        // Index pour les requêtes d'audit
-        builder.HasIndex(rs => new { rs.ReleasedAt, rs.ReservedAt })
-            .HasDatabaseName("IX_ReservationSlots_Audit");
+        // Index partiel pour les créneaux actifs (ReleasedAt IS NULL)
+        builder.HasIndex(rs => rs.ReleasedAt)
+            .HasDatabaseName("idx_reservation_slots_active")
+            .HasFilter("\"ReleasedAt\" IS NULL");
     }
 }
