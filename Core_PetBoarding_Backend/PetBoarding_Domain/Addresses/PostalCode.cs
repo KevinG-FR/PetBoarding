@@ -1,35 +1,35 @@
 using FluentResults;
-
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Errors;
 
-namespace PetBoarding_Domain.Addresses
+namespace PetBoarding_Domain.Addresses;
+
+public class PostalCode : ValueObject
 {
-    public class PostalCode : ValueObject
+    private const int MAX_LENGTH = 10;
+
+    [JsonConstructor]
+    private PostalCode(string value)
     {
-        private const int MAX_LENGTH = 10;
+        Value = value;
+    }
 
-        private PostalCode(string value)
-        {
-            Value = value;
-        }
+    public string Value { get; }
 
-        public string Value { get; }
+    public static Result<PostalCode> Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Result.Fail(new NullOrEmptyError(nameof(PostalCode)));
 
-        public static Result<PostalCode> Create(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return Result.Fail(new NullOrEmptyError(nameof(PostalCode)));
+        if (value.Length > MAX_LENGTH)
+            return Result.Fail(new MaxLengthError(nameof(PostalCode), MAX_LENGTH));
 
-            if (value.Length > MAX_LENGTH)
-                return Result.Fail(new MaxLengthError(nameof(PostalCode), MAX_LENGTH));
+        return Result.Ok(new PostalCode(value));
+    }
 
-            return Result.Ok(new PostalCode(value));
-        }
-
-        public override IEnumerable<object> GetAtomicValues()
-        {
-            yield return Value;
-        }
+    public override IEnumerable<object> GetAtomicValues()
+    {
+        yield return Value;
     }
 }

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
 using FluentResults;
+using Newtonsoft.Json;
 
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Errors;
@@ -12,6 +13,7 @@ namespace PetBoarding_Domain.Users
         private const int MAX_LENGTH = 128;
         private const string REGEX_EMAIL = @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
 
+        [JsonConstructor]
         private Email(string value)
         {
             Value = value;

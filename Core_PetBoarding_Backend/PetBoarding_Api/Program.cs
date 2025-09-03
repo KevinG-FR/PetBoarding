@@ -108,6 +108,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddApplication()
                 .AddInfrastructure()
+                .AddMemcachedCache(builder.Configuration.GetConnectionString("Memcached") ?? "memcached")
                 .AddPersistence();
 
 builder.Services.AddEndpoint(Assembly.GetExecutingAssembly());

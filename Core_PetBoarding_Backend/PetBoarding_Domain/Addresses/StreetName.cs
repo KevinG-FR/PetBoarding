@@ -1,35 +1,35 @@
 using FluentResults;
-
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Errors;
 
-namespace PetBoarding_Domain.Addresses
+namespace PetBoarding_Domain.Addresses;
+
+public class StreetName : ValueObject
 {
-    public class StreetName : ValueObject
+    private const int MAX_LENGTH = 100;
+
+    [JsonConstructor]
+    private StreetName(string value)
     {
-        private const int MAX_LENGTH = 100;
+        Value = value;
+    }
 
-        private StreetName(string value)
-        {
-            Value = value;
-        }
+    public string Value { get; }
 
-        public string Value { get; }
+    public static Result<StreetName> Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Result.Fail(new NullOrEmptyError(nameof(StreetName)));
 
-        public static Result<StreetName> Create(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return Result.Fail(new NullOrEmptyError(nameof(StreetName)));
+        if (value.Length > MAX_LENGTH)
+            return Result.Fail(new MaxLengthError(nameof(StreetName), MAX_LENGTH));
 
-            if (value.Length > MAX_LENGTH)
-                return Result.Fail(new MaxLengthError(nameof(StreetName), MAX_LENGTH));
+        return Result.Ok(new StreetName(value));
+    }
 
-            return Result.Ok(new StreetName(value));
-        }
-
-        public override IEnumerable<object> GetAtomicValues()
-        {
-            yield return Value;
-        }
+    public override IEnumerable<object> GetAtomicValues()
+    {
+        yield return Value;
     }
 }

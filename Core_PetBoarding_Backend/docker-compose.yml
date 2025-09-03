@@ -18,6 +18,8 @@ services:
     depends_on:
       postgres.database:
         condition: service_healthy
+      memcached:
+        condition: service_started
     restart: unless-stopped
 
   postgres.database:
@@ -36,3 +38,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  memcached:
+    image: memcached:latest
+    container_name: petboarding.memcached
+    command: memcached -m 256 -p 11211 -u memcache -l 0.0.0.0
+    ports:
+      - "11211:11211"
+    restart: unless-stopped

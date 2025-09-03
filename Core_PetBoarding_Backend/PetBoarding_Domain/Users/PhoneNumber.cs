@@ -1,4 +1,5 @@
 using FluentResults;
+using Newtonsoft.Json;
 
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Errors;
@@ -9,6 +10,7 @@ namespace PetBoarding_Domain.Users
     {
         private const int MAX_LENGTH = 15;
 
+        [JsonConstructor]
         private PhoneNumber(string value)
         {
             Value = value;

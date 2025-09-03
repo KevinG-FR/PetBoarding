@@ -10,6 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
+    <PackageReference Include="EnyimMemcachedCore" Version="3.4.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8" />
   </ItemGroup>
 
   <ItemGroup>
