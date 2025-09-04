@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Confirmation de paiement</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .highlight { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .details-table td { padding: 10px; border: 1px solid #ddd; }
+        .alert { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 5px; padding: 15px; margin: 20px 0; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        ul { padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Paiement confirmé ! ✅</h1>
+    
+    <p>Bonjour <strong>{{CustomerName}}</strong>,</p>
+    
+    <p>Nous vous confirmons que votre paiement a été traité avec succès.</p>
+    
+    <div class="highlight">
+        <h3>💳 Détails du paiement</h3>
+        <p><strong>ID de transaction :</strong> {{PaymentId}}</p>
+        <p><strong>Statut :</strong> <span style="color: #27ae60; font-weight: bold;">{{Status}}</span></p>
+    </div>
+    
+    <table class="details-table">
+        <tr>
+            <td><strong>Montant :</strong></td>
+            <td><strong>{{Amount}}</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Date du paiement :</strong></td>
+            <td>{{PaymentDate}}</td>
+        </tr>
+        <tr>
+            <td><strong>Méthode de paiement :</strong></td>
+            <td>{{PaymentMethod}}</td>
+        </tr>
+        {{#ReservationNumber}}
+        <tr>
+            <td><strong>Réservation :</strong></td>
+            <td>{{ReservationNumber}}</td>
+        </tr>
+        {{/ReservationNumber}}
+        {{#ServiceName}}
+        <tr>
+            <td><strong>Service :</strong></td>
+            <td>{{ServiceName}}</td>
+        </tr>
+        {{/ServiceName}}
+    </table>
+    
+    {{#ReservationNumber}}
+    <div class="alert">
+        <h3>📅 Votre réservation est maintenant confirmée !</h3>
+        <p>Vous pouvez consulter tous les détails dans votre espace personnel.</p>
+    </div>
+    {{/ReservationNumber}}
+    
+    <h2>Que se passe-t-il maintenant ?</h2>
+    
+    <ul>
+        <li>📧 <strong>Reçu de paiement</strong> - Ce mail fait office de reçu officiel</li>
+        {{#ReservationNumber}}
+        <li>📋 <strong>Préparation de la prestation</strong> - Notre équipe se prépare pour votre réservation</li>
+        <li>📱 <strong>Suivi en temps réel</strong> - Vous recevrez des mises à jour régulières</li>
+        {{/ReservationNumber}}
+        <li>💌 <strong>Support client</strong> - Notre équipe reste disponible pour toute question</li>
+    </ul>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="#" class="btn">📱 Voir mes paiements</a>
+    </div>
+    
+    <div class="alert">
+        <p><strong>📄 Besoin d'une facture ?</strong></p>
+        <p>Vous pouvez télécharger votre facture depuis votre espace personnel ou nous contacter directement.</p>
+    </div>
+    
+    <p>Merci de faire confiance à PetBoarding !</p>
+</body>
+</html>

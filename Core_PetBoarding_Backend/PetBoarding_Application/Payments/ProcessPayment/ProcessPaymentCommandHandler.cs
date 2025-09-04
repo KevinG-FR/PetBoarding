@@ -7,6 +7,7 @@ using PetBoarding_Application.Planning.ReleaseSlots;
 using PetBoarding_Domain.Baskets;
 using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Reservations;
+using PetBoarding_Domain.Users;
 
 internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaymentCommand>
 {
@@ -43,7 +44,8 @@ internal sealed class ProcessPaymentCommandHandler : ICommandHandler<ProcessPaym
 
         if (request.IsSuccessful)
         {
-            payment.MarkAsSuccess(request.ExternalTransactionId);
+            var userId = new UserId(request.UserId);
+            payment.MarkAsSuccess(userId, request.ExternalTransactionId);
             
             var baskets = await _basketRepository.GetAllAsync(cancellationToken);
             var basket = baskets.FirstOrDefault(b => b.PaymentId == paymentId);

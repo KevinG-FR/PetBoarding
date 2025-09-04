@@ -1,8 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import {
+  CreneauDisponibleDto,
+  DisponibiliteQueryDto,
+  PlanningApiService,
+  PlanningDto
+} from '../../../shared/services/planning-api.service';
 import { PlanningPrestation } from '../models/prestation.model';
 import { AvailableSlot, DisponibiliteQuery, DisponibiliteResponse } from '../models/Slot';
-import { PlanningApiService, PlanningDto, CreneauDisponibleDto, DisponibiliteQueryDto } from '../../../shared/services/planning-api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,32 +46,33 @@ export class PlanningService {
     };
   }
 
-
   getPlanningParPrestation(prestationId: string): Observable<PlanningPrestation | null> {
-    return this.planningApi.getPlanningByPrestation(prestationId).pipe(
-      map(response => response.success && response.data 
-        ? this.convertPlanningDtoToModel(response.data) 
-        : null
-      )
-    );
+    return this.planningApi
+      .getPlanningByPrestation(prestationId)
+      .pipe(
+        map((response) =>
+          response.success && response.data ? this.convertPlanningDtoToModel(response.data) : null
+        )
+      );
   }
 
   getTousLesPlannings(): Observable<PlanningPrestation[]> {
-    return this.planningApi.getAllPlannings().pipe(
-      map(response => response.success 
-        ? response.data.map(dto => this.convertPlanningDtoToModel(dto))
-        : []
-      )
-    );
+    return this.planningApi
+      .getAllPlannings()
+      .pipe(
+        map((response) =>
+          response.success ? response.data.map((dto) => this.convertPlanningDtoToModel(dto)) : []
+        )
+      );
   }
 
   verifierDisponibilite(query: DisponibiliteQuery): Observable<DisponibiliteResponse> {
     const queryDto = this.convertDisponibiliteQuery(query);
     return this.planningApi.verifierDisponibilite(queryDto).pipe(
-      map(response => ({
+      map((response) => ({
         prestationId: response.prestationId,
         isAvailable: response.isAvailable,
-        availableSlots: response.availableSlots.map(dto => this.convertCreneauDtoToModel(dto)),
+        availableSlots: response.availableSlots.map((dto) => this.convertCreneauDtoToModel(dto)),
         message: response.message
       }))
     );
@@ -85,9 +91,7 @@ export class PlanningService {
       Quantite: quantite
     };
 
-    return this.planningApi.reserverCreneaux(request).pipe(
-      map(response => response.success)
-    );
+    return this.planningApi.reserverCreneaux(request).pipe(map((response) => response.success));
   }
 
   annulerReservations(
@@ -103,9 +107,7 @@ export class PlanningService {
       Quantite: quantite
     };
 
-    return this.planningApi.annulerReservations(request).pipe(
-      map(response => response.success)
-    );
+    return this.planningApi.annulerReservations(request).pipe(map((response) => response.success));
   }
 
   getCreneauxPourMois(
@@ -114,7 +116,7 @@ export class PlanningService {
     mois: number
   ): Observable<AvailableSlot[]> {
     return this.getPlanningParPrestation(prestationId).pipe(
-      map(planning => {
+      map((planning) => {
         if (!planning) {
           return [];
         }
@@ -128,7 +130,7 @@ export class PlanningService {
 
   getCreneauxForDate(date: Date): Observable<AvailableSlot[]> {
     return this.getTousLesPlannings().pipe(
-      map(plannings => {
+      map((plannings) => {
         const allCreneaux: AvailableSlot[] = [];
 
         plannings.forEach((planning) => {

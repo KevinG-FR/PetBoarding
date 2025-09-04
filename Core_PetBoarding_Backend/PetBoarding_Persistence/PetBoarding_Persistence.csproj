@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PetBoarding_Domain\PetBoarding_Domain.csproj" />
+    <ProjectReference Include="..\PetBoarding_Application\PetBoarding_Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +17,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="MassTransit" Version="8.5.2" />
   </ItemGroup>
 
   <PropertyGroup>

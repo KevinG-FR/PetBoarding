@@ -23,12 +23,16 @@ public sealed class GetPrestationsQueryHandler : IQueryHandler<GetPrestationsQue
         {
             var cacheKey = CacheKeys.Prestations.AllPrestations();
 
+            var _ = await _cacheService.RemoveAsync(cacheKey, cancellationToken);
+
             // Get from cache or create if not exists
             var prestations = await _cacheService.GetOrCreateAsync<List<Prestation>>(cacheKey, async () =>
             {
                 var prestationsFromDb = await _prestationRepository.GetAllAsync(cancellationToken);
                 return prestationsFromDb;
             }, TimeSpan.FromHours(2), cancellationToken);
+
+            //var prestations = await _prestationRepository.GetAllAsync(cancellationToken);
 
             if (prestations is null)
             {

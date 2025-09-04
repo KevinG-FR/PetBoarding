@@ -71,9 +71,9 @@ public class AccountService : IAccountService
         return Convert.ToBase64String(saltBytes);
     }
 
-    public async Task<AuthenticateTokens> Authenticate(AuthenticationRequest authentificationRequest, CancellationToken cancellationToken)
+    public async Task<AuthenticateTokens?> Authenticate(AuthenticationRequest authentificationRequest, CancellationToken cancellationToken)
     {
-        var emailResult = Email.Create(authentificationRequest.Email);
+        var emailResult = PetBoarding_Domain.Users.Email.Create(authentificationRequest.Email);
         if (emailResult.IsFailed) 
         {
             return null;

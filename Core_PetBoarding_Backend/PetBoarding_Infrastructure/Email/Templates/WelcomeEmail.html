@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bienvenue sur PetBoarding</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .highlight { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; }
+        .btn { background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; }
+        .features { display: flex; flex-wrap: wrap; gap: 20px; margin: 30px 0; }
+        .feature { flex: 1; min-width: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        ul { padding-left: 20px; }
+        .footer { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-top: 30px; text-align: center; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🐾 Bienvenue sur PetBoarding, {{FirstName}} !</h1>
+    
+    <div class="highlight">
+        <h2>Votre compte a été créé avec succès ! 🎉</h2>
+        <p>Nous sommes ravis de vous accueillir dans la communauté PetBoarding.</p>
+    </div>
+    
+    <p>Bonjour <strong>{{FirstName}} {{LastName}}</strong>,</p>
+    
+    <p>Félicitations ! Votre compte PetBoarding est maintenant actif. Vous pouvez dès maintenant profiter de tous nos services pour prendre soin de vos compagnons à quatre pattes.</p>
+    
+    <div style="text-align: center;">
+        <a href="{{LoginUrl}}" class="btn">🔐 Accéder à mon compte</a>
+    </div>
+    
+    <h2>🌟 Découvrez nos services</h2>
+    
+    <div class="features">
+        <div class="feature">
+            <h3>🏠 Pension</h3>
+            <p>Un hébergement confortable et sécurisé pour vos animaux</p>
+        </div>
+        <div class="feature">
+            <h3>🚶 Promenades</h3>
+            <p>Des sorties quotidiennes avec nos professionnels</p>
+        </div>
+        <div class="feature">
+            <h3>🎾 Jeux et activités</h3>
+            <p>Stimulation mentale et physique adaptée à chaque animal</p>
+        </div>
+        <div class="feature">
+            <h3>💊 Soins</h3>
+            <p>Administration de médicaments et soins basiques</p>
+        </div>
+    </div>
+    
+    <h2>🚀 Prochaines étapes</h2>
+    
+    <ul>
+        <li>✅ <strong>Complétez votre profil</strong> - Ajoutez les informations de vos animaux</li>
+        <li>📅 <strong>Réservez votre première prestation</strong> - Découvrez nos services</li>
+        <li>📱 <strong>Téléchargez l'app mobile</strong> - Gérez vos réservations en déplacement</li>
+        <li>🔔 <strong>Configurez vos notifications</strong> - Restez informé des activités de vos animaux</li>
+    </ul>
+    
+    <div class="footer">
+        <p><strong>🛠️ Besoin d'aide ?</strong></p>
+        <p>Notre équipe support est là pour vous accompagner :</p>
+        <p>📧 support@petboarding.com | 📞 01 23 45 67 89</p>
+        <p>Du lundi au vendredi, de 9h à 18h</p>
+    </div>
+    
+    <p>À très bientôt sur PetBoarding !</p>
+    <p><em>L'équipe PetBoarding 🐕🐱</em></p>
+</body>
+</html>

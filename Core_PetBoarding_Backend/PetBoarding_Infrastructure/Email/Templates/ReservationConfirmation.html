@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Confirmation de réservation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .highlight { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin: 20px 0; }
+        .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .details-table td { padding: 12px; border: 1px solid #ddd; }
+        .details-table th { background: #f8f9fa; padding: 12px; border: 1px solid #ddd; font-weight: bold; }
+        .btn { background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 5px; }
+        .alert { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0; }
+        ul { padding-left: 20px; }
+        .timeline { border-left: 3px solid #007bff; margin: 20px 0; padding-left: 20px; }
+        .timeline-item { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>📅 Réservation confirmée ! ✅</h1>
+    
+    <div class="highlight">
+        <h2>Merci {{CustomerName}} !</h2>
+        <p>Votre réservation <strong>#{{ReservationNumber}}</strong> a été confirmée avec succès.</p>
+    </div>
+    
+    <p>Bonjour <strong>{{CustomerName}}</strong>,</p>
+    
+    <p>Nous vous confirmons la réservation pour <strong>{{PetName}}</strong>. Notre équipe se prépare déjà pour accueillir votre compagnon dans les meilleures conditions.</p>
+    
+    <div class="success">
+        <h3>🎯 Votre réservation en un coup d'œil</h3>
+    </div>
+    
+    <table class="details-table">
+        <tr>
+            <th colspan="2">Détails de la réservation</th>
+        </tr>
+        <tr>
+            <td><strong>Numéro de réservation</strong></td>
+            <td>{{ReservationNumber}}</td>
+        </tr>
+        <tr>
+            <td><strong>Animal</strong></td>
+            <td>{{PetName}}</td>
+        </tr>
+        <tr>
+            <td><strong>Service</strong></td>
+            <td>{{ServiceName}}</td>
+        </tr>
+        <tr>
+            <td><strong>Date de début</strong></td>
+            <td>{{StartDate}}</td>
+        </tr>
+        <tr>
+            <td><strong>Date de fin</strong></td>
+            <td>{{EndDate}}</td>
+        </tr>
+        <tr>
+            <td><strong>Durée</strong></td>
+            <td>{{Duration}} jour(s)</td>
+        </tr>
+        <tr>
+            <td><strong>Montant total</strong></td>
+            <td><strong>{{TotalAmount}}</strong></td>
+        </tr>
+    </table>
+    
+    {{#SpecialInstructions}}
+    <div class="alert">
+        <h3>📋 Instructions spéciales</h3>
+        <ul>
+        {{#SpecialInstructions}}
+            <li>{{.}}</li>
+        {{/SpecialInstructions}}
+        </ul>
+    </div>
+    {{/SpecialInstructions}}
+    
+    <h2>📍 Prochaines étapes</h2>
+    
+    <div class="timeline">
+        <div class="timeline-item">
+            <h4>📞 Contact préparatoire (J-2)</h4>
+            <p>Notre équipe vous contactera 48h avant pour finaliser les détails et répondre à vos questions.</p>
+        </div>
+        <div class="timeline-item">
+            <h4>🚗 Arrivée ({{StartDate}})</h4>
+            <p>Amenez {{PetName}} avec ses affaires personnelles entre 8h00 et 10h00.</p>
+        </div>
+        <div class="timeline-item">
+            <h4>📱 Suivi quotidien</h4>
+            <p>Vous recevrez des photos et nouvelles de {{PetName}} chaque jour.</p>
+        </div>
+        <div class="timeline-item">
+            <h4>🏠 Récupération ({{EndDate}})</h4>
+            <p>Récupération possible entre 16h00 et 18h00.</p>
+        </div>
+    </div>
+    
+    <h2>🎒 À prévoir pour l'arrivée</h2>
+    
+    <ul>
+        <li>🥣 Gamelles et nourriture habituelle</li>
+        <li>🧸 Jouets et objets réconfortants</li>
+        <li>💊 Médicaments si nécessaire (avec posologie)</li>
+        <li>📋 Carnet de santé et vaccinations à jour</li>
+        <li>🏷️ Collier avec identification</li>
+    </ul>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="#" class="btn">📱 Gérer ma réservation</a>
+        <a href="#" class="btn">📞 Contacter l'équipe</a>
+    </div>
+    
+    <div class="alert">
+        <h3>🚨 En cas d'urgence</h3>
+        <p><strong>Hotline 24h/24 :</strong> 📞 01 23 45 67 89</p>
+        <p><strong>Email prioritaire :</strong> 📧 urgence@petboarding.com</p>
+    </div>
+    
+    <p>Nous avons hâte d'accueillir {{PetName}} et de lui offrir un séjour exceptionnel !</p>
+    <p><em>L'équipe PetBoarding 🐕🐱</em></p>
+</body>
+</html>
