@@ -37,6 +37,7 @@ public static partial class BasketsEndpoints
         // Traiter le paiement comme un échec
         var processPaymentCommand = new ProcessPaymentCommand(
             createResult.Value.Id.Value,
+            userId,
             IsSuccessful: false,
             ExternalTransactionId: null,
             FailureReason: "Payment simulation failure for testing purposes");

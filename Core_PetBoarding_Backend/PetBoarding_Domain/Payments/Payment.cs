@@ -1,8 +1,10 @@
 namespace PetBoarding_Domain.Payments;
 
 using PetBoarding_Domain.Abstractions;
+using PetBoarding_Domain.Events;
+using PetBoarding_Domain.Users;
 
-public sealed class Payment : Entity<PaymentId>, IAuditableEntity
+public sealed class Payment : EntityWithDomainEvents<PaymentId>, IAuditableEntity
 {
     public Payment(
         decimal amount,
@@ -38,7 +40,7 @@ public sealed class Payment : Entity<PaymentId>, IAuditableEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void MarkAsSuccess(string? externalTransactionId = null)
+    public void MarkAsSuccess(UserId userId, string? externalTransactionId = null)
     {
         if (Status != PaymentStatus.Pending)
             throw new InvalidOperationException($"Cannot mark payment as success when status is {Status}");
@@ -47,7 +49,14 @@ public sealed class Payment : Entity<PaymentId>, IAuditableEntity
         ProcessedAt = DateTime.UtcNow;
         ExternalTransactionId = externalTransactionId ?? ExternalTransactionId;
         FailureReason = null;
-        UpdateTimestamp();
+
+        AddDomainEvent(new PaymentProcessedEvent(
+            Id, 
+            userId, 
+            null, // ReservationId - can be added later if needed
+            Amount, 
+            Status.ToString(), 
+            Method.ToString()));
     }
 
     public void MarkAsFailed(string failureReason)

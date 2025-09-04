@@ -3,10 +3,11 @@
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Errors;
+using PetBoarding_Domain.Events;
 
 namespace PetBoarding_Domain.Users;
 
-public class User : AuditableEntity<UserId>
+public class User : AuditableEntityWithDomainEvents<UserId>
 {
     public User(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
         : base(new UserId(Guid.CreateVersion7()))
@@ -18,6 +19,13 @@ public class User : AuditableEntity<UserId>
         PasswordHash = passwordHash;
         ProfileType = profileType;
         Status = UserStatus.Created;
+
+        AddDomainEvent(new UserRegisteredEvent(
+            Id,
+            firstname.Value,
+            lastname.Value,
+            email.Value,
+            DateTime.UtcNow));
     }
 
     public Firstname Firstname { get; set; }

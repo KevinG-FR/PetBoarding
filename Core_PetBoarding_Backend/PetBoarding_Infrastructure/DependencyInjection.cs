@@ -6,6 +6,7 @@ using Enyim.Caching.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Infrastructure.Caching;
+using PetBoarding_Infrastructure.Email.Extensions;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using PetBoarding_Infrastructure.Events.Configuration;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         var assembly = typeof(DependencyInjection).Assembly;
         
         services.AddMassTransit(configuration);
+        services.AddEmailServices(configuration);
         
         return services;
     }
@@ -64,6 +66,9 @@ public static class DependencyInjection
                     h.Password(rabbitMqSettings.Password);
                 });
 
+                // Enable detailed logging
+                cfg.UseMessageRetry(r => r.Immediate(5));
+                
                 cfg.ConfigureEndpoints(context);
             });
         });

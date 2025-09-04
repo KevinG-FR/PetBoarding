@@ -1,6 +1,17 @@
+using Newtonsoft.Json;
+
 namespace PetBoarding_Domain.Abstractions;
 
-public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>> where TIdentifier : EntityIdentifier
+public interface IEntityWithDomainEvents
+{
+    IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
+    IReadOnlyCollection<IDomainEvent> GetDomainEvents();
+    void AddDomainEvent(IDomainEvent domainEvent);
+    void ClearDomainEvents();
+}
+
+public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>> 
+    where TIdentifier : EntityIdentifier
 {
     private const int MULTIPLIER_GET_HASH_CODE = 42;
 
@@ -10,20 +21,6 @@ public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>>
     }
 
     public TIdentifier Id { get; private init; }
-
-    private readonly List<IDomainEvent> _domainEvents = new();
-
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    public void AddDomainEvent(IDomainEvent domainEvent)
-    {
-        _domainEvents.Add(domainEvent);
-    }
-
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
 
     public static bool operator ==(Entity<TIdentifier> left, Entity<TIdentifier> right)
     {

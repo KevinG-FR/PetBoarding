@@ -31,7 +31,7 @@ namespace PetBoarding_Application.Account.CreateAccount
             User newUser = new User(
                Firstname.Create(request.Firstname).Value,
                Lastname.Create(request.Lastname).Value,
-               Email.Create(request.Email).Value,
+               PetBoarding_Domain.Users.Email.Create(request.Email).Value,
                PhoneNumber.Create(request.PhoneNumber).Value,
                passwordHash,
                request.ProfileType);

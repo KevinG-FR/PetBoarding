@@ -7,6 +7,7 @@ using PetBoarding_Application.Payments.ProcessPayment;
 public static partial class PaymentsEndpoints
 {
     public sealed record ProcessPaymentRequest(
+        Guid UserId,
         bool IsSuccessful,
         string? ExternalTransactionId = null,
         string? FailureReason = null
@@ -20,6 +21,7 @@ public static partial class PaymentsEndpoints
     {
         var command = new ProcessPaymentCommand(
             paymentId,
+            request.UserId,
             request.IsSuccessful,
             request.ExternalTransactionId,
             request.FailureReason);

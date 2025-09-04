@@ -11,9 +11,9 @@ public abstract class BaseRepository<TEntity, TEntityIdentifier> : IBaseReposito
     where TEntityIdentifier : EntityIdentifier
 {
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly DbContext _context;
+    protected readonly ApplicationDbContext _context;
 
-    public BaseRepository(DbContext context)
+    public BaseRepository(ApplicationDbContext context)
     {
         _context = context;
         _dbSet = context.Set<TEntity>();

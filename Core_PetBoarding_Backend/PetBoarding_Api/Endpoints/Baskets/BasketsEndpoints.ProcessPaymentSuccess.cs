@@ -37,6 +37,7 @@ public static partial class BasketsEndpoints
         // Traiter le paiement comme un succès
         var processPaymentCommand = new ProcessPaymentCommand(
             createResult.Value.Id.Value,
+            userId,
             IsSuccessful: true,
             ExternalTransactionId: Guid.NewGuid().ToString(),
             FailureReason: null);
