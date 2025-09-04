@@ -9,6 +9,7 @@ using PetBoarding_Infrastructure.Caching;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using PetBoarding_Infrastructure.Events.Configuration;
+using PetBoarding_Infrastructure.Events.Consumers;
 
 namespace PetBoarding_Infrastructure;
 
@@ -47,9 +48,16 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
+            // Register consumers
+            x.AddConsumer<UserRegisteredEventConsumer>();
+            x.AddConsumer<UserProfileUpdatedEventConsumer>();
+            x.AddConsumer<PetRegisteredEventConsumer>();
+            x.AddConsumer<ReservationCreatedEventConsumer>();
+            x.AddConsumer<ReservationStatusChangedEventConsumer>();
+            x.AddConsumer<PaymentProcessedEventConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
-                
                 cfg.Host(uriRabbitMq, h =>
                 {
                     h.Username(rabbitMqSettings.Username);
