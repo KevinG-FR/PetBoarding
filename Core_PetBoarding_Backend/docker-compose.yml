@@ -20,6 +20,8 @@ services:
         condition: service_healthy
       memcached:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   postgres.database:
@@ -45,4 +47,24 @@ services:
     command: memcached -m 256 -p 11211 -u memcache -l 0.0.0.0
     ports:
       - "11211:11211"
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: petboarding.rabbitmq
+    hostname: petboarding-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: petboarding
+      RABBITMQ_DEFAULT_PASS: petboarding123
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    volumes:
+      - ./.containers/rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
     restart: unless-stopped

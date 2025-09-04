@@ -11,6 +11,20 @@ public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>>
 
     public TIdentifier Id { get; private init; }
 
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    public void AddDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
     public static bool operator ==(Entity<TIdentifier> left, Entity<TIdentifier> right)
     {
         return left is not null &&

@@ -6,15 +6,20 @@ using Enyim.Caching.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Infrastructure.Caching;
+using MassTransit;
+using Microsoft.Extensions.Configuration;
+using PetBoarding_Infrastructure.Events.Configuration;
 
 namespace PetBoarding_Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var assembly = typeof(DependencyInjection).Assembly;
-
+        
+        services.AddMassTransit(configuration);
+        
         return services;
     }
 
@@ -31,6 +36,29 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ICacheService, MemcachedService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddMassTransit(this IServiceCollection services, IConfiguration configuration)
+    {
+        var rabbitMqSettings = configuration.GetSection(RabbitMqSettings.SectionName).Get<RabbitMqSettings>();
+        var uriRabbitMq = new Uri($"rabbitmq://{rabbitMqSettings!.Host}:{rabbitMqSettings.Port}{rabbitMqSettings.VirtualHost}");
+
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                
+                cfg.Host(uriRabbitMq, h =>
+                {
+                    h.Username(rabbitMqSettings.Username);
+                    h.Password(rabbitMqSettings.Password);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         return services;
     }

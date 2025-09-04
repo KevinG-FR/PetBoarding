@@ -12,6 +12,9 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
     <PackageReference Include="EnyimMemcachedCore" Version="3.4.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8" />
+    <PackageReference Include="MassTransit" Version="8.5.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.2" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
