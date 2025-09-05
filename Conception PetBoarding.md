@@ -26,6 +26,8 @@
   - [4.12. Service d'envoi d'email](#412-service-denvoi-demail)
   - [4.13. Architecture et dépendances](#413-architecture-et-dépendances)
   - [4.14. Déploiement](#414-déploiement)
+  - [4.15. TaskWorker et traitement asynchrone](#415-taskworker-et-traitement-asynchrone)
+  - [4.16. Optimisation base de données et index](#416-optimisation-base-de-données-et-index)
 - [5. Préliminaire à la conception](#5-préliminaire-à-la-conception)
 - [6. Cas d'utilisation](#6-cas-dutilisation)
   - [6.1. Rappel : modèle conceptuel](#61-rappel--modèle-conceptuel)
@@ -365,6 +367,112 @@ end note
 
 @enduml
 ```
+
+### 4.15. TaskWorker et traitement asynchrone
+
+Le système PetBoarding utilise un composant **TaskWorker** dédié pour le traitement asynchrone des tâches de maintenance et de nettoyage. Ce service fonctionne en arrière-plan et s'exécute indépendamment de l'API principale.
+
+#### Architecture du TaskWorker
+
+- **Framework** : Quartz.NET pour la planification et l'exécution de jobs
+- **Persistance** : PostgreSQL pour le stockage de l'état des jobs (clustering, historique)
+- **Pattern** : CQRS avec MediatR pour la cohérence architecturale
+- **Isolation** : Service autonome avec ses propres processus et logs
+
+#### Jobs implémentés
+
+**CleanExpiredBasketsJob** :
+- **Objectif** : Nettoyer les paniers expirés et libérer les créneaux réservés
+- **Fréquence** : Configurable (par défaut : 10 minutes)
+- **Handler** : `ProcessExpiredBasketsCommandHandler`
+- **Configuration** : `TaskWorker:BasketExpirationMinutes` (défaut: 30 min)
+
+**ProcessExpiredReservationsJob** :
+- **Objectif** : Traiter les réservations expirées et mettre à jour leur statut
+- **Fréquence** : Configurable (par défaut : 15 minutes)  
+- **Handler** : `ProcessExpiredReservationsCommandHandler`
+- **Configuration** : `TaskWorker:ExpiredReservationProcessingIntervalMinutes`
+
+#### Configuration et déploiement
+
+Le TaskWorker utilise la même base de données que l'API principale mais s'exécute en tant que service distinct :
+
+```csharp
+// Configuration Quartz avec persistance PostgreSQL
+q.UsePersistentStore(s =>
+{
+    s.UseProperties = true;
+    s.UsePostgres(connectionString);
+    s.UseClustering(); // Support multi-instances
+});
+```
+
+#### Avantages de l'approche
+
+- **Séparation des préoccupations** : Traitements lourds et où à interval isolés de l'API
+- **Haute disponibilité** : Clustering Quartz pour la redondance
+- **Observabilité** : Logs détaillés et surveillance des jobs
+- **Scalabilité** : Possibilité de déployer plusieurs instances
+- **Cohérence** : Réutilise les handlers CQRS existants
+
+### 4.16. Optimisation base de données et index
+
+Le système PetBoarding implémente une stratégie d'optimisation complète basée sur **19 index de performance** ciblant les requêtes les plus fréquentes. Cette optimisation suit une approche déclarative avec Entity Framework Core.
+
+#### Architecture d'indexation
+
+**Approche déclarative** :
+- Index définis dans les fichiers `*Configuration.cs` avec Entity Framework
+- Génération automatique du SQL optimisé pour PostgreSQL
+- Versioning intégré via les migrations EF Core
+- Type-safety et validation au compile-time
+
+**Types d'index utilisés** :
+- **Index composites** : Optimisation des requêtes multi-critères
+- **Index partiels** : Avec filtres WHERE pour réduire la taille
+- **Index avec tri** : IsDescending() pour optimiser les ORDER BY
+- **Index uniques** : Contraintes d'intégrité avec performance
+
+#### Index critiques par domaine
+
+**Authentification (UserConfiguration)** :
+- `idx_users_email_password` : Optimise les connexions utilisateur (gain 90%+)
+- `idx_users_email` : Validation unicité et recherches par email
+
+**Gestion des réservations (ReservationConfiguration)** :
+- `idx_reservations_userid_createdat` : Historique utilisateur avec tri chronologique
+- `idx_reservations_user_displayed` : Index partiel pour réservations visibles seulement
+- `idx_reservations_date_range` : Optimise les recherches par plages de dates
+
+**Catalogue prestations (PrestationConfiguration)** :
+- `idx_prestations_disponible` : Index partiel pour prestations disponibles uniquement
+- `idx_prestations_disponible_categorie` : Filtres multiples performances
+
+**Gestion planning (ReservationSlotConfiguration)** :
+- `idx_reservation_slots_reservation_available` : Jointures optimisées avec contrainte unique
+- `idx_reservation_slots_active` : Index partiel pour créneaux non libérés
+
+#### Stratégie de mise en production
+
+**Migration automatique** :
+```bash
+# Application des index via migration EF Core
+dotnet ef database update --project PetBoarding_Persistence --startup-project PetBoarding_Api
+```
+
+**Avantages de l'approche EF Core** :
+- Pas de verrouillage des tables pendant la création
+- Rollback automatique complet via méthode Down()
+- Application reste accessible pendant la migration
+- SQL optimisé automatiquement pour PostgreSQL
+
+**Impact performance attendu** :
+- Authentification : amélioration de 90%+ des temps de connexion
+- Historique réservations : gain de 80%+ sur les requêtes utilisateur
+- Recherche prestations : amélioration de 70%+ pour les listes filtrées
+- Gestion planning : optimisation de 75%+ des requêtes temporelles
+
+Pour plus de détails techniques, voir le document `README_PerformanceIndexes.md` dans le projet PetBoarding_Persistence.
 
 ## 5. Préliminaire à la conception
 
