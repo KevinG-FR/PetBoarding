@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PetBoarding_Domain.Emails;
@@ -20,40 +19,31 @@ public sealed class SimpleTemplateService : IEmailTemplateService
 
     public async Task<string> RenderAsync<T>(string templateName, T model, CancellationToken cancellationToken = default)
     {
-        try
+        _logger.LogInformation("Rendering email template: {TemplateName}", templateName);
+
+        // Build path to HTML template using configured templates path
+        var currentDirectory = Directory.GetCurrentDirectory();
+        var templatePath = Path.Combine(currentDirectory, _config.TemplatesPath, $"{templateName}.html");
+        templatePath = Path.GetFullPath(templatePath);
+        
+        _logger.LogDebug("Looking for template at: {TemplatePath}", templatePath);
+        
+        if (!File.Exists(templatePath))
         {
-            _logger.LogInformation("Rendering email template: {TemplateName}", templateName);
-
-            // Build path to HTML template
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var templatePath = Path.Combine(currentDirectory, "..", "PetBoarding_Infrastructure", "Email", "Templates", $"{templateName}.html");
-            templatePath = Path.GetFullPath(templatePath);
-            
-            _logger.LogDebug("Looking for template at: {TemplatePath}", templatePath);
-            
-            if (!File.Exists(templatePath))
-            {
-                _logger.LogError("Template not found: {TemplatePath}", templatePath);
-                throw new FileNotFoundException($"Template not found: {templatePath}");
-            }
-
-            var templateContent = await File.ReadAllTextAsync(templatePath, cancellationToken);
-            
-            // Replace placeholders with model values
-            var result = ReplacePlaceholders(templateContent, model);
-
-            _logger.LogInformation("Template {TemplateName} rendered successfully", templateName);
-            return result;
+            _logger.LogError("Template not found: {TemplatePath}", templatePath);
+            throw new FileNotFoundException($"Template not found: {templatePath}");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to render template {TemplateName}: {ErrorMessage}", 
-                templateName, ex.Message);
-            throw;
-        }
+
+        var templateContent = await File.ReadAllTextAsync(templatePath, cancellationToken);
+        
+        // Replace placeholders with model values
+        var result = ReplacePlaceholders(templateContent, model);
+
+        _logger.LogInformation("Template {TemplateName} rendered successfully", templateName);
+        return result;
     }
 
-    private string ReplacePlaceholders<T>(string template, T model)
+    private static string ReplacePlaceholders<T>(string template, T model)
     {
         if (model == null) return template;
 
