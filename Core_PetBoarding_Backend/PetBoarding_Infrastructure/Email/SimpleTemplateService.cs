@@ -21,20 +21,21 @@ public sealed class SimpleTemplateService : IEmailTemplateService
     {
         _logger.LogInformation("Rendering email template: {TemplateName}", templateName);
 
-        // Build path to HTML template using configured templates path
-        var currentDirectory = Directory.GetCurrentDirectory();
-        var templatePath = Path.Combine(currentDirectory, _config.TemplatesPath, $"{templateName}.html");
-        templatePath = Path.GetFullPath(templatePath);
+        // Load template from embedded resources
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceName = $"PetBoarding_Infrastructure.Email.Templates.{templateName}.html";
         
-        _logger.LogDebug("Looking for template at: {TemplatePath}", templatePath);
-        
-        if (!File.Exists(templatePath))
+        _logger.LogDebug("Looking for embedded resource: {ResourceName}", resourceName);
+
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
         {
-            _logger.LogError("Template not found: {TemplatePath}", templatePath);
-            throw new FileNotFoundException($"Template not found: {templatePath}");
+            _logger.LogError("Embedded template not found: {ResourceName}", resourceName);
+            throw new FileNotFoundException($"Embedded template not found: {resourceName}");
         }
 
-        var templateContent = await File.ReadAllTextAsync(templatePath, cancellationToken);
+        using var reader = new StreamReader(stream);
+        var templateContent = await reader.ReadToEndAsync(cancellationToken);
         
         // Replace placeholders with model values
         var result = ReplacePlaceholders(templateContent, model);
