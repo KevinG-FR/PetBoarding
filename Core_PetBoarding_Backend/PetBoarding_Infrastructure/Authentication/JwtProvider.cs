@@ -101,18 +101,14 @@ namespace PetBoarding_Infrastructure.Authentication
             var claims = GetClaimsFromToken(refreshToken);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Convert.FromBase64String(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(
-                [
-                    new Claim(ClaimTypes.Name, "user")
-                ]),
-                Expires = DateTime.UtcNow.AddMinutes(60),
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(_jwtTokenOptions.AccessTokenExpiryMinutes),
                 SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(
-                    Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
-                SecurityAlgorithms.HmacSha256)
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8?.GetBytes(_jwtTokenOptions?.Key ?? throw new Exception("Secret key for JWT is null"))),
+                    SecurityAlgorithms.HmacSha256)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
