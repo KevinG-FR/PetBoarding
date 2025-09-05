@@ -117,4 +117,19 @@ public class MemcachedService : ICacheService
         
         return data;
     }
+
+    public async Task<bool> FlushAllAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _memcachedClient.FlushAllAsync();
+            _logger.LogInformation("Cache has been flushed successfully");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error flushing all cache entries");
+            return false;
+        }
+    }
 }

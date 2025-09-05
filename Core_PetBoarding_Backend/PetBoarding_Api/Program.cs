@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using PetBoarding_Api.Endpoints;
 using PetBoarding_Api.Endpoints.Authentication;
 using PetBoarding_Api.Endpoints.Baskets;
+using PetBoarding_Api.Endpoints.Cache;
 using PetBoarding_Api.Endpoints.Payments;
 using PetBoarding_Api.Endpoints.Pets;
 using PetBoarding_Api.Endpoints.Planning;
@@ -124,6 +125,11 @@ app.MapPetsEndpoints();
 app.MapPlanningEndpoints();
 app.MapBasketsEndpoints();
 app.MapPaymentsEndpoints();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapCacheEndpoints();
+}
 
 // Configure the HTTP request pipeline.
 
