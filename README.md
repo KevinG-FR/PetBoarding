@@ -1,31 +1,164 @@
-# Core_PetBoarding_Backend
-Backend projet for PetBoarding application
+# PetBoarding - Application de Pension pour Animaux
 
-# NgPetBoardingApp
+## Vue d'ensemble métier
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+PetBoarding est une plateforme complète de gestion de pension pour animaux de compagnie qui permet :
 
-## Development server
+- **Gestion des propriétaires** : Inscription, authentification et gestion des profils utilisateurs
+- **Gestion des animaux** : Enregistrement des informations détaillées (race, âge, vaccinations, besoins spéciaux)
+- **Catalogue de prestations** : Services de pension, toilettage, promenades, soins vétérinaires
+- **Système de réservation** : Booking en ligne avec gestion des disponibilités et calendrier
+- **Suivi des vaccinations** : Vérification et rappels automatiques pour les vaccinations obligatoires
+- **Panier et facturation** : Système de commande avec gestion des prix et facturation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+L'application s'adresse aux propriétaires d'animaux souhaitant confier leurs compagnons pendant leurs absences, ainsi qu'aux professionnels gérant des établissements de pension.
 
-## Code scaffolding
+## Architecture technique
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Stack technologique
 
-## Build
+**Backend (.NET 9)**
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Architecture Clean Architecture avec CQRS
+- APIs minimales avec pattern d'endpoint mapping
+- Entity Framework Core avec PostgreSQL
+- Authentification JWT avec refresh tokens
+- Tests d'architecture avec NetArchTest
 
-## Running unit tests
+**Frontend (Angular 19)**
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- Architecture standalone components (sans NgModules)
+- Gestion d'état avec Angular Signals
+- Angular Material + Bootstrap 5.3.7
+- TypeScript strict mode
 
-## Running end-to-end tests
+**Base de données**
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- PostgreSQL avec conteneurisation Docker
+- Migrations Entity Framework automatiques
+- Seeding de données de test
 
-## Further help
+### Structure du projet
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+PetBoarding/
+├── Core_PetBoarding_Backend/          # Backend .NET
+│   ├── PetBoarding_Api/               # Couche présentation (APIs)
+│   ├── PetBoarding_Domain/            # Logique métier core
+│   ├── PetBoarding_Application/       # Couche application (CQRS)
+│   ├── PetBoarding_Infrastructure/    # Services externes
+│   ├── PetBoarding_Persistence/       # Accès aux données
+│   └── Tests/ArchitectureTests/       # Tests d'architecture
+├── ng_PetBoarding_app/                # Frontend Angular
+│   ├── src/app/features/              # Modules métier
+│   ├── src/app/shared/                # Composants partagés
+│   └── src/app/core/                  # Services core
+└── docker-compose.yml                 # Configuration Docker
+```
 
+## Démarrage avec Docker (Recommandé)
+
+### Prérequis
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Git](https://git-scm.com/)
+
+### Installation rapide
+
+1. **Cloner le projet**
+
+```bash
+git clone <repository-url>
+cd PetBoarding
+```
+
+2. **Lancer l'environnement complet**
+
+```bash
+cd Core_PetBoarding_Backend
+docker-compose up --build
+```
+
+Cette commande démarre :
+
+- API Backend sur `https://localhost:5001`
+- Base de données PostgreSQL sur `localhost:5432`
+- Documentation Swagger sur `https://localhost:5001/swagger`
+
+### Configuration de la base de données
+
+Les paramètres de connexion par défaut :
+
+- **Host** : `localhost:5432`
+- **Database** : `petboarding`
+- **Username** : `postgres`
+- **Password** : `postgres`
+
+### Démarrage du frontend Angular
+
+```bash
+cd ng_PetBoarding_app
+npm install
+npm start
+```
+
+L'application sera accessible sur `http://localhost:4200`
+
+## Développement local (sans Docker)
+
+### Backend (.NET)
+
+```bash
+cd Core_PetBoarding_Backend
+dotnet build                    # Build solution
+cd PetBoarding_Api
+dotnet run                      # Démarrer l'API
+```
+
+### Frontend (Angular)
+
+```bash
+cd ng_PetBoarding_app
+npm install                     # Installer dépendances
+ng serve                        # Serveur de développement
+npm run lint                    # Linter + Prettier
+npm run build                   # Build production
+```
+
+### Base de données (Entity Framework)
+
+```bash
+# Créer une migration
+dotnet ef migrations add <NomMigration> --project PetBoarding_Persistence --startup-project PetBoarding_Api
+
+# Appliquer les migrations
+dotnet ef database update --project PetBoarding_Persistence --startup-project PetBoarding_Api
+```
+
+## Endpoints principaux
+
+- **Authentication** : `/api/auth/*` (login, refresh)
+- **Users** : `/api/users/*`
+- **Prestations** : `/api/prestations/*`
+- **Réservations** : `/api/reservations/*`
+- **Documentation** : `/swagger` (environnement dev)
+
+## Tests
+
+```bash
+# Tests d'architecture
+cd Core_PetBoarding_Backend
+dotnet test Tests/ArchitectureTests/
+
+# Tests frontend
+cd ng_PetBoarding_app
+ng test
+```
+
+## Authentification
+
+Le système utilise JWT avec refresh tokens :
+
+- Tokens d'accès (1h d'expiration)
+- Refresh automatique via interceptors
+- Autorisation basée sur les permissions/claims
