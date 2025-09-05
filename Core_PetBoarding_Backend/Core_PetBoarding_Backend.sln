@@ -21,6 +21,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetBoarding_TaskWorker", "PetBoarding_TaskWorker\PetBoarding_TaskWorker.csproj", "{654BEEE8-A62D-4BA5-AB9E-1332C8116EC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainUnitTests", "..\DomainUnitTests\DomainUnitTests.csproj", "{299A54AB-49C0-4652-99BA-A23A587C169F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,11 +125,27 @@ Global
 		{654BEEE8-A62D-4BA5-AB9E-1332C8116EC3}.Release|x64.Build.0 = Release|Any CPU
 		{654BEEE8-A62D-4BA5-AB9E-1332C8116EC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{654BEEE8-A62D-4BA5-AB9E-1332C8116EC3}.Release|x86.Build.0 = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|x64.Build.0 = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Debug|x86.Build.0 = Debug|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|x64.ActiveCfg = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|x64.Build.0 = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|x86.ActiveCfg = Release|Any CPU
+		{299A54AB-49C0-4652-99BA-A23A587C169F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C4A052C-131E-4269-897A-0217AFBBD2C6} = {FF1D8F3F-0982-4968-BEF4-BF9078FC5424}
+		{299A54AB-49C0-4652-99BA-A23A587C169F} = {FF1D8F3F-0982-4968-BEF4-BF9078FC5424}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB918E5C-917C-4157-BD6D-8F567447EE85}
 	EndGlobalSection
 EndGlobal
