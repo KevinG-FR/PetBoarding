@@ -21,8 +21,11 @@
   - [4.7. Authentification](#47-authentification)
   - [4.8. Environnement de développement](#48-environnement-de-développement)
   - [4.9. Tests](#49-tests)
-  - [4.10. Architecture et dépendances](#410-architecture-et-dépendances)
-  - [4.11. Déploiement](#411-déploiement)
+  - [4.10. Cache distribué](#410-cache-distribué)
+  - [4.11. Système d'événements de domaine](#411-système-dévénements-de-domaine)
+  - [4.12. Service d'envoi d'email](#412-service-denvoi-demail)
+  - [4.13. Architecture et dépendances](#413-architecture-et-dépendances)
+  - [4.14. Déploiement](#414-déploiement)
 - [5. Préliminaire à la conception](#5-préliminaire-à-la-conception)
 - [6. Cas d'utilisation](#6-cas-dutilisation)
   - [6.1. Rappel : modèle conceptuel](#61-rappel--modèle-conceptuel)
@@ -51,6 +54,21 @@
     - [6.5.2. Créer un planning pour une prestation](#652-créer-un-planning-pour-une-prestation)
       - [6.5.2.1. Diagramme de séquences](#6521-diagramme-de-séquences)
       - [6.5.2.2. Diagramme de classes](#6522-diagramme-de-classes)
+  - [6.6. Sous domaine : gestion des animaux de compagnie](#66-sous-domaine--gestion-des-animaux-de-compagnie)
+    - [6.6.1. Créer un animal de compagnie](#661-créer-un-animal-de-compagnie)
+      - [6.6.1.1. Diagramme de séquences](#6611-diagramme-de-séquences)
+      - [6.6.1.2. Diagramme de classes](#6612-diagramme-de-classes)
+    - [6.6.2. Gérer le profil d'un animal](#662-gérer-le-profil-dun-animal)
+      - [6.6.2.1. Diagramme de séquences](#6621-diagramme-de-séquences)
+      - [6.6.2.2. Diagramme de classes](#6622-diagramme-de-classes)
+  - [6.7. Sous domaine : gestion des paiements](#67-sous-domaine--gestion-des-paiements)
+    - [6.7.1. Traiter un paiement](#671-traiter-un-paiement)
+      - [6.7.1.1. Diagramme de séquences](#6711-diagramme-de-séquences)
+      - [6.7.1.2. Diagramme de classes](#6712-diagramme-de-classes)
+  - [6.8. Sous domaine : système de notifications](#68-sous-domaine--système-de-notifications)
+    - [6.8.1. Envoi d'email automatique](#681-envoi-demail-automatique)
+      - [6.8.1.1. Diagramme de séquences](#6811-diagramme-de-séquences)
+      - [6.8.1.2. Diagramme de classes](#6812-diagramme-de-classes)
 - [7. Regroupement des classes](#7-regroupement-des-classes)
   - [7.1. Groupe domaine](#71-groupe-domaine)
   - [7.2. Groupe cycle de vie](#72-groupe-cycle-de-vie)
@@ -187,12 +205,56 @@ Authentification et autorisation basées sur :
 - Tests unitaires pour la logique métier
 - Tests d'intégration pour les API
 
-### 4.10. Architecture et dépendances
+### 4.10. Cache distribué
+
+Le système utilise Memcached comme solution de cache distribué pour optimiser les performances :
+
+- **Technologie** : Memcached avec la librairie Enyim.Caching
+- **Pattern** : Cache-Aside avec fallback automatique
+- **Configuration** : Service injecté via ICacheService
+- **Durée par défaut** : 30 minutes configurable
+- **Gestion d'erreurs** : Dégradation gracieuse en cas de panne du cache
+
+Entités mises en cache :
+
+- Utilisateurs (par ID et email)
+- Prestations
+- Sessions utilisateur
+- Données de profil des animaux
+
+### 4.11. Système d'événements de domaine
+
+Architecture événementielle avec RabbitMQ et MassTransit :
+
+- **Message Broker** : RabbitMQ pour la persistance des messages
+- **Framework** : MassTransit pour l'abstraction .NET
+- **Pattern** : Event-Driven Architecture avec Publish/Subscribe
+- **Events disponibles** :
+  - UserRegisteredEvent : Création d'un utilisateur
+  - PetRegisteredEvent : Enregistrement d'un animal
+  - ReservationCreatedEvent : Nouvelle réservation
+  - PaymentProcessedEvent : Traitement de paiement
+
+### 4.12. Service d'envoi d'email
+
+Service de notification par email intégré avec les événements de domaine :
+
+- **Protocole** : SMTP avec System.Net.Mail
+- **Templates** : Système de templates HTML avec placeholders
+- **Configuration** : Support SMTP sécurisé (SSL/TLS)
+- **Types d'emails** :
+  - Email de bienvenue après inscription
+  - Confirmations de réservation
+  - Confirmations de paiement
+  - Rappels de vaccination
+
+### 4.13. Architecture et dépendances
 
 L'architecture suit les principes de la Clean Architecture avec inversion des dépendances :
 
 ```plantuml
 @startuml packages
+scale 0.8
 skin rose
 
 package "PetBoarding Application" {
@@ -266,7 +328,7 @@ Features ..> PetBoarding_Api : HTTP/REST
 @enduml
 ```
 
-### 4.11. Déploiement
+### 4.14. Déploiement
 
 ```plantuml
 @startuml deploiement
@@ -428,6 +490,45 @@ class ReservationSlot <<entity>> {
   MarkAsReleased() : void
 }
 
+class Pet <<entity>> {
+  id : PetId
+  name : String
+  type : PetType
+  breed : String
+  age : Integer
+  weight? : Decimal
+  color : String
+  gender : PetGender
+  isNeutered : Boolean
+  microchipNumber? : String
+  medicalNotes? : String
+  specialNeeds? : String
+  photoUrl? : String
+  ownerId : UserId
+  emergencyContact? : EmergencyContact
+
+  UpdateBasicInfo() : void
+  UpdateWeight() : void
+  UpdateMedicalNotes() : void
+}
+
+class Payment <<entity>> {
+  id : PaymentId
+  reservationId? : ReservationId
+  amount : Decimal
+  method : PaymentMethod
+  status : PaymentStatus
+  externalTransactionId? : String
+  processedAt? : DateTime
+  failureReason? : String
+  description : String
+  createdAt : DateTime
+
+  MarkAsSuccess() : void
+  MarkAsFailed(reason) : void
+  MarkAsCancelled() : void
+}
+
 enum UserProfileType {
   CLIENT
   ADMIN
@@ -455,15 +556,48 @@ enum ReservationStatus {
   CANCELAUTO
 }
 
+enum PetType {
+  CHIEN
+  CHAT
+  AUTRE
+}
+
+enum PetGender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
 User --> Address : address
 User -> UserProfileType : profileType
 User -> UserStatus : status
+User ||--o{ Pet : owns
+Pet -> PetType : type
+Pet -> PetGender : gender
 Prestation -> TypeAnimal : categorieAnimal
 Planning --> Prestation : prestation
 Planning *-- "*" AvailableSlot : creneaux
 Reservation -> ReservationStatus : status
 Reservation *-- "*" ReservationSlot : reservedSlots
+Reservation --> Pet : animal
 ReservationSlot --> AvailableSlot : availableSlot
+Payment -> PaymentMethod : method
+Payment -> PaymentStatus : status
+Payment --> Reservation : reservation
 
 @enduml
 ```
@@ -1399,6 +1533,479 @@ CreatePlanningCommandHandler ..> Planning
 @enduml
 ```
 
+### 6.6. Sous domaine : gestion des animaux de compagnie
+
+#### 6.6.1. Créer un animal de compagnie
+
+##### 6.6.1.1. Diagramme de séquences
+
+```plantuml
+@startuml
+skin rose
+actor Client as c
+boundary PetsEndpoints as api
+participant "cmd: CreatePetCommand" as cmd
+control CreatePetCommandHandler as handler
+entity "p: Pet" as pet
+participant IPetRepository as repo
+participant IUserRepository as userRepo
+
+c -> api : createPet(createPetRequest)
+api -> cmd : new CreatePetCommand(request)
+api -> handler : Handle(cmd)
+handler -> userRepo : GetByIdAsync(ownerId)
+userRepo --> handler : owner
+alt owner exists
+  create pet
+  handler -> pet : new Pet(name, type, breed, age, ownerId)
+  handler -> repo : CreateAsync(pet)
+  repo --> handler : pet
+  handler --> api : CreatePetResponse(pet)
+  api --> c : HTTP 201 Created
+else owner not found
+  handler --> api : NotFound
+  api --> c : HTTP 404 Not Found
+end
+
+@enduml
+```
+
+##### 6.6.1.2. Diagramme de classes
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "Frontend Angular" {
+  class PetFormComponent {
+    + petForm : FormGroup
+    + isLoading : signal<boolean>
+    + onSubmit() : void
+    + createPet(petData) : void
+  }
+
+  class PetService {
+    + createPet(petData) : Observable<CreatePetResponse>
+    + getPetsByOwner(ownerId) : Observable<Pet[]>
+    + updatePet(id, petData) : Observable<Pet>
+    + deletePet(id) : Observable<boolean>
+  }
+
+  package "Models" {
+    class CreatePetRequest {
+      + name : string
+      + type : PetType
+      + breed : string
+      + age : number
+      + weight? : number
+      + color : string
+      + gender : PetGender
+      + isNeutered : boolean
+      + ownerId : string
+    }
+
+    class Pet {
+      + id : string
+      + name : string
+      + type : PetType
+      + breed : string
+      + age : number
+      + ownerId : string
+    }
+  }
+}
+
+package "PetBoarding_Api" {
+  class PetsEndpoints {
+    + CreatePet(CreatePetRequest) : IResult
+    + GetPetsByOwner(ownerId) : IResult
+    + UpdatePet(id, UpdatePetRequest) : IResult
+    + DeletePet(id) : IResult
+  }
+
+  package "Dto" {
+    class CreatePetRequest {
+      + Name : string
+      + Type : PetType
+      + Breed : string
+      + Age : int
+      + OwnerId : string
+    }
+
+    class CreatePetResponse {
+      + Id : string
+      + Name : string
+      + Type : string
+      + Breed : string
+    }
+  }
+}
+
+package "PetBoarding_Application" {
+  class CreatePetCommandHandler {
+    + Handle(CreatePetCommand) : Result<CreatePetResponse>
+  }
+
+  class CreatePetCommand {
+    + Name : string
+    + Type : PetType
+    + Breed : string
+    + Age : int
+    + OwnerId : string
+  }
+}
+
+package "PetBoarding_Domain" {
+  class Pet <<entity>> {
+    + Id : PetId
+    + Name : string
+    + Type : PetType
+    + Breed : string
+    + Age : int
+    + OwnerId : UserId
+
+    + UpdateBasicInfo() : void
+    + UpdateWeight() : void
+  }
+
+  interface IPetRepository {
+    + CreateAsync(Pet) : Task<Pet>
+    + GetByOwnerIdAsync(ownerId) : Task<List<Pet>>
+    + UpdateAsync(Pet) : Task<Pet>
+    + DeleteAsync(id) : Task<bool>
+  }
+}
+
+PetFormComponent --> PetService
+PetService --> PetsEndpoints : HTTP POST
+PetsEndpoints --> CreatePetCommandHandler
+CreatePetCommandHandler --> IPetRepository
+CreatePetCommandHandler ..> Pet
+
+@enduml
+```
+
+#### 6.6.2. Gérer le profil d'un animal
+
+##### 6.6.2.1. Diagramme de séquences
+
+```plantuml
+@startuml
+skin rose
+actor Client as c
+boundary PetsEndpoints as api
+participant "cmd: UpdatePetCommand" as cmd
+control UpdatePetCommandHandler as handler
+entity "p: Pet" as pet
+participant IPetRepository as repo
+
+c -> api : updatePet(id, updatePetRequest)
+api -> cmd : new UpdatePetCommand(id, request)
+api -> handler : Handle(cmd)
+handler -> repo : GetByIdAsync(id)
+repo --> handler : pet
+alt pet exists
+  handler -> pet : UpdateBasicInfo(name, breed, age, color)
+  handler -> pet : UpdateWeight(weight)
+  handler -> pet : UpdateMedicalNotes(notes)
+  handler -> repo : UpdateAsync(pet)
+  repo --> handler : pet
+  handler --> api : UpdatePetResponse(pet)
+  api --> c : HTTP 200 OK
+else pet not found
+  handler --> api : NotFound
+  api --> c : HTTP 404 Not Found
+end
+
+@enduml
+```
+
+##### 6.6.2.2. Diagramme de classes
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "Frontend Angular" {
+  class PetDetailsComponent {
+    + pet : signal<Pet>
+    + isEditing : signal<boolean>
+    + editForm : FormGroup
+    + enableEdit() : void
+    + savePet() : void
+    + deletePet() : void
+  }
+
+  class VaccinationComponent {
+    + vaccinations : signal<Vaccination[]>
+    + addVaccination(data) : void
+    + updateVaccination(id, data) : void
+    + deleteVaccination(id) : void
+  }
+
+  package "Models" {
+    class Vaccination {
+      + id : string
+      + name : string
+      + date : Date
+      + expiryDate : Date
+      + veterinarian : string
+      + batchNumber : string
+      + petId : string
+    }
+  }
+}
+
+package "PetBoarding_Application" {
+  class UpdatePetCommandHandler {
+    + Handle(UpdatePetCommand) : Result<UpdatePetResponse>
+  }
+
+  class GetPetByIdQueryHandler {
+    + Handle(GetPetByIdQuery) : Result<PetResponse>
+  }
+
+  class DeletePetCommandHandler {
+    + Handle(DeletePetCommand) : Result<bool>
+  }
+}
+
+PetDetailsComponent --> PetService
+VaccinationComponent --> PetService
+PetsEndpoints --> UpdatePetCommandHandler
+PetsEndpoints --> GetPetByIdQueryHandler
+PetsEndpoints --> DeletePetCommandHandler
+
+@enduml
+```
+
+### 6.7. Sous domaine : gestion des paiements
+
+#### 6.7.1. Traiter un paiement
+
+##### 6.7.1.1. Diagramme de séquences
+
+```plantuml
+@startuml
+skin rose
+actor Client as c
+boundary PaymentEndpoints as api
+participant "cmd: CreatePaymentCommand" as cmd
+control CreatePaymentCommandHandler as handler
+entity "p: Payment" as payment
+participant IPaymentRepository as repo
+participant IReservationRepository as resRepo
+participant IDomainEventDispatcher as events
+
+c -> api : createPayment(createPaymentRequest)
+api -> cmd : new CreatePaymentCommand(request)
+api -> handler : Handle(cmd)
+handler -> resRepo : GetByIdAsync(reservationId)
+resRepo --> handler : reservation
+alt reservation exists
+  create payment
+  handler -> payment : new Payment(amount, method, reservationId)
+  handler -> repo : CreateAsync(payment)
+  repo --> handler : payment
+
+  alt payment processing succeeds
+    handler -> payment : MarkAsSuccess()
+    handler -> payment : AddDomainEvent(PaymentProcessedEvent)
+    handler -> events : DispatchAsync(PaymentProcessedEvent)
+    handler --> api : CreatePaymentResponse(payment)
+    api --> c : HTTP 201 Created
+  else payment processing fails
+    handler -> payment : MarkAsFailed(reason)
+    handler --> api : PaymentFailed
+    api --> c : HTTP 400 Bad Request
+  end
+else reservation not found
+  handler --> api : NotFound
+  api --> c : HTTP 404 Not Found
+end
+
+@enduml
+```
+
+##### 6.7.1.2. Diagramme de classes
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "PetBoarding_Domain" {
+  class Payment <<entity>> {
+    + Id : PaymentId
+    + ReservationId : ReservationId
+    + Amount : decimal
+    + Method : PaymentMethod
+    + Status : PaymentStatus
+    + ExternalTransactionId? : string
+    + ProcessedAt? : DateTime
+    + FailureReason? : string
+
+    + MarkAsSuccess() : void
+    + MarkAsFailed(reason) : void
+    + MarkAsCancelled() : void
+  }
+
+  interface IPaymentRepository {
+    + CreateAsync(Payment) : Task<Payment>
+    + GetByIdAsync(id) : Task<Payment?>
+    + GetByReservationIdAsync(reservationId) : Task<List<Payment>>
+    + UpdateAsync(Payment) : Task<Payment>
+  }
+}
+
+package "PetBoarding_Application" {
+  class CreatePaymentCommandHandler {
+    + Handle(CreatePaymentCommand) : Result<CreatePaymentResponse>
+  }
+
+  class ProcessPaymentCommandHandler {
+    + Handle(ProcessPaymentCommand) : Result<PaymentResult>
+  }
+}
+
+package "Domain Events" {
+  class PaymentProcessedEvent {
+    + PaymentId : PaymentId
+    + ReservationId : ReservationId
+    + Amount : decimal
+    + Status : PaymentStatus
+    + ProcessedAt : DateTime
+  }
+
+  class PaymentProcessedEventHandler {
+    + Handle(PaymentProcessedEvent) : Task
+  }
+}
+
+Payment --> PaymentMethod
+Payment --> PaymentStatus
+CreatePaymentCommandHandler --> IPaymentRepository
+PaymentProcessedEventHandler --> IEmailService
+
+@enduml
+```
+
+### 6.8. Sous domaine : système de notifications
+
+#### 6.8.1. Envoi d'email automatique
+
+##### 6.8.1.1. Diagramme de séquences
+
+```plantuml
+@startuml
+skin rose
+participant UserRegisteredEvent as event
+participant UserRegisteredEventConsumer as consumer
+participant UserRegisteredEventHandler as handler
+participant "cmd: SendWelcomeEmailCommand" as cmd
+control SendWelcomeEmailCommandHandler as emailHandler
+participant IEmailService as emailService
+participant ITemplateService as templateService
+
+event -> consumer : Consume(UserRegisteredEvent)
+consumer -> handler : Handle(event)
+handler -> cmd : new SendWelcomeEmailCommand(userId, email, name)
+handler -> emailHandler : Handle(cmd)
+emailHandler -> templateService : GetWelcomeTemplate(userModel)
+templateService --> emailHandler : htmlContent
+emailHandler -> emailService : SendAsync(emailMessage)
+emailService --> emailHandler : EmailResult
+emailHandler --> handler : result
+handler --> consumer : completed
+
+@enduml
+```
+
+##### 6.8.1.2. Diagramme de classes
+
+```plantuml
+@startuml
+scale 0.8
+skin rose
+hide empty members
+
+package "Domain Events" {
+  class UserRegisteredEvent {
+    + UserId : UserId
+    + Email : Email
+    + FirstName : string
+    + LastName : string
+    + OccurredOn : DateTime
+  }
+
+  class ReservationCreatedEvent {
+    + ReservationId : ReservationId
+    + UserId : UserId
+    + PetName : string
+    + ServiceName : string
+    + StartDate : DateTime
+  }
+
+  class PaymentProcessedEvent {
+    + PaymentId : PaymentId
+    + Amount : decimal
+    + Status : PaymentStatus
+  }
+}
+
+package "Email Infrastructure" {
+  interface IEmailService {
+    + SendAsync(EmailMessage) : Task<EmailResult>
+  }
+
+  interface ITemplateService {
+    + GetWelcomeTemplate(model) : Task<string>
+    + GetReservationConfirmationTemplate(model) : Task<string>
+    + GetPaymentConfirmationTemplate(model) : Task<string>
+  }
+
+  class EmailMessage {
+    + ToEmail : string
+    + ToName : string
+    + Subject : string
+    + Body : string
+    + IsHtml : bool
+  }
+
+  class SmtpEmailService {
+    + SendAsync(EmailMessage) : Task<EmailResult>
+  }
+
+  class SimpleTemplateService {
+    + GetWelcomeTemplate(model) : Task<string>
+    + ProcessTemplate(template, model) : string
+  }
+}
+
+package "Event Handlers" {
+  class UserRegisteredEventHandler {
+    + Handle(UserRegisteredEvent) : Task
+  }
+
+  class ReservationCreatedEventHandler {
+    + Handle(ReservationCreatedEvent) : Task
+  }
+
+  class PaymentProcessedEventHandler {
+    + Handle(PaymentProcessedEvent) : Task
+  }
+}
+
+SmtpEmailService --> IEmailService
+SimpleTemplateService --> ITemplateService
+UserRegisteredEventHandler --> IEmailService
+UserRegisteredEventHandler --> ITemplateService
+
+@enduml
+```
+
 ## 7. Regroupement des classes
 
 ### 7.1. Groupe domaine
@@ -1484,27 +2091,27 @@ package "Addresses Domain" {
   class AddressId <<value object>> {
     + Value : Guid
   }
-  
+
   class StreetNumber <<value object>> {
     + Value : string
   }
-  
+
   class StreetName <<value object>> {
     + Value : string
   }
-  
+
   class Complement <<value object>> {
     + Value : string
   }
-  
+
   class PostalCode <<value object>> {
     + Value : string
   }
-  
+
   class City <<value object>> {
     + Value : string
   }
-  
+
   class Country <<value object>> {
     + Value : string
   }
@@ -1537,7 +2144,7 @@ package "Pets Domain" {
     + PhotoUrl? : string
     + OwnerId : UserId
     + EmergencyContact? : EmergencyContact
-    
+
     + UpdateBasicInfo(name, breed, age, color) : void
     + UpdateWeight(weight) : void
     + UpdateType(type) : void
@@ -1549,7 +2156,7 @@ package "Pets Domain" {
   class PetId <<value object>> {
     + Value : Guid
   }
-  
+
   class EmergencyContact <<value object>> {
     + Name : string
     + PhoneNumber : string
@@ -1633,7 +2240,7 @@ package "Planning Domain" {
     + DateCreation : DateTime
     + DateModification? : DateTime
     + Creneaux : List<AvailableSlot>
-    
+
     + AjouterCreneau(date, capaciteMax) : void
     + DeleteSlot(date) : void
     + UpdateSlotCapacity(date, capacite) : void
@@ -1645,7 +2252,7 @@ package "Planning Domain" {
     + ReserveSlot(date, quantite) : void
     + CancelReservation(date, quantite) : void
   }
-  
+
   class AvailableSlot <<entity>> {
     + Id : AvailableSlotId
     + PlanningId : PlanningId
@@ -1654,7 +2261,7 @@ package "Planning Domain" {
     + CapaciteReservee : int
     + CreatedAt : DateTime
     + ModifiedAt? : DateTime
-    
+
     + AvailableCapacity : int
     + IsAvailable(quantite) : bool
     + Reserver(quantite) : void
@@ -1666,11 +2273,11 @@ package "Planning Domain" {
   class PlanningId <<value object>> {
     + Value : Guid
   }
-  
+
   class AvailableSlotId <<value object>> {
     + Value : Guid
   }
-  
+
   Planning *-- "*" AvailableSlot
 }
 
@@ -1712,14 +2319,14 @@ package "Reservations Domain" {
     + GetReservedDates() : IEnumerable<DateTime>
     + GetNumberOfDays() : int
   }
-  
+
   class ReservationSlot <<entity>> {
     + Id : ReservationSlotId
     + ReservationId : ReservationId
     + AvailableSlotId : Guid
     + ReservedAt : DateTime
     + ReleasedAt? : DateTime
-    
+
     + IsActive : bool
     + MarkAsReleased() : void
   }
@@ -1727,7 +2334,7 @@ package "Reservations Domain" {
   class ReservationId <<value object>> {
     + Value : Guid
   }
-  
+
   class ReservationSlotId <<value object>> {
     + Value : Guid
   }
@@ -1740,7 +2347,7 @@ package "Reservations Domain" {
     CANCELLED
     CANCELAUTO
   }
-  
+
   Reservation *-- "*" ReservationSlot
 }
 
@@ -1763,7 +2370,7 @@ package "Baskets Domain" {
     + CreatedAt : DateTime
     + UpdatedAt? : DateTime
     + ExpiresAt : DateTime
-    
+
     + AddItem(prestationId, animalId, dates, price) : void
     + RemoveItem(itemId) : void
     + UpdateItem(itemId, quantity) : void
@@ -1773,7 +2380,7 @@ package "Baskets Domain" {
     + MarkAsCompleted() : void
     + MarkAsCancelled() : void
   }
-  
+
   class BasketItem <<entity>> {
     + Id : BasketItemId
     + BasketId : BasketId
@@ -1786,7 +2393,7 @@ package "Baskets Domain" {
     + UnitPrice : decimal
     + TotalPrice : decimal
     + AddedAt : DateTime
-    
+
     + UpdateQuantity(quantity) : void
     + UpdateDates(startDate, endDate) : void
     + CalculateTotalPrice() : void
@@ -1795,7 +2402,7 @@ package "Baskets Domain" {
   class BasketId <<value object>> {
     + Value : Guid
   }
-  
+
   class BasketItemId <<value object>> {
     + Value : Guid
   }
@@ -1806,21 +2413,193 @@ package "Baskets Domain" {
     CANCELLED
     EXPIRED
   }
-  
+
   Basket *-- "*" BasketItem
 }
 
 @enduml
 ```
 
-### 7.2. Groupe cycle de vie
+#### 7.1.8. Payments Domain
 
 ```plantuml
 @startuml
 skin rose
 hide empty members
 
-package "PetBoarding_Persistence" {
+package "Payments Domain" {
+  class Payment <<entity>> {
+    + Id : PaymentId
+    + ReservationId? : ReservationId
+    + Amount : decimal
+    + Method : PaymentMethod
+    + Status : PaymentStatus
+    + ExternalTransactionId? : string
+    + ProcessedAt? : DateTime
+    + FailureReason? : string
+    + Description : string
+    + CreatedAt : DateTime
+
+    + MarkAsSuccess() : void
+    + MarkAsFailed(reason) : void
+    + MarkAsCancelled() : void
+    + UpdateExternalTransactionId(id) : void
+  }
+
+  class PaymentId <<value object>> {
+    + Value : Guid
+  }
+
+  enum PaymentMethod {
+    CREDIT_CARD
+    DEBIT_CARD
+    PAYPAL
+    BANK_TRANSFER
+    CASH
+  }
+
+  enum PaymentStatus {
+    PENDING
+    SUCCESS
+    FAILED
+    CANCELLED
+    REFUNDED
+  }
+}
+
+@enduml
+```
+
+#### 7.1.9. Email System Domain
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "Email System Domain" {
+  class EmailMessage <<entity>> {
+    + ToEmail : string
+    + ToName : string
+    + Subject : string
+    + Body : string
+    + IsHtml : bool
+    + Attachments : List<EmailAttachment>
+    + CreatedAt : DateTime
+
+    + AddAttachment(attachment) : void
+    + SetPlainTextBody() : void
+    + SetHtmlBody() : void
+  }
+
+  class EmailAttachment <<value object>> {
+    + FileName : string
+    + ContentType : string
+    + Content : byte[]
+    + Size : long
+  }
+
+  class EmailResult {
+    + IsSuccess : bool
+    + ErrorMessage? : string
+    + SentAt? : DateTime
+    + MessageId? : string
+    + FailureReason? : string
+  }
+
+  interface IEmailService {
+    + SendAsync(EmailMessage) : Task<EmailResult>
+    + SendBulkAsync(messages) : Task<List<EmailResult>>
+  }
+
+  interface ITemplateService {
+    + ProcessTemplate(template, model) : string
+    + GetWelcomeTemplate(model) : Task<string>
+    + GetReservationConfirmationTemplate(model) : Task<string>
+    + GetPaymentConfirmationTemplate(model) : Task<string>
+  }
+}
+
+@enduml
+```
+
+#### 7.1.10. Domain Events System
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "Domain Events System" {
+  interface IDomainEvent {
+    + EventId : Guid
+    + OccurredOn : DateTime
+    + EventType : string
+  }
+
+  abstract class DomainEvent {
+    + EventId : Guid
+    + OccurredOn : DateTime
+    + EventType : string
+  }
+
+  class UserRegisteredEvent {
+    + UserId : UserId
+    + Email : Email
+    + FirstName : string
+    + LastName : string
+  }
+
+  class PetRegisteredEvent {
+    + PetId : PetId
+    + Name : string
+    + Type : PetType
+    + OwnerId : UserId
+  }
+
+  class ReservationCreatedEvent {
+    + ReservationId : ReservationId
+    + UserId : UserId
+    + PetId : PetId
+    + ServiceId : PrestationId
+    + StartDate : DateTime
+    + EndDate? : DateTime
+  }
+
+  class ReservationStatusChangedEvent {
+    + ReservationId : ReservationId
+    + OldStatus : ReservationStatus
+    + NewStatus : ReservationStatus
+    + ChangedAt : DateTime
+  }
+
+  class PaymentProcessedEvent {
+    + PaymentId : PaymentId
+    + ReservationId : ReservationId
+    + Amount : decimal
+    + Status : PaymentStatus
+    + ProcessedAt : DateTime
+  }
+
+  DomainEvent --> IDomainEvent
+  UserRegisteredEvent --> DomainEvent
+  PetRegisteredEvent --> DomainEvent
+  ReservationCreatedEvent --> DomainEvent
+  ReservationStatusChangedEvent --> DomainEvent
+  PaymentProcessedEvent --> DomainEvent
+}
+
+@enduml
+```
+
+### 7.2. Groupe cycle de vie / Persistence
+
+```plantuml
+@startuml
+scale 0.8
+skin rose
+hide empty members
+
   package "Repositories" {
     class BaseRepository<TEntity, TId> {
       + GetByIdAsync(id) : Task<TEntity?>
@@ -1844,25 +2623,83 @@ package "PetBoarding_Persistence" {
       + CreateAsync(reservation) : Task<Reservation>
     }
 
+    class PetRepository {
+      + GetByOwnerIdAsync(ownerId) : Task<List<Pet>>
+      + CreateAsync(pet) : Task<Pet>
+      + UpdateAsync(pet) : Task<Pet>
+      + DeleteAsync(id) : Task<bool>
+    }
+
+    class PaymentRepository {
+      + GetByReservationIdAsync(reservationId) : Task<List<Payment>>
+      + CreateAsync(payment) : Task<Payment>
+      + UpdateAsync(payment) : Task<Payment>
+    }
+
+    class PlanningRepository {
+      + GetByPrestationIdAsync(prestationId) : Task<Planning?>
+      + CreateAsync(planning) : Task<Planning>
+      + UpdateAsync(planning) : Task<Planning>
+    }
+
+    class BasketRepository {
+      + GetByUserIdAsync(userId) : Task<Basket?>
+      + CreateAsync(basket) : Task<Basket>
+      + UpdateAsync(basket) : Task<Basket>
+      + DeleteAsync(id) : Task<bool>
+    }
+
     BaseRepository <|-- UserRepository
     BaseRepository <|-- PrestationRepository
     BaseRepository <|-- ReservationRepository
-  }
-
-  package "Configurations" {
-    class UserConfiguration {
-      + Configure(EntityTypeBuilder<User>) : void
-    }
-
-    class PrestationConfiguration {
-      + Configure(EntityTypeBuilder<Prestation>) : void
-    }
-
-    class ReservationConfiguration {
-      + Configure(EntityTypeBuilder<Reservation>) : void
-    }
+    BaseRepository <|-- PetRepository
+    BaseRepository <|-- PaymentRepository
+    BaseRepository <|-- PlanningRepository
+    BaseRepository <|-- BasketRepository
   }
 }
+@enduml
+```
+
+```plantuml
+@startuml
+skin rose
+hide empty members
+
+package "Configurations" {
+  class UserConfiguration {
+    + Configure(EntityTypeBuilder<User>) : void
+  }
+
+  class PrestationConfiguration {
+    + Configure(EntityTypeBuilder<Prestation>) : void
+  }
+
+  class ReservationConfiguration {
+    + Configure(EntityTypeBuilder<Reservation>) : void
+  }
+
+  class PetConfiguration {
+    + Configure(EntityTypeBuilder<Pet>) : void
+  }
+
+  class PaymentConfiguration {
+    + Configure(EntityTypeBuilder<Payment>) : void
+  }
+
+  class PlanningConfiguration {
+    + Configure(EntityTypeBuilder<Planning>) : void
+  }
+
+  class AvailableSlotConfiguration {
+    + Configure(EntityTypeBuilder<AvailableSlot>) : void
+  }
+
+  class BasketConfiguration {
+    + Configure(EntityTypeBuilder<Basket>) : void
+  }
+}
+
 
 @enduml
 ```
@@ -2088,91 +2925,488 @@ package "Baskets Domain" {
 
 ### 7.4. Groupe interface utilisateur
 
+Cette section regroupe uniquement les composants d'interface utilisateur (composants Angular, directives, pipes).
+
 ```plantuml
 @startuml
+!pragma layout smetana
 skin rose
 hide empty members
 
-package "ng_PetBoarding_app" {
-
-  package "Features" {
-    package "Auth" {
-      class LoginComponent {
-        + onSubmit() : void
-        + login(credentials) : void
-      }
-
-      class RegisterComponent {
-        + onSubmit() : void
-        + register(userData) : void
-      }
-
-      class AuthService {
-        + login(credentials) : Observable<LoginResponse>
-        + register(userData) : Observable<RegisterResponse>
-        + logout() : void
-        + isAuthenticated() : boolean
-      }
+package "Shared Components" {
+  package "Layout" {
+    class HeaderComponent {
+      + user : signal<User | null>
+      + isAuthenticated : computed<boolean>
+      + onLogout : output<void>
+      + logout() : void
     }
 
-    package "Prestations" {
-      class PrestationsComponent {
-        + prestations : Prestation[]
-        + filteredPrestations : Prestation[]
-        + onFilterChange(filters) : void
-      }
-
-      class PrestationDetailComponent {
-        + prestation : Prestation
-        + addToBasket() : void
-        + selectDates() : void
-      }
+    class NavigationComponent {
+      + menuItems : MenuItem[]
+      + activeRoute : signal<string>
+      + isCollapsed : signal<boolean>
+      + toggleMenu() : void
     }
 
-    package "Reservations" {
-      class ReservationsComponent {
-        + reservations : Reservation[]
-        + loadReservations() : void
-      }
-
-      class ReservationItemComponent {
-        + reservation : Reservation
-        + cancelReservation() : void
-      }
-    }
-
-    package "Basket" {
-      class BasketComponent {
-        + basketItems : BasketItem[]
-        + total : number
-        + checkout() : void
-        + removeItem(itemId) : void
-      }
+    class FooterComponent {
+      + currentYear : number
+      + companyInfo : CompanyInfo
     }
   }
 
-  package "Shared" {
-    package "Services" {
-      class PrestationApiService {
-        + getPrestations() : Observable<Prestation[]>
-      }
-
-      class ReservationApiService {
-        + createReservation(data) : Observable<Reservation>
-        + getReservations() : Observable<Reservation[]>
-      }
-
-      class BasketApiService {
-        + addToBasket(item) : Observable<BasketResponse>
-        + getBasket() : Observable<Basket>
-      }
+  package "Common" {
+    class LoadingSpinnerComponent {
+      + isLoading : input<boolean>
+      + message : input<string>
     }
 
-    package "Guards" {
-      class AuthGuard {
-        + canActivate() : boolean
-      }
+    class ConfirmDialogComponent {
+      + title : input<string>
+      + message : input<string>
+      + onConfirm : output<boolean>
+      + onCancel : output<boolean>
     }
+
+    class ErrorMessageComponent {
+      + error : input<string | null>
+      + type : input<'error' | 'warning' | 'info'>
+    }
+
+    class DatePickerComponent {
+      + selectedDate : model<Date | null>
+      + minDate : input<Date | null>
+      + maxDate : input<Date | null>
+      + placeholder : input<string>
+    }
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Features 1 / 4" {
+  package "Auth" {
+    class LoginComponent {
+      + loginForm : FormGroup
+      + isLoading : signal<boolean>
+      + hidePassword : signal<boolean>
+      + onSubmit() : void
+      + togglePasswordVisibility() : void
+    }
+
+    class RegisterComponent {
+      + registerForm : FormGroup
+      + isLoading : signal<boolean>
+      + onSubmit() : void
+      + validateForm() : boolean
+    }
+  }
+
+  package "Profile" {
+    class ProfileComponent {
+      + user : signal<User | null>
+      + isEditing : signal<boolean>
+      + profileForm : FormGroup
+      + enableEdit() : void
+      + saveProfile() : void
+      + cancelEdit() : void
+    }
+
+    class ProfileEditComponent {
+      + user : input<User>
+      + editForm : FormGroup
+      + onSave : output<User>
+      + onCancel : output<void>
+      + saveProfile() : void
+    }
+
+    class AddressFormComponent {
+      + addressForm : FormGroup
+      + address : input<Address | null>
+      + onAddressChange : output<Address>
+      + validateAddress() : boolean
+    }
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+package "Features 2 / 4" {
+  package "Pets" {
+    class PetsSectionComponent {
+      + pets : signal<Pet[]>
+      + isLoading : signal<boolean>
+      + selectedPet : signal<Pet | null>
+      + showAddForm : signal<boolean>
+      + onPetSelect(pet) : void
+      + toggleAddForm() : void
+    }
+
+    class PetsListComponent {
+      + pets : input<Pet[]>
+      + onPetSelect : output<Pet>
+      + onPetEdit : output<Pet>
+      + onPetDelete : output<string>
+    }
+
+    class PetCardComponent {
+      + pet : input<Pet>
+      + onClick : output<Pet>
+      + onEdit : output<Pet>
+      + onDelete : output<string>
+    }
+
+    class PetDetailsComponent {
+      + pet : signal<Pet>
+      + isEditing : signal<boolean>
+      + editForm : FormGroup
+      + enableEdit() : void
+      + savePet() : void
+      + deletePet() : void
+    }
+
+    class PetFormComponent {
+      + petForm : FormGroup
+      + isLoading : signal<boolean>
+      + pet : input<Pet | null>
+      + onSave : output<Pet>
+      + onCancel : output<void>
+      + onSubmit() : void
+    }
+
+    class PetAddComponent {
+      + addForm : FormGroup
+      + isVisible : input<boolean>
+      + onPetAdded : output<Pet>
+      + onCancel : output<void>
+      + addPet() : void
+    }
+
+    class PetDialogComponent {
+      + pet : input<Pet>
+      + isOpen : input<boolean>
+      + onClose : output<void>
+      + onSave : output<Pet>
+    }
+  }
+
+  package "Vaccinations" {
+    class VaccinationComponent {
+      + vaccinations : signal<Vaccination[]>
+      + selectedPet : input<Pet>
+      + showAddForm : signal<boolean>
+      + loadVaccinations() : void
+      + toggleAddForm() : void
+    }
+
+    class VaccinationListComponent {
+      + vaccinations : input<Vaccination[]>
+      + onEdit : output<Vaccination>
+      + onDelete : output<string>
+      + isExpiringSoon(vaccination) : boolean
+    }
+
+    class VaccinationFormComponent {
+      + vaccinationForm : FormGroup
+      + vaccination : input<Vaccination | null>
+      + onSave : output<Vaccination>
+      + onCancel : output<void>
+      + onSubmit() : void
+    }
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Features 3 / 4" {
+
+  package "Prestations" {
+    class PrestationsComponent {
+      + prestations : signal<Prestation[]>
+      + filteredPrestations : computed<Prestation[]>
+      + filters : signal<PrestationFilters>
+      + isLoading : signal<boolean>
+      + onFilterChange(filters) : void
+    }
+
+    class PrestationDetailComponent {
+      + prestation : input<Prestation>
+      + selectedDates : signal<Date[]>
+      + onAddToBasket : output<BasketItem>
+      + onDateSelect : output<Date[]>
+      + addToBasket() : void
+    }
+
+    class PrestationCardComponent {
+      + prestation : input<Prestation>
+      + onClick : output<Prestation>
+      + onAddToBasket : output<Prestation>
+    }
+
+    class DateSelectionComponent {
+      + prestation : input<Prestation>
+      + availableSlots : signal<AvailableSlot[]>
+      + selectedDates : signal<Date[]>
+      + onSelectionChange : output<DateSelectionResult>
+      + onDateClick(date) : void
+    }
+  }
+
+  package "Reservations" {
+    class ReservationsComponent {
+      + reservations : signal<Reservation[]>
+      + filteredReservations : computed<Reservation[]>
+      + statusFilter : signal<ReservationStatus | null>
+      + isLoading : signal<boolean>
+      + onStatusFilter(status) : void
+    }
+
+    class ReservationItemComponent {
+      + reservation : input<Reservation>
+      + onCancel : output<string>
+      + onEdit : output<Reservation>
+      + canCancel : computed<boolean>
+      + cancelReservation() : void
+    }
+
+    class ReservationDetailComponent {
+      + reservation : input<Reservation>
+      + onStatusChange : output<{id: string, status: ReservationStatus}>
+      + canModifyStatus : computed<boolean>
+    }
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+package "Features 4 / 4" {
+
+  package "Basket" {
+    class BasketComponent {
+      + basketItems : signal<BasketItem[]>
+      + total : computed<number>
+      + isLoading : signal<boolean>
+      + isEmpty : computed<boolean>
+      + checkout() : void
+      + clearBasket() : void
+    }
+
+    class BasketItemComponent {
+      + item : input<BasketItem>
+      + onRemove : output<string>
+      + onQuantityChange : output<{id: string, quantity: number}>
+      + removeItem() : void
+    }
+  }
+}
+
+@enduml
+```
+
+### 7.5. Groupe services et infrastructure
+
+Cette section regroupe les services, guards, interceptors et autres éléments d'infrastructure.
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Core Services" {
+  class AuthService {
+    + login(credentials) : Observable<LoginResponse>
+    + register(userData) : Observable<RegisterResponse>
+    + logout() : void
+    + isAuthenticated() : computed<boolean>
+    + getCurrentUser() : computed<User | null>
+    + refreshToken() : Observable<TokenResponse>
+  }
+
+  class UserService {
+    + updateProfile(user) : Observable<User>
+    + getProfile() : Observable<User>
+    + uploadAvatar(file) : Observable<string>
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Infrastructure" {
+  class AuthGuard {
+    + canActivate() : boolean
+    + canActivateChild() : boolean
+  }
+
+  class AdminGuard {
+    + canActivate() : boolean
+  }
+
+  class AuthInterceptor {
+    + intercept(req, next) : Observable<HttpEvent>
+    + addAuthHeader(req) : HttpRequest
+    + handleUnauthorized(error) : Observable<HttpEvent>
+  }
+
+  class LoadingInterceptor {
+    + intercept(req, next) : Observable<HttpEvent>
+    + showLoading() : void
+    + hideLoading() : void
+  }
+
+  class ErrorInterceptor {
+    + intercept(req, next) : Observable<HttpEvent>
+    + handleError(error) : Observable<never>
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "State Management" {
+  class AuthStateService {
+    + currentUser : signal<User | null>
+    + isAuthenticated : computed<boolean>
+    + setCurrentUser(user) : void
+    + clearCurrentUser() : void
+  }
+
+  class BasketStateService {
+    + basketItems : signal<BasketItem[]>
+    + itemCount : computed<number>
+    + total : computed<number>
+    + addItem(item) : void
+    + removeItem(id) : void
+    + clearBasket() : void
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Feature Services 1/4" {
+  class PetService {
+    + getPetsByOwner(ownerId) : Observable<Pet[]>
+    + createPet(petData) : Observable<Pet>
+    + updatePet(id, petData) : Observable<Pet>
+    + deletePet(id) : Observable<boolean>
+    + uploadPhoto(petId, file) : Observable<string>
+  }
+
+  class VaccinationService {
+    + getVaccinationsByPet(petId) : Observable<Vaccination[]>
+    + addVaccination(vaccination) : Observable<Vaccination>
+    + updateVaccination(id, vaccination) : Observable<Vaccination>
+    + deleteVaccination(id) : Observable<boolean>
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Feature Services 2/4" {
+  class PrestationApiService {
+    + getPrestations(filters?) : Observable<Prestation[]>
+    + getPrestationById(id) : Observable<Prestation>
+  }
+
+  class PlanningService {
+    + getPlanningByPrestation(prestationId) : Observable<Planning>
+    + checkAvailability(dates, serviceId) : Observable<boolean>
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Feature Services 3/4" {
+  class ReservationApiService {
+    + createReservation(data) : Observable<Reservation>
+    + getReservations(userId?) : Observable<Reservation[]>
+    + updateReservation(id, data) : Observable<Reservation>
+    + cancelReservation(id) : Observable<boolean>
+  }
+}
+
+@enduml
+```
+
+```plantuml
+@startuml
+!pragma layout smetana
+skin rose
+hide empty members
+
+package "Feature Services 4/4" {
+  class BasketApiService {
+    + addToBasket(item) : Observable<BasketResponse>
+    + getBasket() : Observable<Basket>
+    + updateBasketItem(id, data) : Observable<BasketItem>
+    + removeFromBasket(itemId) : Observable<boolean>
+    + clearBasket() : Observable<boolean>
+  }
+
+  class PaymentService {
+    + createPayment(paymentData) : Observable<Payment>
+    + processPayment(paymentId, data) : Observable<PaymentResult>
+    + getPaymentHistory(userId) : Observable<Payment[]>
   }
 }
 
@@ -2210,13 +3444,13 @@ Le système de réservation implémente une gestion sophistiquée des créneaux 
 
 ### 8.4. Critique de cette version du modèle
 
-Points d'amélioration identifiés :
+Points d'amélioration identifiés pour les prochaines versions :
 
-- **Gestion des événements** : Implémentation possible d'Event Sourcing pour l'historique des réservations
-- **Notifications** : Ajout d'un système de notifications en temps réel (SignalR)
-- **Cache** : Optimisation des performances avec mise en cache des prestations
-- **Paiements** : Intégration avec des systèmes de paiement externes
-- **Reporting** : Ajout de fonctionnalités de reporting et statistiques
+- **Event Sourcing complet** : Migration vers Event Store pour un historique complet
+- **Notifications temps réel** : Implémentation SignalR pour les mises à jour live
+- **Paiements externes** : Intégration Stripe/PayPal pour les transactions réelles
+- **Reporting avancé** : Dashboard d'analytics et KPIs métier
+- **Microservices** : Division possible en services indépendants
 
 ## 9. Annexes
 
