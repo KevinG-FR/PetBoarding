@@ -19,7 +19,7 @@ public static partial class AuthenticationEndpoints
 
         var authenticateTokens = await accountService.Authenticate(authRequest, CancellationToken.None);
 
-        if (!string.IsNullOrEmpty(authenticateTokens.Token))
+        if (!string.IsNullOrEmpty(authenticateTokens?.Token))
         {
             var userResult = await sender.Send(new GetUserByEmailQuery(loginRequestDto.Email));
 
