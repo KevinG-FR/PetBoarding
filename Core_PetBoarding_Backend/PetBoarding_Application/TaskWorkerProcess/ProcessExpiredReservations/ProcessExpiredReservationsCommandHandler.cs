@@ -1,4 +1,4 @@
-namespace PetBoarding_Application.Reservations.ProcessExpiredReservations;
+namespace PetBoarding_Application.TaskWorkerProcess.ProcessExpiredReservations;
 
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -11,18 +11,18 @@ using PetBoarding_Domain.Reservations;
 /// <summary>
 /// Handler pour traiter les réservations expirées et libérer les créneaux automatiquement
 /// </summary>
-internal sealed class ProcessExpiredReservationsHandler : ICommandHandler<ProcessExpiredReservationsCommand, int>
+internal sealed class ProcessExpiredReservationsCommandHandler : ICommandHandler<ProcessExpiredReservationsCommand, int>
 {
     private readonly IReservationRepository _reservationRepository;
     private readonly IPlanningRepository _planningRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<ProcessExpiredReservationsHandler> _logger;
+    private readonly ILogger<ProcessExpiredReservationsCommandHandler> _logger;
 
-    public ProcessExpiredReservationsHandler(
+    public ProcessExpiredReservationsCommandHandler(
         IReservationRepository reservationRepository,
         IPlanningRepository planningRepository,
         IUnitOfWork unitOfWork,
-        ILogger<ProcessExpiredReservationsHandler> logger)
+        ILogger<ProcessExpiredReservationsCommandHandler> logger)
     {
         _reservationRepository = reservationRepository;
         _planningRepository = planningRepository;

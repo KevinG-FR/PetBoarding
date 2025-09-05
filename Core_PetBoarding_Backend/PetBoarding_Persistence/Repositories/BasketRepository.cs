@@ -53,6 +53,17 @@ public sealed class BasketRepository : BaseRepository<Basket, BasketId>, IBasket
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Basket>> GetExpiredBaskets(int expirationMinutes, CancellationToken cancellationToken = default)
+    {
+        var expiredTime = DateTime.UtcNow.AddMinutes(-expirationMinutes);
+        
+        return await _dbSet
+            .Include(b => b.Items)
+            .ThenInclude(i => i.Reservation)
+            .Where(b => b.Status == BasketStatus.Created && b.CreatedAt < expiredTime)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Basket>> GetBasketsWithPaymentFailures(CancellationToken cancellationToken = default)
     {
         return await _dbSet

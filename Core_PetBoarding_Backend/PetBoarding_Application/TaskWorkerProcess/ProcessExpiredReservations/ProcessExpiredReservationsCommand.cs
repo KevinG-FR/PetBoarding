@@ -1,4 +1,4 @@
-namespace PetBoarding_Application.Reservations.ProcessExpiredReservations;
+namespace PetBoarding_Application.TaskWorkerProcess.ProcessExpiredReservations;
 
 using PetBoarding_Application.Abstractions;
 

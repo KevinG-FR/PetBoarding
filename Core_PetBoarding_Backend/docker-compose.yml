@@ -24,6 +24,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  petboarding_taskworker:
+    image: ${DOCKER_REGISTRY-}petboardingtaskworker
+    container_name: petboarding.taskworker
+    build:
+      context: .
+      dockerfile: PetBoarding_TaskWorker/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=petboarding.postgres.database:5432;Database=petboarding;Username=postgres;Password=postgres
+      - TaskWorker__ExpiredBasketCleanupIntervalMinutes=10
+      - TaskWorker__BasketExpirationMinutes=30
+      - TaskWorker__ExpiredReservationProcessingIntervalMinutes=15
+    depends_on:
+      postgres.database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+
   postgres.database:
     image: postgres:latest
     container_name: petboarding.postgres.database

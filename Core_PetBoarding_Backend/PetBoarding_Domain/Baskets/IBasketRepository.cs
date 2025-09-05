@@ -11,5 +11,6 @@ public interface IBasketRepository : IBaseRepository<Basket, BasketId>
     Task<Basket?> GetActiveBasketByUserIdWithItemsAsync(UserId userId, CancellationToken cancellationToken = default);
     Task<Basket?> GetByIdWithItemsAsync(BasketId basketId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Basket>> GetExpiredBaskets(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Basket>> GetExpiredBaskets(int expirationMinutes, CancellationToken cancellationToken = default);
     Task<IEnumerable<Basket>> GetBasketsWithPaymentFailures(CancellationToken cancellationToken = default);
 }
