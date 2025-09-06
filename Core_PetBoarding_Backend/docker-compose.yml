@@ -54,6 +54,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./.containers/petboarding-db:/var/lib/postgresql/data
+      - ./PetBoarding_TaskWorker/init-quartz.sql:/docker-entrypoint-initdb.d/init-quartz.sql
     ports:
       - 5432:5432
     healthcheck:
