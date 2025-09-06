@@ -203,9 +203,57 @@ Authentification et autorisation basées sur :
 
 ### 4.9. Tests
 
-- Tests d'architecture avec NetArchTest pour valider les contraintes de Clean Architecture
-- Tests unitaires pour la logique métier
-- Tests d'intégration pour les API
+Le projet PetBoarding dispose d'une suite complète de tests organisée en plusieurs projets spécialisés, utilisant principalement **xUnit**, **FluentAssertions**, et **Moq** comme frameworks de test :
+
+#### 4.9.1. Tests d'architecture (ArchitectureTests)
+
+- **Framework** : NetArchTest avec xUnit
+- **Objectif** : Valider les contraintes de Clean Architecture et les règles de dépendances entre couches
+- **Localisation** : `Core_PetBoarding_Backend/Tests/ArchitectureTests/`
+- **Tests implémentés** :
+  - Validation de l'isolation des couches (Domain, Application, Infrastructure, Persistence)
+  - Vérification des règles de dépendances inversées
+  - Contrôle de la pureté du domaine métier
+
+#### 4.9.2. Tests unitaires du domaine (DomainUnitTests)
+
+- **Framework** : xUnit avec FluentAssertions
+- **Objectif** : Tester la logique métier pure et les value objects du domaine
+- **Localisation** : `DomainUnitTests/`
+- **Couverture** :
+  - Value objects (Address, Email, Firstname, StreetName, ...)
+  - Entités métier (User, Pet, Prestation, ...)
+  - Règles de validation et invariants métier
+
+#### 4.9.3. Tests unitaires de l'infrastructure (InfrastructureUnitTests)
+
+- **Framework** : xUnit avec Moq et FluentAssertions
+- **Objectif** : Tester les services d'infrastructure sans dépendances externes
+- **Localisation** : `InfrastructureUnitTests/`
+- **Modules testés** :
+  - Authentification JWT et gestion des permissions
+  - Services de cache (Memcached) avec mocks
+  - Système d'événements et messaging (MassTransit)
+  - Services d'envoi d'email avec templates
+
+#### 4.9.4. Tests unitaires de persistance (PetBoarding.PersistenceUnitTests)
+
+- **Framework** : xUnit avec Testcontainers PostgreSQL
+- **Objectif** : Tester la couche de persistance avec une vraie base de données PostgreSQL
+- **Localisation** : `PetBoarding.PersistenceUnitTests/`
+- **Approche** :
+  - Tests d'intégration avec conteneurs Docker PostgreSQL
+  - Validation des configurations Entity Framework
+  - Tests des repositories et Unit of Work
+  - Vérification des migrations et contraintes de base de données
+
+#### 4.9.5. Structure et technologies communes
+
+- **Framework de base** : .NET 9.0 avec xUnit
+- **Assertions** : FluentAssertions pour une syntaxe expressive
+- **Mocking** : Moq pour les dépendances externes
+- **Couverture** : Coverlet pour l'analyse de couverture de code
+- **Intégration continue** : Compatible avec les pipelines de build automatisés
 
 ### 4.10. Cache distribué
 
@@ -376,26 +424,39 @@ Le système PetBoarding utilise un composant **TaskWorker** dédié pour le trai
 
 - **Framework** : Quartz.NET pour la planification et l'exécution de jobs
 - **Persistance** : PostgreSQL pour le stockage de l'état des jobs (clustering, historique)
-- **Pattern** : CQRS avec MediatR pour la cohérence architecturale
-- **Isolation** : Service autonome avec ses propres processus et logs
+- **Pattern** : CQRS avec MediatR pour la cohérence architecturale avec le reste de l'application
+- **Isolation** : Service autonome (.NET Worker Service) avec ses propres processus et logs
+- **Clustering** : Support multi-instances avec coordination via base de données
+- **Configuration** : Séparée avec appsettings.json dédiés
 
 #### Jobs implémentés
 
 **CleanExpiredBasketsJob** :
-- **Objectif** : Nettoyer les paniers expirés et libérer les créneaux réservés
+
+- **Objectif** : Nettoyer les paniers expirés et libérer les créneaux réservés temporairement
 - **Fréquence** : Configurable (par défaut : 10 minutes)
-- **Handler** : `ProcessExpiredBasketsCommandHandler`
-- **Configuration** : `TaskWorker:BasketExpirationMinutes` (défaut: 30 min)
+- **Handler** : `ProcessExpiredBasketsCommandHandler` via MediatR
+- **Configuration** : `TaskWorker:ExpiredBasketCleanupIntervalMinutes` et `TaskWorker:BasketExpirationMinutes` (défaut: 30 min)
 
 **ProcessExpiredReservationsJob** :
+
 - **Objectif** : Traiter les réservations expirées et mettre à jour leur statut
-- **Fréquence** : Configurable (par défaut : 15 minutes)  
+- **Fréquence** : Configurable (par défaut : 15 minutes)
 - **Handler** : `ProcessExpiredReservationsCommandHandler`
 - **Configuration** : `TaskWorker:ExpiredReservationProcessingIntervalMinutes`
 
 #### Configuration et déploiement
 
 Le TaskWorker utilise la même base de données que l'API principale mais s'exécute en tant que service distinct :
+
+**Structure du projet** :
+
+- **Localisation** : `Core_PetBoarding_Backend/PetBoarding_TaskWorker/`
+- **Type** : .NET Worker Service autonome
+- **Dependencies** : Partage les couches Application, Infrastructure et Persistence
+- **Configuration** : appsettings.json séparés avec paramètres spécifiques
+
+**Configuration Quartz.NET** :
 
 ```csharp
 // Configuration Quartz avec persistance PostgreSQL
@@ -406,6 +467,18 @@ q.UsePersistentStore(s =>
     s.UseClustering(); // Support multi-instances
 });
 ```
+
+**Déploiement Docker** :
+
+- Partage la même base de données PostgreSQL que l'API
+- Configuration via variables d'environnement
+- Orchestration via docker-compose.yml
+
+**Paramètres de configuration** :
+
+- `ExpiredBasketCleanupIntervalMinutes` : Intervalle de nettoyage des paniers (défaut: 10 min)
+- `BasketExpirationMinutes` : Durée de vie des paniers temporaires (défaut: 30 min)
+- `ExpiredReservationProcessingIntervalMinutes` : Traitement des réservations expirées (défaut: 15 min)
 
 #### Avantages de l'approche
 
@@ -422,12 +495,14 @@ Le système PetBoarding implémente une stratégie d'optimisation complète bas�
 #### Architecture d'indexation
 
 **Approche déclarative** :
+
 - Index définis dans les fichiers `*Configuration.cs` avec Entity Framework
 - Génération automatique du SQL optimisé pour PostgreSQL
 - Versioning intégré via les migrations EF Core
 - Type-safety et validation au compile-time
 
 **Types d'index utilisés** :
+
 - **Index composites** : Optimisation des requêtes multi-critères
 - **Index partiels** : Avec filtres WHERE pour réduire la taille
 - **Index avec tri** : IsDescending() pour optimiser les ORDER BY
@@ -436,37 +511,44 @@ Le système PetBoarding implémente une stratégie d'optimisation complète bas�
 #### Index critiques par domaine
 
 **Authentification (UserConfiguration)** :
+
 - `idx_users_email_password` : Optimise les connexions utilisateur (gain 90%+)
 - `idx_users_email` : Validation unicité et recherches par email
 
 **Gestion des réservations (ReservationConfiguration)** :
+
 - `idx_reservations_userid_createdat` : Historique utilisateur avec tri chronologique
 - `idx_reservations_user_displayed` : Index partiel pour réservations visibles seulement
 - `idx_reservations_date_range` : Optimise les recherches par plages de dates
 
 **Catalogue prestations (PrestationConfiguration)** :
+
 - `idx_prestations_disponible` : Index partiel pour prestations disponibles uniquement
 - `idx_prestations_disponible_categorie` : Filtres multiples performances
 
 **Gestion planning (ReservationSlotConfiguration)** :
+
 - `idx_reservation_slots_reservation_available` : Jointures optimisées avec contrainte unique
 - `idx_reservation_slots_active` : Index partiel pour créneaux non libérés
 
 #### Stratégie de mise en production
 
 **Migration automatique** :
+
 ```bash
 # Application des index via migration EF Core
 dotnet ef database update --project PetBoarding_Persistence --startup-project PetBoarding_Api
 ```
 
 **Avantages de l'approche EF Core** :
+
 - Pas de verrouillage des tables pendant la création
 - Rollback automatique complet via méthode Down()
 - Application reste accessible pendant la migration
 - SQL optimisé automatiquement pour PostgreSQL
 
 **Impact performance attendu** :
+
 - Authentification : amélioration de 90%+ des temps de connexion
 - Historique réservations : gain de 80%+ sur les requêtes utilisateur
 - Recherche prestations : amélioration de 70%+ pour les listes filtrées
