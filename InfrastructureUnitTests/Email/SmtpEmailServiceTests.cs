@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using PetBoarding_Domain.Emails;
 using PetBoarding_Infrastructure.Email;
 
-namespace InfrastructureTests.Email;
+namespace InfrastructureUnitTests.Email;
 
 public class SmtpEmailServiceTests
 {

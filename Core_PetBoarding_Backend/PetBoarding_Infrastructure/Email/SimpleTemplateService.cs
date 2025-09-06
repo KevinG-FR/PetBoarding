@@ -23,7 +23,8 @@ public sealed class SimpleTemplateService : IEmailTemplateService
 
         // Load template from embedded resources
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"PetBoarding_Infrastructure.Email.Templates.{templateName}.html";
+        var templatePath = _config.TemplatesPath.Replace("/", ".").Replace("\\", ".");
+        var resourceName = $"PetBoarding_Infrastructure.{templatePath}.{templateName}.html";
         
         _logger.LogDebug("Looking for embedded resource: {ResourceName}", resourceName);
 
