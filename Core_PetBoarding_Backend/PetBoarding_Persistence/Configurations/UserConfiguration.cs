@@ -58,8 +58,9 @@ namespace PetBoarding_Persistence.Configurations
             builder.HasIndex(x => new { x.Email, x.PasswordHash })
                 .HasDatabaseName("idx_users_email_password");
 
-            // Index pour les recherches par email seul
+            // Index unique pour les recherches par email seul (contrainte d'unicité)
             builder.HasIndex(x => x.Email)
+                .IsUnique()
                 .HasDatabaseName("idx_users_email");
 
             // Index pour les filtres par statut et type de profil

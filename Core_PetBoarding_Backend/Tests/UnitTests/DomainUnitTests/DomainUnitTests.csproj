@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core_PetBoarding_Backend\PetBoarding_Domain\PetBoarding_Domain.csproj" />
+    <ProjectReference Include="..\..\..\PetBoarding_Domain\PetBoarding_Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

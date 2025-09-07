@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core_PetBoarding_Backend\PetBoarding_Infrastructure\PetBoarding_Infrastructure.csproj" />
-    <ProjectReference Include="..\Core_PetBoarding_Backend\PetBoarding_Domain\PetBoarding_Domain.csproj" />
-    <ProjectReference Include="..\Core_PetBoarding_Backend\PetBoarding_Application\PetBoarding_Application.csproj" />
+    <ProjectReference Include="..\..\..\PetBoarding_Infrastructure\PetBoarding_Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\PetBoarding_Domain\PetBoarding_Domain.csproj" />
+    <ProjectReference Include="..\..\..\PetBoarding_Application\PetBoarding_Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
