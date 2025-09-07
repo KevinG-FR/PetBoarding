@@ -136,15 +136,17 @@ services:
     image: signoz/query-service:0.39.0
     container_name: signoz-query-service
     hostname: query-service
-    command: ["-config=/root/config/prometheus.yml"]
-    volumes:
-      - ./signoz/prometheus.yml:/root/config/prometheus.yml
     environment:
       - ClickHouseUrl=tcp://clickhouse:9000
       - STORAGE=clickhouse
       - GODEBUG=netdns=go
+      - TELEMETRY_ENABLED=true
+      - DEPLOYMENT_TYPE=docker-standalone-amd
+      - SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/signoz.db
     ports:
       - "8080:8080"
+    volumes:
+      - ./.containers/signoz-data:/var/lib/signoz
     depends_on:
       - clickhouse
     restart: unless-stopped
