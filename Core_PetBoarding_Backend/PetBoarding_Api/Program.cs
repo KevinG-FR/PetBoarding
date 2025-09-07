@@ -23,8 +23,8 @@ using PetBoarding_Api.Extensions;
 using PetBoarding_Api.OptionsSetup;
 
 using PetBoarding_Application;
-using PetBoarding_Application.Abstractions;
-using PetBoarding_Application.Account;
+using PetBoarding_Application.Web.Abstractions;
+using PetBoarding_Application.Web.Account;
 
 using PetBoarding_Domain.Accounts;
 using PetBoarding_Domain.Users;
@@ -161,7 +161,8 @@ builder.Services.AddAuthorization(options =>
     }
 });
 
-builder.Services.AddApplication()
+builder.Services.AddApplicationCore()
+                .AddApplicationWeb()
                 .AddInfrastructure(builder.Configuration)
                 .AddMemcachedCache(builder.Configuration.GetConnectionString("Memcached") ?? "memcached")
                 .AddPersistence();

@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Api.Dto.Pets.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Pets;
-using PetBoarding_Application.Pets.GetPetsByOwner;
+using PetBoarding_Application.Core.Pets.GetPetsByOwner;
 using PetBoarding_Domain.Pets;
 using PetBoarding_Domain.Users;
 using System.Security.Claims;

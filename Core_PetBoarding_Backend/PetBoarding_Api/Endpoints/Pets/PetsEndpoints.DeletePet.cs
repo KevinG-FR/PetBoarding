@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Pets.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Pets;
-using PetBoarding_Application.Pets.DeletePet;
+using PetBoarding_Application.Core.Pets.DeletePet;
 using PetBoarding_Domain.Pets;
 
 namespace PetBoarding_Api.Endpoints.Pets;

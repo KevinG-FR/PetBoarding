@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Reservations;
 using PetBoarding_Api.Extensions;
-using PetBoarding_Application.Reservations.UpdateReservation;
+using PetBoarding_Application.Core.Reservations.UpdateReservation;
 
 public static partial class ReservationsEndpoints
 {

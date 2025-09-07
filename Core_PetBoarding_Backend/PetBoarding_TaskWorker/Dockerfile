@@ -8,17 +8,17 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy project files
-COPY ["PetBoarding_TaskWorker/PetBoarding_TaskWorker.csproj", "PetBoarding_TaskWorker/"]
-COPY ["PetBoarding_Application/PetBoarding_Application.csproj", "PetBoarding_Application/"]
-COPY ["PetBoarding_Domain/PetBoarding_Domain.csproj", "PetBoarding_Domain/"]
-COPY ["PetBoarding_Infrastructure/PetBoarding_Infrastructure.csproj", "PetBoarding_Infrastructure/"]
-COPY ["PetBoarding_Persistence/PetBoarding_Persistence.csproj", "PetBoarding_Persistence/"]
+COPY ["Core_PetBoarding_Backend/PetBoarding_TaskWorker/PetBoarding_TaskWorker.csproj", "PetBoarding_TaskWorker/"]
+COPY ["Core_PetBoarding_Backend/PetBoarding_Application/PetBoarding_Application.csproj", "PetBoarding_Application/"]
+COPY ["Core_PetBoarding_Backend/PetBoarding_Domain/PetBoarding_Domain.csproj", "PetBoarding_Domain/"]
+COPY ["Core_PetBoarding_Backend/PetBoarding_Infrastructure/PetBoarding_Infrastructure.csproj", "PetBoarding_Infrastructure/"]
+COPY ["Core_PetBoarding_Backend/PetBoarding_Persistence/PetBoarding_Persistence.csproj", "PetBoarding_Persistence/"]
 
 # Restore dependencies
 RUN dotnet restore "PetBoarding_TaskWorker/PetBoarding_TaskWorker.csproj"
 
 # Copy source code
-COPY . .
+COPY Core_PetBoarding_Backend/ .
 WORKDIR "/src/PetBoarding_TaskWorker"
 
 # Build the application

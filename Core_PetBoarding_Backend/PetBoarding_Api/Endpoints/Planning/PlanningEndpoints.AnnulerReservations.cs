@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Planning;
 using MediatR;
 using PetBoarding_Api.Dto.Planning;
 using PetBoarding_Api.Dto.Planning.Responses;
-using PetBoarding_Application.Planning.AnnulerReservations;
+using PetBoarding_Application.Core.Planning.AnnulerReservations;
 
 public static partial class PlanningEndpoints
 {

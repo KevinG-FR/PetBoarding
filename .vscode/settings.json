@@ -19,5 +19,6 @@
         "titleBar.inactiveForeground": "#e7e7e799"
     },
     "peacock.color": "#006400",
-    "markdown-preview-enhanced.plantumlJarPath": "${workspaceFolder}/tools/plantuml.jar"
+    "markdown-preview-enhanced.plantumlJarPath": "${workspaceFolder}/tools/plantuml.jar",
+    "claudeCodeChat.permissions.yoloMode": true
 }

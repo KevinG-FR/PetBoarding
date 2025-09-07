@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Core.Abstractions;
 using PetBoarding_Domain.Events;
 using PetBoarding_Domain.Users;
 using PetBoarding_Infrastructure.Events.Consumers;

@@ -2,10 +2,9 @@ namespace PetBoarding_Api.Endpoints.Prestations;
 
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Api.Dto.Prestations.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Prestations;
-using PetBoarding_Application.Prestations.GetPrestations;
+using PetBoarding_Application.Core.Prestations.GetPrestations;
 using PetBoarding_Domain.Prestations;
 
 public static partial class PrestationsEndpoints

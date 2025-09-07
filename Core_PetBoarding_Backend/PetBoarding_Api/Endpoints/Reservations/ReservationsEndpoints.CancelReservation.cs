@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Reservations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Extensions;
-using PetBoarding_Application.Reservations.CancelReservation;
+using PetBoarding_Application.Core.Reservations.CancelReservation;
 
 public static partial class ReservationsEndpoints
 {

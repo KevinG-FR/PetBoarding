@@ -1,11 +1,9 @@
 namespace PetBoarding_Api.Endpoints.Baskets;
 
-using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Application.Payments.CreatePayment;
-using PetBoarding_Application.Payments.ProcessPayment;
-using PetBoarding_Domain.Payments;
+using PetBoarding_Application.Core.Payments.CreatePayment;
+using PetBoarding_Application.Core.Payments.ProcessPayment;
+using System.Security.Claims;
 
 public static partial class BasketsEndpoints
 {

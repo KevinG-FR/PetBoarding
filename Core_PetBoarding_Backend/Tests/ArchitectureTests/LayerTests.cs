@@ -1,14 +1,11 @@
-using System.Reflection;
-
 using FluentAssertions;
-
 using NetArchTest.Rules;
-
+using PetBoarding_Api.Mappers.Users;
+using PetBoarding_Application.Core.Users.GetAllUsers;
 using PetBoarding_Domain.Abstractions;
-using PetBoarding_Application.Users.GetAllUsers;
 using PetBoarding_Infrastructure.Caching;
 using PetBoarding_Persistence;
-using PetBoarding_Api.Mappers.Users;
+using System.Reflection;
 
 namespace ArchitectureTests;
 

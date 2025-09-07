@@ -1,8 +1,8 @@
 namespace PetBoarding_Api.Endpoints.Baskets;
 
-using System.Security.Claims;
 using MediatR;
-using PetBoarding_Application.Baskets.RemoveItemFromBasket;
+using PetBoarding_Application.Core.Baskets.RemoveItemFromBasket;
+using System.Security.Claims;
 
 public static partial class BasketsEndpoints
 {

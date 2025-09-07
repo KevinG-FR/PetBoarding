@@ -143,14 +143,22 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
     {
         // Arrange
         var baseDate = DateTime.Today;
-        var reservations = new[]
-        {
-            new Reservation("user123", "pet1", "First", "service1", baseDate, null),
-            new Reservation("user456", "pet2", "Second", "service2", baseDate, null),
-            new Reservation("user789", "pet3", "Third", "service3", baseDate, null)
-        };
-
-        Context.Reservations.AddRange(reservations);
+        
+        // Créer les réservations une par une avec des délais pour s'assurer que CreatedAt est différent
+        var firstReservation = new Reservation("user123", "pet1", "First", "service1", baseDate, null);
+        Context.Reservations.Add(firstReservation);
+        await Context.SaveChangesAsync();
+        
+        await Task.Delay(10); // Petit délai pour garantir un CreatedAt différent
+        
+        var secondReservation = new Reservation("user456", "pet2", "Second", "service2", baseDate, null);
+        Context.Reservations.Add(secondReservation);
+        await Context.SaveChangesAsync();
+        
+        await Task.Delay(10); // Petit délai pour garantir un CreatedAt différent
+        
+        var thirdReservation = new Reservation("user789", "pet3", "Third", "service3", baseDate, null);
+        Context.Reservations.Add(thirdReservation);
         await Context.SaveChangesAsync();
 
         // Act

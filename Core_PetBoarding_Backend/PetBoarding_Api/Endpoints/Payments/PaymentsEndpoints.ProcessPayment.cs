@@ -2,7 +2,7 @@ namespace PetBoarding_Api.Endpoints.Payments;
 
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Application.Payments.ProcessPayment;
+using PetBoarding_Application.Core.Payments.ProcessPayment;
 
 public static partial class PaymentsEndpoints
 {

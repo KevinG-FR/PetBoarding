@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Login.Requests;
 using PetBoarding_Api.Dto.Login.Responses;
 using PetBoarding_Api.Extensions;
-using PetBoarding_Application.Users.GetTokenFromRefreshToken;
+using PetBoarding_Application.Web.Users.GetTokenFromRefreshToken;
 using PetBoarding_Domain.Accounts;
 
 namespace PetBoarding_Api.Endpoints.Authentication;

@@ -3,10 +3,9 @@ namespace PetBoarding_Api.Endpoints.Reservations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Reservations;
-using PetBoarding_Api.Dto.Reservations.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Reservations;
-using PetBoarding_Application.Reservations.CreateReservation;
+using PetBoarding_Application.Core.Reservations.CreateReservation;
 
 public static partial class ReservationsEndpoints
 {

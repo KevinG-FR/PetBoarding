@@ -1,7 +1,7 @@
 namespace PetBoarding_Api.Endpoints.Baskets;
 
 using MediatR;
-using PetBoarding_Application.Baskets.ClearBasket;
+using PetBoarding_Application.Core.Baskets.ClearBasket;
 
 public static partial class BasketsEndpoints
 {

@@ -12,6 +12,9 @@ namespace PetBoarding_Domain.Errors
         public static Error NotFound(Guid userId) =>
             new($"User not found for id '{userId}'.");
 
+        public static Error NotFoundByEmail(string email) =>
+            new($"User not found for email '{email}'.");
+
         public static Error ChangeUserStatus(UserStatus actualUserStatus, UserStatus newUserStatus) =>
             new($"Unable to change user status '{actualUserStatus}' for '{newUserStatus}'.");
 

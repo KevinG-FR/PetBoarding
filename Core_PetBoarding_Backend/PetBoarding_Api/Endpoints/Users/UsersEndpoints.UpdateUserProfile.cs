@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Users;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Users;
-using PetBoarding_Application.Users.UpdateUserProfile;
+using PetBoarding_Application.Core.Users.UpdateUserProfile;
 using PetBoarding_Domain.Users;
 
 public static partial class UsersEndpoints

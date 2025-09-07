@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PetBoarding_Application.TaskWorkerProcess.ProcessExpiredBaskets;
+using PetBoarding_Application.Core.TaskWorkerProcess.ProcessExpiredBaskets;
 using Quartz;
 
 namespace PetBoarding_TaskWorker.Jobs;

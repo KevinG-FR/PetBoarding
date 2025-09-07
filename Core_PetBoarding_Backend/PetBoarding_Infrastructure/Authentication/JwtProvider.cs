@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Web.Abstractions;
 
 using PetBoarding_Domain.Users;
 

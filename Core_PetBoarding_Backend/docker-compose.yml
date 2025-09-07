@@ -3,8 +3,8 @@ services:
     image: ${DOCKER_REGISTRY-}petboardingapi
     container_name: petboarding.api
     build:
-      context: .
-      dockerfile: PetBoarding_Api/Dockerfile
+      context: ..
+      dockerfile: Core_PetBoarding_Backend/PetBoarding_Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:5001;http://+:5000
@@ -33,11 +33,11 @@ services:
     image: ${DOCKER_REGISTRY-}petboardingtaskworker
     container_name: petboarding.taskworker
     build:
-      context: .
-      dockerfile: PetBoarding_TaskWorker/Dockerfile
+      context: ..
+      dockerfile: Core_PetBoarding_Backend/PetBoarding_TaskWorker/Dockerfile
     environment:
       - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=petboarding.postgres.database:5432;Database=petboarding;Username=postgres;Password=postgres
+      - ConnectionStrings__Database=Host=petboarding.postgres.database:5432;Database=petboarding;Username=postgres;Password=postgres
       - TaskWorker__ExpiredBasketCleanupIntervalMinutes=10
       - TaskWorker__BasketExpirationMinutes=30
       - TaskWorker__ExpiredReservationProcessingIntervalMinutes=15
@@ -45,6 +45,8 @@ services:
       - OTEL_SERVICE_NAME=PetBoarding.TaskWorker
       - OTEL_RESOURCE_ATTRIBUTES=service.name=PetBoarding.TaskWorker,service.version=1.0.0
     depends_on:
+      petboarding_api:
+        condition: service_started
       postgres.database:
         condition: service_healthy
       rabbitmq:

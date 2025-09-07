@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Addresses;
 using PetBoarding_Api.Dto.Login.Requests;
 using PetBoarding_Api.Dto.Login.Responses;
-using PetBoarding_Application.Users.GetUserByEmail;
+using PetBoarding_Application.Core.Users.GetUserByEmail;
 using PetBoarding_Domain.Accounts;
 
 namespace PetBoarding_Api.Endpoints.Authentication;

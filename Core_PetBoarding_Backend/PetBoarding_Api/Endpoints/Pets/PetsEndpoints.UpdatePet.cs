@@ -4,7 +4,7 @@ using PetBoarding_Api.Dto.Pets;
 using PetBoarding_Api.Dto.Pets.Responses;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Pets;
-using PetBoarding_Application.Pets.UpdatePet;
+using PetBoarding_Application.Core.Pets.UpdatePet;
 using PetBoarding_Domain.Pets;
 
 namespace PetBoarding_Api.Endpoints.Pets;

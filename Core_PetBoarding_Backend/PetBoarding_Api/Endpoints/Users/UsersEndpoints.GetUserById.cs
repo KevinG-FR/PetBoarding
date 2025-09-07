@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Users;
 using MediatR;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Users;
-using PetBoarding_Application.Users.GetUserById;
+using PetBoarding_Application.Core.Users.GetUserById;
 using PetBoarding_Domain.Users;
 
 public static partial class UsersEndpoints

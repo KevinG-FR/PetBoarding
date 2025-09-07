@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using PetBoarding_Application.TaskWorkerProcess.ProcessExpiredReservations;
+using PetBoarding_Application.Core.TaskWorkerProcess.ProcessExpiredReservations;
 using Quartz;
 
 namespace PetBoarding_TaskWorker.Jobs;

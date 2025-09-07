@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Baskets;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Application.Baskets.AddItemToBasket;
+using PetBoarding_Application.Core.Baskets.AddItemToBasket;
 using PetBoarding_Api.Dto.Baskets;
 
 public static partial class BasketsEndpoints

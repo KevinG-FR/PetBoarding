@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Payments;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Application.Payments.CreatePayment;
+using PetBoarding_Application.Core.Payments.CreatePayment;
 using PetBoarding_Api.Dto.Payments;
 
 public static partial class PaymentsEndpoints

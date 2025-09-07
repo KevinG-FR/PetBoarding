@@ -1,11 +1,10 @@
 namespace PetBoarding_Api.Endpoints.Baskets;
 
-using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using PetBoarding_Application.Baskets.GetUserBasket;
 using PetBoarding_Api.Dto.Baskets;
+using PetBoarding_Application.Core.Baskets.GetUserBasket;
 using PetBoarding_Domain.Prestations;
+using System.Security.Claims;
 
 public static partial class BasketsEndpoints
 {

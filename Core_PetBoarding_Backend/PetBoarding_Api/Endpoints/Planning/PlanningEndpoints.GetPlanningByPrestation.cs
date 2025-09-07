@@ -3,7 +3,7 @@ namespace PetBoarding_Api.Endpoints.Planning;
 using MediatR;
 using PetBoarding_Api.Dto.Planning.Responses;
 using PetBoarding_Api.Mappers.Planning;
-using PetBoarding_Application.Planning.GetPlanningByPrestationId;
+using PetBoarding_Application.Core.Planning.GetPlanningByPrestationId;
 
 public static partial class PlanningEndpoints
 {

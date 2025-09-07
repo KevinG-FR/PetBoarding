@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetBoarding_Api.Dto.Reservations;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.Mappers.Reservations;
-using PetBoarding_Application.Reservations.ValidatePayment;
+using PetBoarding_Application.Core.Reservations.ValidatePayment;
 
 public static partial class ReservationsEndpoints
 {

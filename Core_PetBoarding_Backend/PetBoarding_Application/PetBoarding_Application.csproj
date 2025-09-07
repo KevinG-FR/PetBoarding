@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Core\Users &amp;&amp; cp -r cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationUsersUpdateUserProfile cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationCoreUsers\**" />
+    <EmbeddedResource Remove="Core\Users &amp;&amp; cp -r cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationUsersUpdateUserProfile cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationCoreUsers\**" />
+    <None Remove="Core\Users &amp;&amp; cp -r cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationUsersUpdateUserProfile cPERSOProjectsPetBoardingCore_PetBoarding_BackendPetBoarding_ApplicationCoreUsers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PetBoarding_Domain\PetBoarding_Domain.csproj" />
   </ItemGroup>
 

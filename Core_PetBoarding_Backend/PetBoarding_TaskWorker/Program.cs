@@ -65,16 +65,17 @@ builder.Services.AddOpenTelemetry()
 
 // Add layers
 builder.Services
-    .AddApplication()
+    .AddApplicationCore()
     .AddInfrastructure(builder.Configuration)
+    .AddMemcachedCache(builder.Configuration.GetConnectionString("Memcached") ?? "memcached")
     .AddPersistence();
 
 // Configure Quartz
 builder.Services.AddQuartz(q =>
 {
     // Configuration de la base de données PostgreSQL pour la persistance des jobs
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
-        throw new InvalidOperationException("DefaultConnection string not found");
+    var connectionString = builder.Configuration.GetConnectionString("Database") ?? 
+        throw new InvalidOperationException("Database connection string not found");
         
     q.UsePersistentStore(s =>
     {
@@ -82,6 +83,9 @@ builder.Services.AddQuartz(q =>
         s.UsePostgres(connectionString);
         s.UseClustering();
     });
+    
+    // Explicit configuration for serializer
+    q.SetProperty("quartz.serializer.type", "json");
 
     // Job de nettoyage des paniers expirés
     var cleanBasketsJobKey = new JobKey("CleanExpiredBasketsJob");
@@ -117,24 +121,6 @@ builder.Services.AddQuartzHostedService(options =>
 });
 
 var app = builder.Build();
-
-// Apply database migrations
-using (var scope = app.Services.CreateScope())
-{
-    var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    try
-    {
-        migrationLogger.LogInformation("Applying database migrations...");
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.Migrate();
-        migrationLogger.LogInformation("Database migrations applied successfully");
-    }
-    catch (Exception ex)
-    {
-        migrationLogger.LogError(ex, "Failed to apply database migrations");
-        throw;
-    }
-}
 
 // Start the application
 var logger = app.Services.GetRequiredService<ILogger<Program>>();

@@ -1,5 +1,5 @@
 using MassTransit;
-using PetBoarding_Application.Abstractions;
+using PetBoarding_Application.Core.Abstractions;
 using PetBoarding_Domain.Events;
 using Microsoft.Extensions.Logging;
 
