@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 using PetBoarding_Api.Endpoints;
 using PetBoarding_Api.Endpoints.Authentication;
 using PetBoarding_Api.Endpoints.Baskets;
@@ -34,6 +39,55 @@ using PetBoarding_Persistence.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuration du logging par défaut avec OpenTelemetry
+builder.Logging.AddConsole();
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService(serviceName, serviceVersion: "1.0.0"));
+    logging.AddOtlpExporter(options =>
+    {
+        options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
+    });
+});
+
+// Configuration OpenTelemetry
+var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
+var serviceVersion = "1.0.0";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation(options =>
+        {
+            options.RecordException = true;
+            options.Filter = httpContext =>
+            {
+                // Exclure les endpoints de santé et Swagger du tracing
+                var path = httpContext.Request.Path.ToString();
+                return !path.Contains("/swagger") && !path.Contains("/health");
+            };
+        })
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation(options =>
+        {
+            options.SetDbStatementForText = true;
+            options.SetDbStatementForStoredProcedure = true;
+        })
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
+        }))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
+        }));
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAccountService, AccountService>();
