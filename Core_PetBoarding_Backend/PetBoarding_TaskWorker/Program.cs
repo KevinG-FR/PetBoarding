@@ -15,8 +15,26 @@ using PetBoarding_Persistence;
 using PetBoarding_TaskWorker.Jobs;
 
 using Quartz;
+using Serilog;
+using Serilog.Events;
+
+// Configuration Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("Quartz", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
+    .WriteTo.Console()
+    .WriteTo.Seq(Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://seq:5341")
+    .CreateLogger();
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSerilog();
 
 // Configuration
 builder.Configuration
@@ -26,6 +44,42 @@ builder.Configuration
 
 // Configuration du logging par défaut avec OpenTelemetry
 builder.Logging.AddConsole();
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.TaskWorker";
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService(serviceName, serviceVersion: "1.0.0"));
+    logging.AddOtlpExporter(options =>
+    {
+        options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+    });
+});
+
+// Configuration OpenTelemetry pour Jaeger
+var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.TaskWorker";
+var serviceVersion = "1.0.0";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+    .WithTracing(tracing => tracing
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation(options =>
+        {
+            options.SetDbStatementForText = true;
+            options.SetDbStatementForStoredProcedure = true;
+        })
+        .AddSource("Quartz.Core") // Pour tracer les jobs Quartz
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+        }))
+    .WithMetrics(metrics => metrics
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+        }));
 
 // Add layers
 builder.Services

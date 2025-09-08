@@ -11,6 +11,15 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password123
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ConnectionStrings__Database=Host=postgres.database;Port=5432;Database=petboarding;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=petboarding
+      - RabbitMQ__Password=petboarding123
+      - RabbitMQ__VirtualHost=/
+      - RabbitMQ__ExchangeName=petboarding.events
+      - JAEGER_ENDPOINT=http://jaeger:4317
+      - SEQ_URL=http://seq
+      - OTEL_SERVICE_NAME=PetBoarding.Api
     ports:
       - '5000:5000'
       - '5001:5001'
@@ -23,12 +32,17 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+      jaeger:
+        condition: service_started
+      seq:
+        condition: service_started
     restart: unless-stopped
     networks:
       - app-network
       - database-network
       - cache-network
       - messaging-network
+      - observability-network
 
   petboarding_taskworker:
     image: ${DOCKER_REGISTRY-}petboardingtaskworker
@@ -39,9 +53,18 @@ services:
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ConnectionStrings__Database=Host=postgres.database;Port=5432;Database=petboarding;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=petboarding
+      - RabbitMQ__Password=petboarding123
+      - RabbitMQ__VirtualHost=/
+      - RabbitMQ__ExchangeName=petboarding.events
       - TaskWorker__ExpiredBasketCleanupIntervalMinutes=10
       - TaskWorker__BasketExpirationMinutes=30
       - TaskWorker__ExpiredReservationProcessingIntervalMinutes=15
+      - JAEGER_ENDPOINT=http://jaeger:4317
+      - SEQ_URL=http://seq
+      - OTEL_SERVICE_NAME=PetBoarding.TaskWorker
     depends_on:
       petboarding_api:
         condition: service_started
@@ -49,6 +72,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      jaeger:
+        condition: service_started
+      seq:
+        condition: service_started
     restart: unless-stopped
     deploy:
       replicas: 1
@@ -56,6 +83,7 @@ services:
       - app-network
       - database-network
       - messaging-network
+      - observability-network
 
   postgres.database:
     image: postgres:17-alpine
@@ -111,6 +139,40 @@ services:
     networks:
       - messaging-network
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.73.0
+    container_name: petboarding.jaeger
+    hostname: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - JAEGER_DISABLED=false
+    ports:
+      - '16686:16686' # Jaeger UI
+      - '4317:4317' # OTLP gRPC receiver
+      - '4318:4318' # OTLP HTTP receiver
+    volumes:
+      - ./.containers/jaeger-data:/badger
+    restart: unless-stopped
+    networks:
+      - observability-network
+
+  seq:
+    image: datalust/seq:2025.2
+    container_name: petboarding.seq
+    hostname: seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINUSERNAME=admin
+      - SEQ_FIRSTRUN_ADMINPASSWORD=petboarding123
+    ports:
+      - '5341:80' # Seq UI and API
+      - '5342:5341' # Seq ingestion only
+    volumes:
+      - ./.containers/seq-data:/data
+    restart: unless-stopped
+    networks:
+      - observability-network
+
 networks:
   app-network:
     driver: bridge
@@ -119,6 +181,8 @@ networks:
   cache-network:
     driver: bridge
   messaging-network:
+    driver: bridge
+  observability-network:
     driver: bridge
 
 volumes:

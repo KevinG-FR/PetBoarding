@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using PetBoarding_Api.Endpoints.Authentication;
 using PetBoarding_Api.Endpoints.Baskets;
 using PetBoarding_Api.Endpoints.Cache;
@@ -19,13 +23,67 @@ using PetBoarding_Infrastructure;
 using PetBoarding_Infrastructure.Authentication;
 using PetBoarding_Persistence;
 using PetBoarding_Persistence.Migrations;
+using Serilog;
+using Serilog.Events;
 using System.Reflection;
 
 
+// Configuration Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
+    .WriteTo.Console()
+    .WriteTo.Seq(Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://seq:5341")
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Configuration du logging par défaut avec OpenTelemetry
 builder.Logging.AddConsole();
+builder.Logging.AddOpenTelemetry(logging =>
+{
+    var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService(serviceName, serviceVersion: "1.0.0"));
+    logging.AddOtlpExporter(options =>
+    {
+        options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+    });
+});
+
+// Configuration OpenTelemetry pour Jaeger
+var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
+var serviceVersion = "1.0.0";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation(options =>
+        {
+            options.SetDbStatementForText = true;
+            options.SetDbStatementForStoredProcedure = true;
+        })
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+        }))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("JAEGER_ENDPOINT") ?? "http://jaeger:4317");
+        }));
 
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAccountService, AccountService>();
