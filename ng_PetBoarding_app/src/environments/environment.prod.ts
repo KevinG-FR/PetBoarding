@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.petboarding.com'
+  apiUrl: 'https://localhost:5001' // API sous Docker
 };

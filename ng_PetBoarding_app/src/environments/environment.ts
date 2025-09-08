@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7023' // HTTPS activé
+  apiUrl: 'https://localhost:5001' // API sous Docker
 };
