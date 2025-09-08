@@ -10,6 +10,7 @@ services:
       - ASPNETCORE_URLS=https://+:5001;http://+:5000
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password123
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__Database=Host=postgres.database;Port=5432;Database=petboarding;Username=postgres;Password=postgres
       - SIGNOZ_OTEL_ENDPOINT=http://signoz-otel-collector:4317
       - OTEL_SERVICE_NAME=PetBoarding.Api
       - OTEL_RESOURCE_ATTRIBUTES=service.name=PetBoarding.Api,service.version=1.0.0
@@ -26,8 +27,14 @@ services:
       rabbitmq:
         condition: service_healthy
       signoz-otel-collector:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - app-network
+      - database-network
+      - cache-network
+      - messaging-network
+      - observability-network
 
   petboarding_taskworker:
     image: ${DOCKER_REGISTRY-}petboardingtaskworker
@@ -37,7 +44,7 @@ services:
       dockerfile: Core_PetBoarding_Backend/PetBoarding_TaskWorker/Dockerfile
     environment:
       - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=petboarding.postgres.database:5432;Database=petboarding;Username=postgres;Password=postgres
+      - ConnectionStrings__Database=Host=postgres.database;Port=5432;Database=petboarding;Username=postgres;Password=postgres
       - TaskWorker__ExpiredBasketCleanupIntervalMinutes=10
       - TaskWorker__BasketExpirationMinutes=30
       - TaskWorker__ExpiredReservationProcessingIntervalMinutes=15
@@ -52,14 +59,20 @@ services:
       rabbitmq:
         condition: service_healthy
       signoz-otel-collector:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
     deploy:
       replicas: 1
+    networks:
+      - app-network
+      - database-network
+      - messaging-network
+      - observability-network
 
   postgres.database:
-    image: postgres:latest
+    image: postgres:17-alpine
     container_name: petboarding.postgres.database
+    hostname: postgres.database
     environment:
       - POSTGRES_DB=petboarding
       - POSTGRES_USER=postgres
@@ -74,26 +87,31 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - database-network
 
   memcached:
-    image: memcached:latest
+    image: memcached:1.6.32-alpine
     container_name: petboarding.memcached
+    hostname: memcached
     command: memcached -m 256 -p 11211 -u memcache -l 0.0.0.0
     ports:
-      - "11211:11211"
+      - '11211:11211'
     restart: unless-stopped
+    networks:
+      - cache-network
 
   rabbitmq:
-    image: rabbitmq:3.13-management
+    image: rabbitmq:3.13.7-management-alpine
     container_name: petboarding.rabbitmq
-    hostname: petboarding-rabbitmq
+    hostname: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: petboarding
       RABBITMQ_DEFAULT_PASS: petboarding123
       RABBITMQ_DEFAULT_VHOST: /
     ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
+      - '5672:5672' # AMQP port
+      - '15672:15672' # Management UI
     volumes:
       - ./.containers/rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
@@ -102,63 +120,132 @@ services:
       timeout: 10s
       retries: 5
     restart: unless-stopped
+    networks:
+      - messaging-network
 
   # SigNoz Services
   clickhouse:
-    image: clickhouse/clickhouse-server:23.7
+    image: clickhouse/clickhouse-server:24.3-alpine
     container_name: signoz-clickhouse
     hostname: clickhouse
     ports:
-      - "9000:9000"
-      - "8123:8123"
+      - '9000:9000'
+      - '8123:8123'
     volumes:
       - ./.containers/signoz-clickhouse:/var/lib/clickhouse
+      - ./signoz/clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./signoz/clickhouse-users.xml:/etc/clickhouse-server/users.xml:ro
     environment:
       - CLICKHOUSE_DB=signoz
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_INIT_TIMEOUT=60
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:8123/ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
+    networks:
+      - observability-network
 
   signoz-otel-collector:
-    image: signoz/signoz-otel-collector:0.88.11
+    image: otel/opentelemetry-collector-contrib:0.102.0
     container_name: signoz-otel-collector
-    hostname: otel-collector
-    command: ["--config=/etc/otelcol-contrib/otel-collector-config.yaml"]
+    hostname: signoz-otel-collector
+    command: ['--config=/etc/otelcol-contrib/config.yaml']
     volumes:
-      - ./signoz/otel-collector-config.yaml:/etc/otelcol-contrib/otel-collector-config.yaml
+      - ./signoz/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
-      - "8889:8889"   # Prometheus metrics
+      - '4317:4317' # OTLP gRPC
+      - '4318:4318' # OTLP HTTP
+      - '8889:8889' # Prometheus metrics
+      - '13133:13133' # Health check
+      - '55679:55679' # zPages
     depends_on:
-      - clickhouse
+      clickhouse:
+        condition: service_healthy # Attend que ClickHouse soit vraiment prêt
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:13133/']
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
+    networks:
+      - observability-network
+      - app-network
 
   signoz-query-service:
-    image: signoz/query-service:0.39.0
+    image: signoz/query-service:0.44.0
     container_name: signoz-query-service
-    hostname: query-service
+    hostname: signoz-query-service
     environment:
       - ClickHouseUrl=tcp://clickhouse:9000
       - STORAGE=clickhouse
       - GODEBUG=netdns=go
       - TELEMETRY_ENABLED=true
       - DEPLOYMENT_TYPE=docker-standalone-amd
-      - SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/signoz.db
+      - SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/
+      - LOW_CARDINAL_EXCEPTION_GROUPING=true
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
-      - ./.containers/signoz-data:/var/lib/signoz
+      - ./.containers/signoz-data:/var/lib/signoz/
     depends_on:
-      - clickhouse
+      clickhouse:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - observability-network
 
   signoz-frontend:
-    image: signoz/frontend:0.39.0
+    image: signoz/frontend:0.44.0
     container_name: signoz-frontend
-    hostname: frontend
+    hostname: signoz-frontend
     ports:
-      - "3301:3301"
+      - '3301:3301'
     environment:
       - FRONTEND_API_ENDPOINT=http://signoz-query-service:8080
+      - NEXT_PUBLIC_DEPLOYED_VERSION=0.44.0
     depends_on:
       - signoz-query-service
     restart: unless-stopped
+    networks:
+      - observability-network
+
+  signoz-init:
+    image: signoz/query-service:0.44.0
+    container_name: signoz-init
+    hostname: signoz-init
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo "Initializing SigNoz database..."
+        /root/migrate -path /root/migrations/ -database "clickhouse://clickhouse:9000?database=signoz&x-multi-statement=true" up
+        echo "SigNoz initialization completed"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: 'no'
+    networks:
+      - observability-network
+
+networks:
+  app-network:
+    driver: bridge
+  database-network:
+    driver: bridge
+  cache-network:
+    driver: bridge
+  messaging-network:
+    driver: bridge
+  observability-network:
+    driver: bridge
+
+volumes:
+  petboarding-db:
+  signoz-clickhouse:
+  signoz-data:
+  rabbitmq-data:

@@ -1,15 +1,10 @@
-using System.Reflection;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
-using PetBoarding_Api.Endpoints;
 using PetBoarding_Api.Endpoints.Authentication;
 using PetBoarding_Api.Endpoints.Baskets;
 using PetBoarding_Api.Endpoints.Cache;
@@ -21,37 +16,73 @@ using PetBoarding_Api.Endpoints.Reservations;
 using PetBoarding_Api.Endpoints.Users;
 using PetBoarding_Api.Extensions;
 using PetBoarding_Api.OptionsSetup;
-
 using PetBoarding_Application;
 using PetBoarding_Application.Web.Abstractions;
 using PetBoarding_Application.Web.Account;
-
 using PetBoarding_Domain.Accounts;
-using PetBoarding_Domain.Users;
-
 using PetBoarding_Infrastructure;
 using PetBoarding_Infrastructure.Authentication;
-
 using PetBoarding_Persistence;
 using PetBoarding_Persistence.Migrations;
-using PetBoarding_Persistence.Options;
-using PetBoarding_Persistence.Repositories;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuration du logging par défaut avec OpenTelemetry
 builder.Logging.AddConsole();
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
-    logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
-        .AddService(serviceName, serviceVersion: "1.0.0"));
-    logging.AddOtlpExporter(options =>
-    {
-        options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
-    });
-});
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("PetBoarding.Api", "1.0.0")
+        .AddAttributes(new Dictionary<string, object>
+        {
+            ["deployment.environment"] = builder.Environment.EnvironmentName,
+            ["service.namespace"] = "petboarding",
+            ["service.instance.id"] = Environment.MachineName,
+            ["signoz.deployment.type"] = "standalone",
+            ["signoz.version"] = "0.44.0"
+        }))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation(options =>
+        {
+            options.RecordException = true;
+            options.Filter = context => !context.Request.Path.StartsWithSegments("/health");
+        })
+        .AddEntityFrameworkCoreInstrumentation(options =>
+        {
+            options.SetDbStatementForText = true;
+            options.SetDbStatementForStoredProcedure = true;
+        })
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
+            options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+            options.Headers = "signoz-access-token=standalone";
+            options.TimeoutMilliseconds = 10000;
+                    
+                    // Configuration pour gRPC
+                    options.ExportProcessorType = ExportProcessorType.Batch;
+                    options.BatchExportProcessorOptions = new BatchExportProcessorOptions<System.Diagnostics.Activity>
+                    {
+                        MaxQueueSize = 2048,
+                        ScheduledDelayMilliseconds = 1000,
+                        ExporterTimeoutMilliseconds = 10000,
+                        MaxExportBatchSize = 512
+                    };
+        }))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
+            options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+            options.Headers = "signoz-access-token=standalone";
+            options.TimeoutMilliseconds = 10000;
+
+            // Configuration pour les métriques gRPC
+            options.ExportProcessorType = ExportProcessorType.Simple;
+        }));
 
 // Configuration OpenTelemetry
 var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.Api";
@@ -172,6 +203,9 @@ builder.Services.AddEndpoint(Assembly.GetExecutingAssembly());
 var app = builder.Build();
 
 // Add Endpoints. Don't forget to add new Endpoints here.
+app.MapGet("/", () => "PetBoarding API is running!");
+app.MapGet("/health", () => "OK");
+
 app.MapAuthenticationEndpoints();
 app.MapUsersEndpoints();
 app.MapReservationsEndpoints();

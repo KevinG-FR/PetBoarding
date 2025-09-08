@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "PetBoarding",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
