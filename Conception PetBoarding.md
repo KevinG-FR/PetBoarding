@@ -24,10 +24,11 @@
   - [4.10. Cache distribué](#410-cache-distribué)
   - [4.11. Système d'événements de domaine](#411-système-dévénements-de-domaine)
   - [4.12. Service d'envoi d'email](#412-service-denvoi-demail)
-  - [4.13. Architecture et dépendances](#413-architecture-et-dépendances)
-  - [4.14. Déploiement](#414-déploiement)
-  - [4.15. TaskWorker et traitement asynchrone](#415-taskworker-et-traitement-asynchrone)
-  - [4.16. Optimisation base de données et index](#416-optimisation-base-de-données-et-index)
+  - [4.13. Monitoring et observabilité](#413-monitoring-et-observabilité)
+  - [4.14. Architecture et dépendances](#414-architecture-et-dépendances)
+  - [4.15. Déploiement](#415-déploiement)
+  - [4.16. TaskWorker et traitement asynchrone](#416-taskworker-et-traitement-asynchrone)
+  - [4.17. Optimisation base de données et index](#417-optimisation-base-de-données-et-index)
 - [5. Préliminaire à la conception](#5-préliminaire-à-la-conception)
 - [6. Cas d'utilisation](#6-cas-dutilisation)
   - [6.1. Rappel : modèle conceptuel](#61-rappel--modèle-conceptuel)
@@ -236,16 +237,27 @@ Le projet PetBoarding dispose d'une suite complète de tests organisée en plusi
   - Système d'événements et messaging (MassTransit)
   - Services d'envoi d'email avec templates
 
-#### 4.9.4. Tests unitaires de persistance (PetBoarding.PersistenceUnitTests)
+#### 4.9.4. Tests d'intégration de persistance (PersistenceIntegrationTests)
 
-- **Framework** : xUnit avec Testcontainers PostgreSQL
-- **Objectif** : Tester la couche de persistance avec une vraie base de données PostgreSQL
-- **Localisation** : `PetBoarding.PersistenceUnitTests/`
-- **Approche** :
-  - Tests d'intégration avec conteneurs Docker PostgreSQL
-  - Validation des configurations Entity Framework
-  - Tests des repositories et Unit of Work
-  - Vérification des migrations et contraintes de base de données
+- **Framework** : xUnit avec Testcontainers PostgreSQL et FluentAssertions
+- **Objectif** : Tester complètement l'intégration de la couche persistance avec une base de données réelle
+- **Localisation** : `PersistenceIntegrationTests/`
+- **Architecture** :
+  - `PostgreSqlTestBase` : Classe de base gérant le cycle de vie des conteneurs PostgreSQL
+  - `TestBase` : Infrastructure commune pour les tests avec configuration automatique du DbContext
+  - `EntityTestFactory` : Factory pour la création d'entités de test cohérentes
+- **Couverture détaillée** :
+  - **Repositories** : Tests complets de tous les repositories (User, Prestation, Reservation)
+  - **Unit of Work** : Validation des transactions et de la cohérence des données
+  - **ApplicationDbContext** : Tests de configuration EF Core et mapping des entités
+  - **Configurations** : Validation des configurations Entity Framework (UserConfiguration, etc.)
+  - **Performance** : Tests de performance avec analyse des requêtes générées
+  - **Intégration base de données** : Tests end-to-end avec données réelles
+- **Approche avancée** :
+  - Conteneurs PostgreSQL isolés par test pour éviter les interférences
+  - Tests de concurrence et gestion des conflits
+  - Validation des contraintes de base de données et indexes
+  - Tests de migration et de rollback
 
 #### 4.9.5. Structure et technologies communes
 
@@ -298,7 +310,65 @@ Service de notification par email intégré avec les événements de domaine :
   - Confirmations de paiement
   - Rappels de vaccination
 
-### 4.13. Architecture et dépendances
+### 4.13. Monitoring et observabilité
+
+Le système PetBoarding intègre une stack complète de monitoring et d'observabilité pour assurer le suivi des performances, le debugging et la maintenance proactive de l'application.
+
+#### 4.13.1. Tracing distribué avec Jaeger et OpenTelemetry
+
+- **Framework** : OpenTelemetry .NET SDK pour l'instrumentation automatique et manuelle
+- **Collector** : Jaeger All-in-One pour la collecte, le stockage et la visualisation des traces
+- **Protocol** : OTLP (OpenTelemetry Protocol) via gRPC pour le transport des données
+- **Configuration** :
+  - Service name configuré par application (PetBoarding.Api, PetBoarding.TaskWorker)
+  - Endpoint Jaeger : `http://jaeger:4317`
+  - Auto-instrumentation pour HTTP, Entity Framework, et MassTransit
+- **Fonctionnalités** :
+  - Tracing des requêtes HTTP avec détails des performances
+  - Suivi des requêtes base de données avec requêtes SQL générées
+  - Correlation des traces entre API et TaskWorker via les événements
+  - Analyse des goulets d'étranglement et temps de réponse
+  - Interface web Jaeger UI disponible sur le port 16686
+
+#### 4.13.2. Logging centralisé avec SeriLog et Seq
+
+- **Framework de logging** : Serilog avec support des logs structurés
+- **Centralisation** : Seq pour l'agrégation et l'analyse des logs
+- **Configuration** :
+  - URL Seq : `http://seq` (port 5341 pour l'interface web)
+  - Authentification : admin/petboarding123
+  - Format JSON structuré avec enrichissement automatique
+- **Niveaux de log** :
+  - **Error** : Exceptions et erreurs critiques
+  - **Warning** : Situations anormales non bloquantes
+  - **Information** : Événements métier importants (création utilisateur, réservation, etc.)
+  - **Debug** : Détails techniques pour le debugging
+- **Enrichissement automatique** :
+  - SourceContexte
+  - Nom de la librairie
+  - Propriétés custom pour les événements métier
+
+#### 4.13.3. Métriques et alerting
+
+- **Métriques OpenTelemetry** : Compteurs personnalisés pour les événements métier
+- **Métriques système** : CPU, mémoire, connexions base de données
+- **Dashboards** : Visualisation via Jaeger UI pour les traces et Seq pour les logs
+- **Corrélation** : Lien automatique entre traces, logs et métriques via correlation ID
+
+#### 4.13.4. Configuration réseau observability
+
+- **Réseau dédié** : `observability-network` pour isoler les services de monitoring
+- **Volumes persistants** :
+  - `.containers/jaeger-data` : Stockage des traces Jaeger
+  - `.containers/seq-data` : Stockage des logs Seq
+- **Ports exposés** :
+  - Jaeger UI : 16686
+  - Jaeger OTLP gRPC : 4317
+  - Jaeger OTLP HTTP : 4318
+  - Seq Web UI : 5341
+  - Seq Ingestion : 5342
+
+### 4.14. Architecture et dépendances
 
 L'architecture suit les principes de la Clean Architecture avec inversion des dépendances :
 
@@ -378,10 +448,14 @@ Features ..> PetBoarding_Api : HTTP/REST
 @enduml
 ```
 
-### 4.14. Déploiement
+### 4.15. Déploiement
+
+L'architecture de déploiement a été étendue pour inclure un écosystème complet avec monitoring, messaging et cache distribué. Le système utilise Docker Compose pour orchestrer l'ensemble des services.
+
+#### 4.15.1. Architecture de déploiement complète
 
 ```plantuml
-@startuml deploiement
+@startuml deploiement_complet
 !pragma layout smetana
 skin rose
 
@@ -391,32 +465,152 @@ node "Machine Client" {
   }
 }
 
-node "Serveur Docker" {
-  component "API .NET" {
-    port "HTTPS:5001" as https
-    port "HTTP:5000" as http
+node "Environnement Docker" {
+  
+  package "Services Applicatifs" {
+    component "PetBoarding API" {
+      port "HTTPS:5001" as api_https
+      port "HTTP:5000" as api_http
+    }
+    component "TaskWorker" as worker
   }
-
-  database "PostgreSQL" as postgres {
-    port "5432" as db_port
+  
+  package "Infrastructure Données" {
+    database "PostgreSQL" as postgres {
+      port "5432" as db_port
+    }
+    component "Memcached" as cache {
+      port "11211" as cache_port
+    }
+  }
+  
+  package "Messaging" {
+    component "RabbitMQ" as rabbitmq {
+      port "5672" as amqp_port
+      port "15672" as rabbit_ui
+    }
+  }
+  
+  package "Observabilité" {
+    component "Jaeger UI" as jaeger {
+      port "16686" as jaeger_ui
+      port "4317" as otlp_grpc
+    }
+    component "Seq" as seq {
+      port "5341" as seq_ui
+      port "5342" as seq_ingest
+    }
+  }
+  
+  package "Volumes Persistants" {
+    component "postgres-data" as pg_vol
+    component "rabbitmq-data" as rabbit_vol
+    component "jaeger-data" as jaeger_vol
+    component "seq-data" as seq_vol
   }
 }
 
-component "Volume Docker" as volume
+[Application Angular] ..> api_https : HTTPS/REST API
+[PetBoarding API] ..> db_port : Entity Framework
+[TaskWorker] ..> db_port : Quartz Jobs
+[PetBoarding API] ..> cache_port : Cache distribué
+[PetBoarding API] ..> amqp_port : Events
+[TaskWorker] ..> amqp_port : Events
+[PetBoarding API] ..> otlp_grpc : Traces
+[TaskWorker] ..> otlp_grpc : Traces
+[PetBoarding API] ..> seq_ingest : Logs
+[TaskWorker] ..> seq_ingest : Logs
 
-[Application Angular] ..> https : HTTPS/REST API
-[API .NET] ..> db_port : Entity Framework
-postgres --> volume : données persistantes
-
-note right of volume
-  Volume persistant pour
-  les données PostgreSQL
-end note
+postgres --> pg_vol
+rabbitmq --> rabbit_vol
+jaeger --> jaeger_vol
+seq --> seq_vol
 
 @enduml
 ```
 
-### 4.15. TaskWorker et traitement asynchrone
+#### 4.15.2. Services Docker Compose
+
+**Services principaux** :
+
+- **petboarding_api** : API principale .NET 9 (ports 5000/5001)
+- **petboarding_taskworker** : Worker service pour tâches asynchrones
+- **postgres.database** : Base de données PostgreSQL 17 (port 5432)
+
+**Services d'infrastructure** :
+
+- **memcached** : Cache distribué (port 11211)
+- **rabbitmq** : Message broker avec interface de management (ports 5672/15672)
+
+**Services d'observabilité** :
+
+- **jaeger** : Tracing distribué avec Jaeger All-in-One (ports 16686/4317/4318)
+- **seq** : Logging centralisé (ports 5341/5342)
+
+#### 4.15.3. Réseaux Docker
+
+**Segmentation réseau** pour l'isolation et la sécurité :
+
+- **app-network** : Communication entre services applicatifs
+- **database-network** : Accès base de données
+- **cache-network** : Accès au cache Memcached
+- **messaging-network** : Communication RabbitMQ
+- **observability-network** : Services de monitoring isolés
+
+#### 4.15.4. Configuration environnement
+
+**Variables d'environnement communes** :
+
+```yaml
+# Base de données
+ConnectionStrings__Database: Host=postgres.database;Port=5432;Database=petboarding;Username=postgres;Password=postgres
+
+# RabbitMQ
+RabbitMQ__Host: rabbitmq
+RabbitMQ__Username: petboarding
+RabbitMQ__Password: petboarding123
+
+# Observabilité
+JAEGER_ENDPOINT: http://jaeger:4317
+SEQ_URL: http://seq
+OTEL_SERVICE_NAME: PetBoarding.Api # ou PetBoarding.TaskWorker
+```
+
+#### 4.15.5. Volumes persistants
+
+**Stockage des données** :
+- `.containers/petboarding-db` : Données PostgreSQL
+- `.containers/rabbitmq-data` : Messages RabbitMQ persistants
+- `.containers/jaeger-data` : Traces Jaeger
+- `.containers/seq-data` : Logs Seq
+- `~/.aspnet/https` : Certificats HTTPS pour développement
+
+#### 4.15.6. Health checks et dépendances
+
+**Supervision de santé** :
+- PostgreSQL : `pg_isready` check toutes les 5 secondes
+- RabbitMQ : `rabbitmq-diagnostics ping` toutes les 30 secondes
+
+**Orchestration des dépendances** :
+- L'API attend PostgreSQL, Memcached, RabbitMQ, Jaeger et Seq
+- Le TaskWorker attend l'API, PostgreSQL, RabbitMQ, Jaeger et Seq
+
+#### 4.15.7. Commandes de déploiement
+
+```bash
+# Démarrage complet de l'stack
+docker-compose up --build
+
+# Services accessibles :
+# API : https://localhost:5001
+# Swagger : https://localhost:5001/swagger
+# RabbitMQ UI : http://localhost:15672
+# Jaeger UI : http://localhost:16686
+# Seq UI : http://localhost:5341
+# PostgreSQL : localhost:5432
+```
+
+### 4.16. TaskWorker et traitement asynchrone
 
 Le système PetBoarding utilise un composant **TaskWorker** dédié pour le traitement asynchrone des tâches de maintenance et de nettoyage. Ce service fonctionne en arrière-plan et s'exécute indépendamment de l'API principale.
 
@@ -456,17 +650,8 @@ Le TaskWorker utilise la même base de données que l'API principale mais s'exé
 - **Dependencies** : Partage les couches Application, Infrastructure et Persistence
 - **Configuration** : appsettings.json séparés avec paramètres spécifiques
 
-**Configuration Quartz.NET** :
 
-```csharp
-// Configuration Quartz avec persistance PostgreSQL
-q.UsePersistentStore(s =>
-{
-    s.UseProperties = true;
-    s.UsePostgres(connectionString);
-    s.UseClustering(); // Support multi-instances
-});
-```
+
 
 **Déploiement Docker** :
 
@@ -488,7 +673,7 @@ q.UsePersistentStore(s =>
 - **Scalabilité** : Possibilité de déployer plusieurs instances
 - **Cohérence** : Réutilise les handlers CQRS existants
 
-### 4.16. Optimisation base de données et index
+### 4.17. Optimisation base de données et index
 
 Le système PetBoarding implémente une stratégie d'optimisation complète basée sur **19 index de performance** ciblant les requêtes les plus fréquentes. Cette optimisation suit une approche déclarative avec Entity Framework Core.
 
