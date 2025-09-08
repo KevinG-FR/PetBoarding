@@ -26,42 +26,6 @@ builder.Configuration
 
 // Configuration du logging par défaut avec OpenTelemetry
 builder.Logging.AddConsole();
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.TaskWorker";
-    logging.SetResourceBuilder(ResourceBuilder.CreateDefault()
-        .AddService(serviceName, serviceVersion: "1.0.0"));
-    logging.AddOtlpExporter(options =>
-    {
-        options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
-    });
-});
-
-// Configuration OpenTelemetry
-var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? "PetBoarding.TaskWorker";
-var serviceVersion = "1.0.0";
-
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource
-        .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-    .WithTracing(tracing => tracing
-        .AddHttpClientInstrumentation()
-        .AddEntityFrameworkCoreInstrumentation(options =>
-        {
-            options.SetDbStatementForText = true;
-            options.SetDbStatementForStoredProcedure = true;
-        })
-        .AddSource("Quartz.Core") // Pour tracer les jobs Quartz
-        .AddOtlpExporter(options =>
-        {
-            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
-        }))
-    .WithMetrics(metrics => metrics
-        .AddHttpClientInstrumentation()
-        .AddOtlpExporter(options =>
-        {
-            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("SIGNOZ_OTEL_ENDPOINT") ?? "http://localhost:4317");
-        }));
 
 // Add layers
 builder.Services
