@@ -209,7 +209,7 @@
               mat-raised-button
               type="submit"
               class="action-button submit-button"
-              [disabled]="!profileForm.valid || !hasChanges() || isSubmitting()">
+              [disabled]="isSubmitting()">
               @if (isSubmitting()) {
                 <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
               } @else {

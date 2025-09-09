@@ -92,7 +92,31 @@ export class ProfileEditComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.profileForm.valid && !this._isSubmitting()) {
+    // Si le formulaire n'a pas changé, ne pas faire d'appel API
+    if (!this._hasChanges()) {
+      this.snackBar.open('Aucune modification à sauvegarder', 'Fermer', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['info-snackbar']
+      });
+      return;
+    }
+
+    // Si le formulaire est invalide, mettre en évidence les erreurs
+    if (!this.profileForm.valid) {
+      this.markFormGroupTouched();
+      this.snackBar.open('Veuillez corriger les erreurs dans le formulaire', 'Fermer', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Formulaire valide et modifié : procéder à la sauvegarde
+    if (!this._isSubmitting()) {
       this._isSubmitting.set(true);
 
       const formValue = this.profileForm.value;
@@ -105,8 +129,6 @@ export class ProfileEditComponent implements OnInit {
       };
 
       this.updateProfile(profileData);
-    } else {
-      this.markFormGroupTouched();
     }
   }
 
@@ -167,7 +189,15 @@ export class ProfileEditComponent implements OnInit {
 
   private markFormGroupTouched(): void {
     Object.keys(this.profileForm.controls).forEach((key: string) => {
-      this.profileForm.get(key)?.markAsTouched();
+      const control = this.profileForm.get(key);
+      control?.markAsTouched();
+
+      // Si c'est un FormGroup (comme address), marquer aussi ses enfants
+      if (control instanceof FormGroup) {
+        Object.keys(control.controls).forEach((nestedKey: string) => {
+          control.get(nestedKey)?.markAsTouched();
+        });
+      }
     });
   }
 
