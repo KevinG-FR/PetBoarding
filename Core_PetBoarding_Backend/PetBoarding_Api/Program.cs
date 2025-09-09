@@ -22,6 +22,7 @@ using PetBoarding_Domain.Accounts;
 using PetBoarding_Infrastructure;
 using PetBoarding_Infrastructure.Authentication;
 using PetBoarding_Persistence;
+using PetBoarding_Persistence.Extensions;
 using PetBoarding_Persistence.Migrations;
 using Serilog;
 using Serilog.Events;
@@ -196,6 +197,10 @@ app.UseSwaggerUI(c =>
 });
 
 app.ApplyMigrations();
+
+
+app.SeedTestData();
+
 
 // Utiliser CORS
 app.UseCors("AllowAngularApp");
