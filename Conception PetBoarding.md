@@ -7,9 +7,8 @@
   - [2.1. Sur l'état du document](#21-sur-létat-du-document)
 - [3. Architecture](#3-architecture)
   - [3.1. Choix des technologies](#31-choix-des-technologies)
-    - [3.1.1. Administration du système](#311-administration-du-système)
-    - [3.1.2. Côté clients](#312-côté-clients)
-    - [3.1.3. Gestion des prestations et réservations](#313-gestion-des-prestations-et-réservations)
+    - [3.1.1. Côté clients](#312-côté-clients)
+    - [3.1.2. Gestion des prestations et réservations](#313-gestion-des-prestations-et-réservations)
   - [3.2. Contraintes techniques](#32-contraintes-techniques)
 - [4. Technologies utilisées](#4-technologies-utilisées)
   - [4.1. Serveur web](#41-serveur-web)
@@ -114,14 +113,7 @@ Il est bien entendu possible de sélectionner plusieurs technologies différente
 - le passage à l'échelle ;
 - la sécurité
 
-#### 3.1.1. Administration du système
-
-- Gestion des prestations, des utilisateurs et des plannings ;
-- Interface d'administration intégrée dans l'application web ;
-- Authentification par JWT avec gestion des permissions ;
-- Sécurité renforcée avec autorisation basée sur les rôles.
-
-#### 3.1.2. Côté clients
+#### 3.1.1. Côté clients
 
 L'interface utilisateur est moderne et responsive. Une Single Page Application (SPA) Angular convient parfaitement pour :
 
@@ -130,7 +122,7 @@ L'interface utilisateur est moderne et responsive. Une Single Page Application (
 - La visualisation du planning en temps réel
 - L'expérience utilisateur optimisée sur mobile et desktop
 
-#### 3.1.3. Gestion des prestations et réservations
+#### 3.1.2. Gestion des prestations et réservations
 
 - Interface complexe nécessitant une réactivité en temps réel ;
 - Gestion des créneaux de disponibilité avec mise à jour instantanée ;
@@ -169,6 +161,47 @@ La couche métier suit les principes du Domain Driven Design avec :
 - Value Objects pour la sécurité de type
 - Services de domaine pour la logique transversale
 - Events de domaine pour la communication entre agrégats
+
+#### 4.4.1. Factory Pattern pour la création d'entités
+
+Le système applique systématiquement le **Factory Method Pattern** pour garantir la cohérence et la validation lors de la création des entités de domaine :
+
+**Principe d'implémentation** :
+
+- **Constructeurs privés** : Tous les constructeurs des entités sont privés pour empêcher l'instanciation directe
+- **Méthodes factory statiques** : Chaque entité expose des méthodes `Create()` ou `CreateNew()` statiques
+- **Validation centralisée** : La logique de validation et les règles métier sont encapsulées dans les méthodes factory
+- **Événements de domaine** : Les événements sont déclenchés uniquement lors de la création effective (pas lors de la reconstruction)
+
+**Exemple type** :
+
+```csharp
+public class User : Entity<UserId>
+{
+    // Constructeur privé pour empêcher l'instanciation directe
+    private User(UserId id, Email email, Firstname firstname, Lastname lastname)
+        : base(id) { ... }
+
+    // Factory method pour création de nouvelles entités
+    public static User Create(Email email, Firstname firstname, Lastname lastname)
+    {
+        var userId = UserId.CreateNew();
+        var user = new User(userId, email, firstname, lastname);
+
+        // Déclencher événement de domaine uniquement à la création
+        user.AddDomainEvent(new UserRegisteredEvent(userId, email, firstname, lastname));
+
+        return user;
+    }
+}
+```
+
+**Avantages** :
+
+- **Intégrité** : Impossible de créer une entité dans un état invalide
+- **Traçabilité** : Centralisation de la logique de création et des règles métier
+- **Évolutivité** : Facilite l'ajout de nouvelles validations sans impact sur le code client
+- **Testabilité** : Mocking et création d'entités de test simplifiés
 
 ### 4.5. Couche application
 
@@ -277,11 +310,48 @@ Le système utilise Memcached comme solution de cache distribué pour optimiser 
 - **Durée par défaut** : 30 minutes configurable
 - **Gestion d'erreurs** : Dégradation gracieuse en cas de panne du cache
 
-Entités mises en cache :
+#### 4.10.1. Sérialisation et reconstruction des entités
+
+Pour permettre la mise en cache et la reconstruction des entités de domaine, le système implémente un pattern de **constructeur de reconstruction** :
+
+**Principe** :
+
+- **Constructeur primaire privé** : Empêche l'instanciation directe et force l'utilisation des factory methods
+- **Constructeur [JsonConstructor]** : Constructeur privé spécialisé pour la désérialisation JSON
+- **Séparation des responsabilités** : Distinction claire entre création (factory) et reconstruction (cache)
+
+**Exemple d'implémentation** :
+
+```csharp
+public class User : Entity<UserId>
+{
+    // Constructeur pour reconstruction depuis le cache (JsonConstructor)
+    [JsonConstructor]
+    private User(UserId id, Email email, Firstname firstname, Lastname lastname,
+                 DateTime createdAt, DateTime? updatedAt)
+        : base(id)
+    {
+        Email = email;
+        Firstname = firstname;
+        Lastname = lastname;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+        // IMPORTANT: Pas d'événement de domaine lors de la reconstruction
+    }
+}
+```
+
+**Différences clés** :
+
+- **Factory method** : Déclenche des événements de domaine, applique les règles métier
+- **JsonConstructor** : Reconstruction pure sans effets de bord, préserve l'état historique
+- **Cohérence** : Les entités reconstituées depuis le cache conservent leur intégrité
+
+#### 4.10.2. Entités mises en cache
 
 - Utilisateurs (par ID et email)
 - Prestations
-- Sessions utilisateur
+- Profil utilisateur
 - Données de profil des animaux
 
 ### 4.11. Système d'événements de domaine
@@ -466,7 +536,7 @@ node "Machine Client" {
 }
 
 node "Environnement Docker" {
-  
+
   package "Services Applicatifs" {
     component "PetBoarding API" {
       port "HTTPS:5001" as api_https
@@ -474,7 +544,7 @@ node "Environnement Docker" {
     }
     component "TaskWorker" as worker
   }
-  
+
   package "Infrastructure Données" {
     database "PostgreSQL" as postgres {
       port "5432" as db_port
@@ -483,14 +553,14 @@ node "Environnement Docker" {
       port "11211" as cache_port
     }
   }
-  
+
   package "Messaging" {
     component "RabbitMQ" as rabbitmq {
       port "5672" as amqp_port
       port "15672" as rabbit_ui
     }
   }
-  
+
   package "Observabilité" {
     component "Jaeger UI" as jaeger {
       port "16686" as jaeger_ui
@@ -501,7 +571,7 @@ node "Environnement Docker" {
       port "5342" as seq_ingest
     }
   }
-  
+
   package "Volumes Persistants" {
     component "postgres-data" as pg_vol
     component "rabbitmq-data" as rabbit_vol
@@ -579,6 +649,7 @@ OTEL_SERVICE_NAME: PetBoarding.Api # ou PetBoarding.TaskWorker
 #### 4.15.5. Volumes persistants
 
 **Stockage des données** :
+
 - `.containers/petboarding-db` : Données PostgreSQL
 - `.containers/rabbitmq-data` : Messages RabbitMQ persistants
 - `.containers/jaeger-data` : Traces Jaeger
@@ -588,10 +659,12 @@ OTEL_SERVICE_NAME: PetBoarding.Api # ou PetBoarding.TaskWorker
 #### 4.15.6. Health checks et dépendances
 
 **Supervision de santé** :
+
 - PostgreSQL : `pg_isready` check toutes les 5 secondes
 - RabbitMQ : `rabbitmq-diagnostics ping` toutes les 30 secondes
 
 **Orchestration des dépendances** :
+
 - L'API attend PostgreSQL, Memcached, RabbitMQ, Jaeger et Seq
 - Le TaskWorker attend l'API, PostgreSQL, RabbitMQ, Jaeger et Seq
 
@@ -649,9 +722,6 @@ Le TaskWorker utilise la même base de données que l'API principale mais s'exé
 - **Type** : .NET Worker Service autonome
 - **Dependencies** : Partage les couches Application, Infrastructure et Persistence
 - **Configuration** : appsettings.json séparés avec paramètres spécifiques
-
-
-
 
 **Déploiement Docker** :
 
