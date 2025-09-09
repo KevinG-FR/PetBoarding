@@ -17,15 +17,13 @@ export interface CategoryInfo {
 }
 
 // Mapping des types d'animaux entre backend (TypeAnimal enum) et frontend (PetType enum)
-// Attention : les données SQL utilisent des valeurs inconsistantes (0 au lieu de 1 pour Chien)
 const FrontendPetTypeMap = {
-  0: PetType.DOG, // Dans les données SQL: 0 = Chien (devrait être 1 selon l'enum)
-  1: PetType.CAT, // Dans les données SQL: 1 = Chat (devrait être 2 selon l'enum)
-  2: PetType.CAT, // Mapping correct selon l'enum C#
-  3: PetType.BIRD,
-  4: PetType.RABBIT,
-  5: PetType.HAMSTER,
-  99: PetType.DOG // TypeAnimal.Autre -> par défaut Chien
+  1: PetType.DOG,    // TypeAnimal.Chien = 1
+  2: PetType.CAT,    // TypeAnimal.Chat = 2
+  3: PetType.BIRD,   // TypeAnimal.Oiseau = 3
+  4: PetType.RABBIT, // TypeAnimal.Lapin = 4
+  5: PetType.HAMSTER,// TypeAnimal.Hamster = 5
+  99: PetType.DOG    // TypeAnimal.Autre = 99 -> par défaut Chien
 } as const;
 
 import { switchMap } from 'rxjs';
