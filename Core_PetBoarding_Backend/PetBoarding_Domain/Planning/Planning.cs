@@ -1,5 +1,6 @@
 namespace PetBoarding_Domain.Planning;
 
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Prestations;
 
@@ -20,8 +21,21 @@ public sealed class Planning : Entity<PlanningId>
         Creneaux = new List<AvailableSlot>();
     }
 
+    // Constructeur privé pour la reconstruction depuis la cache
+    [JsonConstructor]
+    private Planning(PlanningId id, PrestationId prestationId, string label, List<AvailableSlot> creneaux, DateTime dateCreation, bool isActive, string? description = null)
+        : base(id)
+    {
+        PrestationId = prestationId;
+        Label = label;
+        Description = description;
+        IsActive = isActive;
+        DateCreation = dateCreation;
+        Creneaux = creneaux;
+    }
+
     // Constructeur privé pour EF Core
-    private Planning() : base(default!)
+    private Planning() : base()
     {
         Creneaux = [];
     }

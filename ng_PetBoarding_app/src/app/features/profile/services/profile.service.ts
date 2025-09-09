@@ -84,26 +84,18 @@ export class ProfileService {
       .subscribe();
   }
 
-  updateUserProfile(updates: Partial<User>): Observable<User> {
+  updateUserProfile(updates: UpdateProfileRequestDto): Observable<User> {
     const currentUser = this._currentUser();
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
+
     const profileData: UpdateProfileRequestDto = {
-      firstname: updates.firstName || currentUser.firstName,
-      lastname: updates.lastName || currentUser.lastName,
+      firstname: updates.firstname || currentUser.firstName,
+      lastname: updates.lastname || currentUser.lastName,
       email: updates.email || currentUser.email,
       phoneNumber: updates.phoneNumber || currentUser.phoneNumber,
-      address: updates.address
-        ? {
-            streetNumber: updates.address.streetNumber,
-            streetName: updates.address.streetName,
-            city: updates.address.city,
-            postalCode: updates.address.postalCode,
-            country: updates.address.country,
-            complement: updates.address.complement
-          }
-        : currentUser.address
+      address: updates.address || currentUser.address
     };
 
     const apiUrl = `${this.baseApiUrl}/${currentUser.id}/profile`;

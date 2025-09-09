@@ -7,9 +7,14 @@ public static class PetMapper
 {
     public static PetDto ToDto(Pet pet)
     {
+        if (pet == null)
+            throw new ArgumentNullException($"Pet is null");
+        
+        // IDs peuvent être null à cause du constructeur EF parameterless - on utilise Guid.Empty comme fallback
+
         return new PetDto
         {
-            Id = pet.Id.Value,
+            Id = pet.Id?.Value ?? Guid.Empty,
             Name = pet.Name,
             Type = pet.Type,
             Breed = pet.Breed,
@@ -22,7 +27,7 @@ public static class PetMapper
             MedicalNotes = pet.MedicalNotes,
             SpecialNeeds = pet.SpecialNeeds,
             PhotoUrl = pet.PhotoUrl,
-            OwnerId = pet.OwnerId.Value,
+            OwnerId = pet.OwnerId?.Value ?? Guid.Empty,
             EmergencyContact = pet.EmergencyContact != null ? ToEmergencyContactDto(pet.EmergencyContact) : null,
             CreatedAt = pet.CreatedAt,
             UpdatedAt = pet.UpdatedAt

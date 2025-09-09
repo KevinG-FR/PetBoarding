@@ -2,7 +2,7 @@ namespace PetBoarding_Domain.Prestations;
 
 using PetBoarding_Domain.Abstractions;
 
-public sealed record PrestationId : EntityIdentifier
+public sealed class PrestationId : EntityIdentifier
 {
     public PrestationId(Guid value) : base(value)
     {

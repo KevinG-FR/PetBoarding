@@ -43,6 +43,10 @@ public class UpdateUserProfileCommandHandler : ICommandHandler<UpdateUserProfile
         if (lastnameResult.IsFailed)
             return Result.Fail(lastnameResult.Errors);
 
+        var emailResult = PetBoarding_Domain.Users.Email.Create(request.Email);
+        if (emailResult.IsFailed)
+            return Result.Fail(emailResult.Errors);
+
         var phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
         if (phoneNumberResult.IsFailed)
             return Result.Fail(phoneNumberResult.Errors);
@@ -93,6 +97,7 @@ public class UpdateUserProfileCommandHandler : ICommandHandler<UpdateUserProfile
         var updateResult = user.UpdateProfile(
             firstnameResult.Value,
             lastnameResult.Value,
+            emailResult.Value,
             phoneNumberResult.Value,
             address);
 

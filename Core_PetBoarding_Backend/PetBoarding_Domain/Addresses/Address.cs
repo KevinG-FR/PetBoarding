@@ -1,9 +1,11 @@
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 
 namespace PetBoarding_Domain.Addresses;
 
 public class Address : Entity<AddressId>, IAuditableEntity
 {
+    // Constructeur privé pour forcer l'utilisation de la méthode factory
     private Address(
         StreetNumber streetNumber,
         StreetName streetName,
@@ -21,6 +23,29 @@ public class Address : Entity<AddressId>, IAuditableEntity
         Complement = complement;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    [JsonConstructor]
+    private Address(
+        AddressId id,
+        StreetNumber streetNumber,
+        StreetName streetName,
+        City city,
+        PostalCode postalCode,
+        Country country,
+        DateTime createdAt,
+        DateTime updatedAt,
+        Complement? complement = null)
+            : base(id)
+    {
+        StreetNumber = streetNumber;
+        StreetName = streetName;
+        City = city;
+        PostalCode = postalCode;
+        Country = country;
+        Complement = complement;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
     }
 
     /// <summary>

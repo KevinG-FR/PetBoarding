@@ -31,6 +31,7 @@ public static partial class UsersEndpoints
             new UserId(userId),
             updateDto.Firstname,
             updateDto.Lastname,
+            updateDto.Email,
             updateDto.PhoneNumber,
             addressData);
 

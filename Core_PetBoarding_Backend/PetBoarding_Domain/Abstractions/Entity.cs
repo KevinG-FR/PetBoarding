@@ -5,6 +5,8 @@ public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>>
 {
     private const int MULTIPLIER_GET_HASH_CODE = 42;
 
+    // Constructeur protégé pour les classes dérivées pour EF Core.
+    protected Entity() { }
     protected Entity(TIdentifier id)
     {
         Id = id;

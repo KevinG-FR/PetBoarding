@@ -1,5 +1,6 @@
 namespace PetBoarding_Domain.Prestations;
 
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 
 /// <summary>
@@ -33,8 +34,35 @@ public sealed class Prestation : Entity<PrestationId>
         DateCreation = DateTime.UtcNow;
     }
 
+    // Constructeur privé pour reconstruction depuis le cache.
+    [JsonConstructor]
+    private Prestation(
+        PrestationId id,
+        string libelle,
+        string description,
+        TypeAnimal categorieAnimal,
+        decimal prix,
+        int dureeEnMinutes, bool estDisponible) : base(id)
+    {
+        if (string.IsNullOrWhiteSpace(libelle))
+            throw new ArgumentException("Le libellé ne peut pas être vide", nameof(libelle));
+
+        if (prix < 0)
+            throw new ArgumentException("Le prix ne peut pas être négatif", nameof(prix));
+
+        if (dureeEnMinutes <= 0)
+            throw new ArgumentException("La durée doit être supérieure à 0", nameof(dureeEnMinutes));
+
+        Libelle = libelle;
+        Description = description;
+        CategorieAnimal = categorieAnimal;
+        Prix = prix;
+        DureeEnMinutes = dureeEnMinutes;
+        EstDisponible = estDisponible;
+    }
+
     // Constructeur privé pour Entity Framework
-    private Prestation() : base(default!) { }
+    private Prestation() : base() { }
 
     // Méthode factory pour créer une nouvelle prestation
     public static Prestation Create(

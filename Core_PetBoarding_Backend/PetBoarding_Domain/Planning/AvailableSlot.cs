@@ -1,5 +1,6 @@
 namespace PetBoarding_Domain.Planning;
 
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 
 /// <summary>
@@ -8,10 +9,11 @@ using PetBoarding_Domain.Abstractions;
 public sealed class AvailableSlot : Entity<AvailableSlotId>
 {
     // Constructeur privé pour EF Core
-    private AvailableSlot() : base(default!) { }
+    private AvailableSlot() : base() { }
 
-    private AvailableSlot(AvailableSlotId id, PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
-        : base(id)
+    [JsonConstructor]
+    private AvailableSlot(PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
+        : base(new AvailableSlotId(Guid.CreateVersion7()))
     {
         if (capaciteMax <= 0)
         {
@@ -106,7 +108,7 @@ public sealed class AvailableSlot : Entity<AvailableSlotId>
     // Factory method pour créer un nouveau slot
     public static AvailableSlot Create(PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
     {
-        return new AvailableSlot(AvailableSlotId.New(), planningId, date, capaciteMax, capaciteReservee);
+        return new AvailableSlot(planningId, date, capaciteMax, capaciteReservee);
     }
 
     public override string ToString()

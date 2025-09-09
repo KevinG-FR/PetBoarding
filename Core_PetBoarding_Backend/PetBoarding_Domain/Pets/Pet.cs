@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Users;
 
@@ -8,6 +9,7 @@ namespace PetBoarding_Domain.Pets;
 /// </summary>
 public sealed class Pet : AuditableEntity<PetId>
 {
+    // Constructeur privé pour la création via la factory method
     private Pet(
         string name,
         PetType type,
@@ -58,6 +60,59 @@ public sealed class Pet : AuditableEntity<PetId>
         EmergencyContact = emergencyContact;
     }
 
+    // Constructeur pour la reconstruction depuis le cache
+    [JsonConstructor]
+    private Pet(
+        PetId id,
+        string name,
+        PetType type,
+        string breed,
+        int age,
+        string color,
+        PetGender gender,
+        bool isNeutered,
+        UserId ownerId,
+        decimal? weight = null,
+        string? microchipNumber = null,
+        string? medicalNotes = null,
+        string? specialNeeds = null,
+        string? photoUrl = null,
+        EmergencyContact? emergencyContact = null) : base(id)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Le nom de l'animal ne peut pas être vide", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(breed))
+            throw new ArgumentException("La race de l'animal ne peut pas être vide", nameof(breed));
+
+        if (age < 0)
+            throw new ArgumentException("L'âge de l'animal ne peut pas être négatif", nameof(age));
+
+        if (age > 50)
+            throw new ArgumentException("L'âge de l'animal ne peut pas dépasser 50 ans", nameof(age));
+
+        if (string.IsNullOrWhiteSpace(color))
+            throw new ArgumentException("La couleur de l'animal ne peut pas être vide", nameof(color));
+
+        if (weight.HasValue && weight.Value < 0)
+            throw new ArgumentException("Le poids de l'animal ne peut pas être négatif", nameof(weight));
+
+        Name = name.Trim();
+        Type = type;
+        Breed = breed.Trim();
+        Age = age;
+        Weight = weight;
+        Color = color.Trim();
+        Gender = gender;
+        IsNeutered = isNeutered;
+        OwnerId = ownerId;
+        MicrochipNumber = microchipNumber?.Trim();
+        MedicalNotes = medicalNotes?.Trim();
+        SpecialNeeds = specialNeeds?.Trim();
+        PhotoUrl = photoUrl?.Trim();
+        EmergencyContact = emergencyContact;
+    }
+
     /// <summary>
     /// Factory method to create a new Pet
     /// </summary>
@@ -81,9 +136,7 @@ public sealed class Pet : AuditableEntity<PetId>
     }
 
     // Constructeur pour Entity Framework
-    private Pet() : base(default!)
-    {
-    }
+    private Pet() : base() { }
 
     // Propriétés principales
     public string Name { get; private set; }

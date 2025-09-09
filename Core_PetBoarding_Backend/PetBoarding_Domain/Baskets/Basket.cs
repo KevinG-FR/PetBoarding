@@ -1,6 +1,7 @@
 namespace PetBoarding_Domain.Baskets;
 
 using FluentResults;
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Payments;
 using PetBoarding_Domain.Reservations;
@@ -13,10 +14,11 @@ public sealed class Basket : AuditableEntity<BasketId>
     private readonly List<BasketItem> _items = new();
 
     // Private constructor for Entity Framework Core
-    private Basket() : base(default!)
+    private Basket() : base()
     {
     }
 
+    [JsonConstructor]
     private Basket(UserId userId) : base(new BasketId(Guid.CreateVersion7()))
     {
         UserId = userId;

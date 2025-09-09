@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Errors;
@@ -29,8 +29,22 @@ public class User : AuditableEntityWithDomainEvents<UserId>
             DateTime.UtcNow));
     }
 
+    // Constructeur privé pour reconstruction depuis le cache d'un utilisateur.
+    [JsonConstructor]
+    private User(UserId id, Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
+        : base(id)
+    {
+        Firstname = firstname;
+        Lastname = lastname;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        PasswordHash = passwordHash;
+        ProfileType = profileType;
+        Status = UserStatus.Created;
+    }
+
     // Constructeur privé pour Entity Framework (reconstruction depuis la DB)
-    private User() : base(default!) { }
+    private User() : base() { }
 
     // Méthode factory pour créer un nouvel utilisateur (explicite)
     public static User Create(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
@@ -95,15 +109,16 @@ public class User : AuditableEntityWithDomainEvents<UserId>
         return Result.Ok();
     }
 
-    public Result UpdateProfile(Firstname firstname, Lastname lastname, PhoneNumber phoneNumber, Address? address = null)
+    public Result UpdateProfile(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, Address? address = null)
     {
         // Validation des données
-        if (firstname == null || lastname == null || phoneNumber == null)
+        if (firstname == null || lastname == null || email == null || phoneNumber == null)
             return Result.Fail("Les données du profil ne peuvent pas être nulles");
 
         // Mise à jour des propriétés
         Firstname = firstname;
         Lastname = lastname;
+        Email = email;
         PhoneNumber = phoneNumber;
         
         // Mise à jour de l'adresse si fournie

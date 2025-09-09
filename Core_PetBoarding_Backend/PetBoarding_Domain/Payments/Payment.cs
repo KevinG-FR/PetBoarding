@@ -1,5 +1,6 @@
 namespace PetBoarding_Domain.Payments;
 
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 using PetBoarding_Domain.Events;
 using PetBoarding_Domain.Users;
@@ -7,10 +8,11 @@ using PetBoarding_Domain.Users;
 public sealed class Payment : EntityWithDomainEvents<PaymentId>, IAuditableEntity
 {
     // Private constructor for Entity Framework Core
-    private Payment() : base(default!)
+    private Payment() : base()
     {
     }
 
+    [JsonConstructor]
     private Payment(
         decimal amount,
         PaymentMethod method,

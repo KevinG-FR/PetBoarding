@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PetBoarding_Domain.Abstractions;
+﻿namespace PetBoarding_Domain.Abstractions;
 
 public abstract class AuditableEntityWithDomainEvents<TIdentifier> : EntityWithDomainEvents<TIdentifier>, IAuditableEntity
     where TIdentifier : EntityIdentifier
 {
+    // Constructeur protégé pour les classes dérivées pour EF Core.
+    protected AuditableEntityWithDomainEvents() : base() { }
     protected AuditableEntityWithDomainEvents(TIdentifier id) : base(id)
     {
         CreatedAt = DateTime.UtcNow;

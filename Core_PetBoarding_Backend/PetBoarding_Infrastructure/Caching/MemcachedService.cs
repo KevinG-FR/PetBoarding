@@ -102,7 +102,7 @@ public class MemcachedService : ICacheService
         var expirationTime = expiration ?? DefaultExpirationInMinutes;
         
         var cached = await _memcachedClient.GetValueAsync<T>(key);
-        if (cached != null)
+        if (cached is not null)
         {
             return cached;
         }

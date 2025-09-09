@@ -2,7 +2,7 @@ namespace PetBoarding_Domain.Planning;
 
 using PetBoarding_Domain.Abstractions;
 
-public sealed record AvailableSlotId : EntityIdentifier
+public sealed class AvailableSlotId : EntityIdentifier
 {
     public AvailableSlotId(Guid value) : base(value)
     {

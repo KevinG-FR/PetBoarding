@@ -7,6 +7,8 @@ public abstract class EntityWithDomainEvents<TIdentifier> : Entity<TIdentifier>,
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 
+    // Constructeur protégé pour les classes dérivées pour EF Core.
+    protected EntityWithDomainEvents() : base() { }
     protected EntityWithDomainEvents(TIdentifier id) : base(id)
     {
     }

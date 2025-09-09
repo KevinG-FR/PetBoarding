@@ -15,5 +15,6 @@ public record UpdateUserProfileCommand(
     UserId UserId,
     string Firstname,
     string Lastname,
+    string Email,
     string PhoneNumber,
     AddressData? AddressData = null) : ICommand<User>;

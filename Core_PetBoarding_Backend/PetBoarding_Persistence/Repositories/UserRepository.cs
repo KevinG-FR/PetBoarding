@@ -20,14 +20,20 @@ public class UserRepository : BaseRepository<User, UserId>, IUserRepository
 
     public async Task<bool> UserEmailAlreadyUsed(string email, CancellationToken cancellationToken)
     {
-        var emailAlreadyUsed = await _dbSet.AnyAsync(x => x.Email == Email.Create(email).Value, cancellationToken);
+        var emailResult = Email.Create(email);
+        if (!emailResult.IsSuccess) return false;
+        
+        var emailAlreadyUsed = await _dbSet.AnyAsync(x => x.Email == emailResult.Value, cancellationToken);
 
         return emailAlreadyUsed;
     }
 
     public async Task<User?> GetUserForAuthentification(string email, string passwordHash, CancellationToken cancellationToken)
     {
-        var emailDomain = Email.Create(email).Value;
+        var emailResult = Email.Create(email);
+        if (!emailResult.IsSuccess) return null;
+        
+        var emailDomain = emailResult.Value;
         var user = await _dbSet
                     .Include(x => x.Address)
                     .Where(x => x.Email == emailDomain)

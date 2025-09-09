@@ -1,5 +1,6 @@
 namespace PetBoarding_Domain.Reservations;
 
+using Newtonsoft.Json;
 using PetBoarding_Domain.Abstractions;
 
 /// <summary>
@@ -8,10 +9,11 @@ using PetBoarding_Domain.Abstractions;
 public sealed class Reservation : AuditableEntity<ReservationId>
 {
     // Private constructor for Entity Framework Core
-    private Reservation() : base(default!)
+    private Reservation() : base()
     {        
     }
 
+    // Private constructor for creating a new reservation
     private Reservation(
         string userId,
         string animalId,
@@ -41,6 +43,41 @@ public sealed class Reservation : AuditableEntity<ReservationId>
         EndDate = endDate?.Date;
         Comments = comments;
         Status = ReservationStatus.Created;
+    }
+
+    // Private constructor for rehydrating from cache
+    [JsonConstructor]
+    private Reservation(
+        ReservationId id,
+       string userId,
+       string animalId,
+       string animalName,
+       string serviceId,
+       ReservationStatus status,
+       DateTime startDate,
+       DateTime? endDate = null,
+       string? comments = null) : base(id)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+
+        if (string.IsNullOrWhiteSpace(animalId))
+            throw new ArgumentException("Animal ID cannot be empty", nameof(animalId));
+
+        if (string.IsNullOrWhiteSpace(serviceId))
+            throw new ArgumentException("Service ID cannot be empty", nameof(serviceId));
+
+        if (endDate.HasValue && endDate.Value.Date < startDate.Date)
+            throw new ArgumentException("End date cannot be before start date");
+
+        UserId = userId;
+        AnimalId = animalId;
+        AnimalName = animalName;
+        ServiceId = serviceId;
+        StartDate = startDate.Date;
+        EndDate = endDate?.Date;
+        Comments = comments;
+        Status = status;
     }
 
     /// <summary>
