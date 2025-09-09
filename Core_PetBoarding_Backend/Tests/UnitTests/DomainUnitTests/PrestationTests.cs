@@ -24,7 +24,7 @@ public class PrestationTests
     public void Constructor_WithValidParameters_ShouldCreatePrestation()
     {
         // Act
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Assert
         prestation.Should().NotBeNull();
@@ -47,7 +47,7 @@ public class PrestationTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Prestation(invalidLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes));
+            Prestation.Create(invalidLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes));
         
         exception.Message.Should().Contain("Le libellé ne peut pas être vide");
         exception.ParamName.Should().Be("libelle");
@@ -60,7 +60,7 @@ public class PrestationTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Prestation(_validLibelle, _validDescription, _validTypeAnimal, negativePrice, _validDureeEnMinutes));
+            Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, negativePrice, _validDureeEnMinutes));
         
         exception.Message.Should().Contain("Le prix ne peut pas être négatif");
         exception.ParamName.Should().Be("prix");
@@ -74,7 +74,7 @@ public class PrestationTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, invalidDuration));
+            Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, invalidDuration));
         
         exception.Message.Should().Contain("La durée doit être supérieure à 0");
         exception.ParamName.Should().Be("dureeEnMinutes");
@@ -84,7 +84,7 @@ public class PrestationTests
     public void ModifierLibelle_WithValidLibelle_ShouldUpdateLibelleAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var nouveauLibelle = "Garde de nuit";
         var dateBefore = DateTime.UtcNow;
 
@@ -105,7 +105,7 @@ public class PrestationTests
     public void ModifierLibelle_WithInvalidLibelle_ShouldThrowArgumentException(string invalidLibelle)
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => prestation.ModifierLibelle(invalidLibelle));
@@ -117,7 +117,7 @@ public class PrestationTests
     public void ModifierDescription_WithValidDescription_ShouldUpdateDescriptionAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var nouvelleDescription = "Service de garde d'animaux à domicile premium";
         var dateBefore = DateTime.UtcNow;
 
@@ -135,7 +135,7 @@ public class PrestationTests
     public void ModifierPrix_WithValidPrice_ShouldUpdatePriceAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var nouveauPrix = 30.00m;
         var dateBefore = DateTime.UtcNow;
 
@@ -155,7 +155,7 @@ public class PrestationTests
     public void ModifierPrix_WithNegativePrice_ShouldThrowArgumentException(decimal negativePrice)
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => prestation.ModifierPrix(negativePrice));
@@ -167,7 +167,7 @@ public class PrestationTests
     public void ModifierDuree_WithValidDuration_ShouldUpdateDurationAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var nouvelleDuree = 90;
         var dateBefore = DateTime.UtcNow;
         
@@ -191,7 +191,7 @@ public class PrestationTests
     public void ModifierDuree_WithInvalidDuration_ShouldThrowArgumentException(int invalidDuration)
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => prestation.ModifierDuree(invalidDuration));
@@ -203,7 +203,7 @@ public class PrestationTests
     public void ModifierCategorieAnimal_ShouldUpdateCategoryAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var nouvelleCategorie = TypeAnimal.Chat;
         var dateBefore = DateTime.UtcNow;
 
@@ -221,7 +221,7 @@ public class PrestationTests
     public void RendreDisponible_WhenIndisponible_ShouldUpdateAvailabilityAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         prestation.RendreIndisponible(); // First make it unavailable
         var dateBefore = DateTime.UtcNow;
 
@@ -239,8 +239,11 @@ public class PrestationTests
     public void RendreIndisponible_WhenDisponible_ShouldUpdateAvailabilityAndModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var dateBefore = DateTime.UtcNow;
+        
+        // Wait to ensure time difference
+        Thread.Sleep(10);
 
         // Act
         prestation.RendreIndisponible();
@@ -256,7 +259,7 @@ public class PrestationTests
     public void Activer_ShouldSetDisponibleToTrueAndUpdateModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         prestation.Desactiver(); // First deactivate
         var dateBefore = DateTime.UtcNow;
 
@@ -274,7 +277,7 @@ public class PrestationTests
     public void Desactiver_ShouldSetDisponibleToFalseAndUpdateModificationDate()
     {
         // Arrange
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
         var dateBefore = DateTime.UtcNow;
 
         // Act
@@ -291,7 +294,7 @@ public class PrestationTests
     public void Constructor_ShouldSetEstDisponibleToTrueByDefault()
     {
         // Act
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Assert
         prestation.EstDisponible.Should().BeTrue();
@@ -304,7 +307,7 @@ public class PrestationTests
         var before = DateTime.UtcNow;
 
         // Act
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Assert
         var after = DateTime.UtcNow;
@@ -316,7 +319,7 @@ public class PrestationTests
     public void Constructor_ShouldSetDateModificationToNull()
     {
         // Act
-        var prestation = new Prestation(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
+        var prestation = Prestation.Create(_validLibelle, _validDescription, _validTypeAnimal, _validPrix, _validDureeEnMinutes);
 
         // Assert
         prestation.DateModification.Should().BeNull();

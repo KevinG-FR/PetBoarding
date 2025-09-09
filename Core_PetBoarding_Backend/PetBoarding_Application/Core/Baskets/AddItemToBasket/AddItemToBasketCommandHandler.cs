@@ -41,7 +41,7 @@ internal sealed class AddItemToBasketCommandHandler : ICommandHandler<AddItemToB
         
         if (basket is null)
         {
-            basket = new Basket(userId);
+            basket = Basket.Create(userId);
             basket = await _basketRepository.AddAsync(basket, cancellationToken);
         }
 

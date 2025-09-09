@@ -46,7 +46,7 @@ internal sealed class CreatePaymentCommandHandler : ICommandHandler<CreatePaymen
         if (paymentMethod is null)
             return Result.Fail<Payment>("Invalid payment method");
 
-        var payment = new Payment(
+        var payment = Payment.Create(
             basket.GetTotalAmount(),
             paymentMethod,
             description: request.Description);

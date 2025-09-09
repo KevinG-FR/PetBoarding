@@ -13,7 +13,7 @@ public sealed class ReservationSlot : Entity<ReservationSlotId>
     {
     }
 
-    public ReservationSlot(
+    private ReservationSlot(
         ReservationId reservationId,
         Guid availableSlotId) : base(new ReservationSlotId(Guid.CreateVersion7()))
     {
@@ -26,6 +26,16 @@ public sealed class ReservationSlot : Entity<ReservationSlotId>
         ReservationId = reservationId;
         AvailableSlotId = availableSlotId;
         ReservedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Factory method to create a new ReservationSlot
+    /// </summary>
+    public static ReservationSlot Create(
+        ReservationId reservationId,
+        Guid availableSlotId)
+    {
+        return new ReservationSlot(reservationId, availableSlotId);
     }
 
     /// <summary>

@@ -9,7 +9,8 @@ namespace PetBoarding_Domain.Users;
 
 public class User : AuditableEntityWithDomainEvents<UserId>
 {
-    public User(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
+    // Constructeur privé pour création d'un nouvel utilisateur
+    private User(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
         : base(new UserId(Guid.CreateVersion7()))
     {
         Firstname = firstname;
@@ -26,6 +27,15 @@ public class User : AuditableEntityWithDomainEvents<UserId>
             lastname.Value,
             email.Value,
             DateTime.UtcNow));
+    }
+
+    // Constructeur privé pour Entity Framework (reconstruction depuis la DB)
+    private User() : base(default!) { }
+
+    // Méthode factory pour créer un nouvel utilisateur (explicite)
+    public static User Create(Firstname firstname, Lastname lastname, Email email, PhoneNumber phoneNumber, string passwordHash, UserProfileType profileType)
+    {
+        return new User(firstname, lastname, email, phoneNumber, passwordHash, profileType);
     }
 
     public Firstname Firstname { get; set; }
@@ -46,7 +56,7 @@ public class User : AuditableEntityWithDomainEvents<UserId>
 
     public Address? Address { get; set; }
 
-    public UserProfileType ProfileType { get; }
+    public UserProfileType ProfileType { get; private set; }
     public UserStatus Status { get; private set; }                
 
     public Result ChangeForConfirmedStatus()

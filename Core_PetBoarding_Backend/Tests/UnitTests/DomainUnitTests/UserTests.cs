@@ -29,7 +29,7 @@ public class UserTests
     public void Constructor_WithValidParameters_ShouldCreateUser()
     {
         // Act
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Assert
         user.Should().NotBeNull();
@@ -51,7 +51,7 @@ public class UserTests
     public void Constructor_ShouldAddUserRegisteredEvent()
     {
         // Act
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Assert
         user.GetDomainEvents().Should().HaveCount(1);
@@ -70,7 +70,7 @@ public class UserTests
     public void ChangeForConfirmedStatus_WhenStatusIsCreated_ShouldSucceed()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.ChangeForConfirmedStatus();
@@ -84,7 +84,7 @@ public class UserTests
     public void ChangeForConfirmedStatus_WhenAlreadyConfirmed_ShouldReturnOk()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         user.ChangeForConfirmedStatus();
 
         // Act
@@ -99,7 +99,7 @@ public class UserTests
     public void ChangeForConfirmedStatus_WhenStatusIsNotCreated_ShouldFail()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         user.ChangeForDeletedStatus();
 
         // Act
@@ -114,7 +114,7 @@ public class UserTests
     public void ChangeForInactiveStatus_WhenStatusIsCreated_ShouldFailDueToDomainLogicBug()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.ChangeForInactiveStatus();
@@ -129,7 +129,7 @@ public class UserTests
     public void ChangeForInactiveStatus_WhenAlreadyInactive_ShouldReturnOk()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         // Note: Due to domain logic bug, we cannot actually set user to Inactive from Created status
         // So this test documents the current behavior where repeated calls also fail
 
@@ -145,7 +145,7 @@ public class UserTests
     public void ChangeForDeletedStatus_ShouldAlwaysSucceed()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.ChangeForDeletedStatus();
@@ -159,7 +159,7 @@ public class UserTests
     public void ChangeForDeletedStatus_WhenAlreadyDeleted_ShouldReturnOk()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         user.ChangeForDeletedStatus();
 
         // Act
@@ -174,7 +174,7 @@ public class UserTests
     public void UpdateProfile_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         var newFirstname = Firstname.Create("Pierre").Value;
         var newLastname = Lastname.Create("Martin").Value;
         var newPhoneNumber = PhoneNumber.Create("0987654321").Value;
@@ -193,7 +193,7 @@ public class UserTests
     public void UpdateProfile_WithAddress_ShouldUpdateAddressAndAddressId()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
         var newFirstname = Firstname.Create("Pierre").Value;
         var newLastname = Lastname.Create("Martin").Value;
         var newPhoneNumber = PhoneNumber.Create("0987654321").Value;
@@ -203,7 +203,7 @@ public class UserTests
         var city = City.Create("Paris").Value;
         var postalCode = PostalCode.Create("75001").Value;
         var country = Country.Create("France").Value;
-        var address = new Address(streetNumber, streetName, city, postalCode, country);
+        var address = Address.Create(streetNumber, streetName, city, postalCode, country);
 
         // Act
         var result = user.UpdateProfile(newFirstname, newLastname, newPhoneNumber, address);
@@ -221,7 +221,7 @@ public class UserTests
     public void UpdateProfile_WithNullFirstname_ShouldFail()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.UpdateProfile(null!, _validLastname, _validPhoneNumber);
@@ -235,7 +235,7 @@ public class UserTests
     public void UpdateProfile_WithNullLastname_ShouldFail()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.UpdateProfile(_validFirstname, null!, _validPhoneNumber);
@@ -249,7 +249,7 @@ public class UserTests
     public void UpdateProfile_WithNullPhoneNumber_ShouldFail()
     {
         // Arrange
-        var user = new User(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
+        var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
         var result = user.UpdateProfile(_validFirstname, _validLastname, null!);

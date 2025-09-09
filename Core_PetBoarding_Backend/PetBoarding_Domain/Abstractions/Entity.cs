@@ -1,14 +1,4 @@
-using Newtonsoft.Json;
-
 namespace PetBoarding_Domain.Abstractions;
-
-public interface IEntityWithDomainEvents
-{
-    IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
-    IReadOnlyCollection<IDomainEvent> GetDomainEvents();
-    void AddDomainEvent(IDomainEvent domainEvent);
-    void ClearDomainEvents();
-}
 
 public abstract class Entity<TIdentifier> : IEquatable<Entity<EntityIdentifier>> 
     where TIdentifier : EntityIdentifier

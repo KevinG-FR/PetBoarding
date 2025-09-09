@@ -27,7 +27,7 @@ public class AddressTests
     public void Constructor_WithValidParameters_ShouldCreateAddress()
     {
         // Act
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
 
         // Assert
         address.Should().NotBeNull();
@@ -46,7 +46,7 @@ public class AddressTests
     public void Constructor_WithComplement_ShouldCreateAddressWithComplement()
     {
         // Act
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
 
         // Assert
         address.Should().NotBeNull();
@@ -65,7 +65,7 @@ public class AddressTests
     public void UpdateTimestamp_ShouldUpdateUpdatedAtProperty()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
         var initialUpdatedAt = address.UpdatedAt;
         
         // Wait a small amount to ensure time difference
@@ -83,7 +83,7 @@ public class AddressTests
     public void UpdateAddress_WithValidParameters_ShouldUpdateAllProperties()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
         var initialUpdatedAt = address.UpdatedAt;
         
         var newStreetNumber = StreetNumber.Create("456").Value;
@@ -112,7 +112,7 @@ public class AddressTests
     public void UpdateAddress_WithoutComplement_ShouldUpdatePropertiesAndSetComplementToNull()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
         var initialUpdatedAt = address.UpdatedAt;
         
         var newStreetNumber = StreetNumber.Create("456").Value;
@@ -140,7 +140,7 @@ public class AddressTests
     public void GetFullAddress_WithoutComplement_ShouldReturnCorrectFormat()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
 
         // Act
         var fullAddress = address.GetFullAddress();
@@ -153,7 +153,7 @@ public class AddressTests
     public void GetFullAddress_WithComplement_ShouldReturnCorrectFormat()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, _validComplement);
 
         // Act
         var fullAddress = address.GetFullAddress();
@@ -167,7 +167,7 @@ public class AddressTests
     {
         // Arrange
         var emptyComplement = Complement.Create("").Value;
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, emptyComplement);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, emptyComplement);
 
         // Act
         var fullAddress = address.GetFullAddress();
@@ -181,7 +181,7 @@ public class AddressTests
     {
         // Arrange
         var whitespaceComplement = Complement.Create("   ").Value;
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, whitespaceComplement);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry, whitespaceComplement);
 
         // Act
         var fullAddress = address.GetFullAddress();
@@ -194,7 +194,7 @@ public class AddressTests
     public void CreatedAt_ShouldBeReadonly()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
         var initialCreatedAt = address.CreatedAt;
         
         // Wait to ensure time difference
@@ -212,7 +212,7 @@ public class AddressTests
     public void IAuditableEntity_CreatedAt_ShouldReturnSameValueAsReadonlyField()
     {
         // Arrange
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
 
         // Act
         var auditableEntity = (IAuditableEntity)address;
@@ -225,7 +225,7 @@ public class AddressTests
     public void Constructor_ShouldSetCreatedAtAndUpdatedAtToSameTime()
     {
         // Act
-        var address = new Address(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
+        var address = Address.Create(_validStreetNumber, _validStreetName, _validCity, _validPostalCode, _validCountry);
 
         // Assert
         address.CreatedAt.Should().BeCloseTo(address.UpdatedAt, TimeSpan.FromMilliseconds(1));

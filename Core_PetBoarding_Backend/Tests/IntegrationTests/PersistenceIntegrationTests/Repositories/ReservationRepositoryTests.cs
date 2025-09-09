@@ -12,7 +12,7 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
     public async Task GetByIdAsync_Should_IncludeReservedSlots()
     {
         // Arrange
-        var reservation = new Reservation(
+        var reservation = Reservation.Create(
             "user123",
             "pet123",
             "Buddy",
@@ -41,9 +41,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Max", "service2", DateTime.Today, null),
-            new Reservation("user123", "pet3", "Charlie", "service3", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Max", "service2", DateTime.Today, null),
+            Reservation.Create("user123", "pet3", "Charlie", "service3", DateTime.Today, null)
         };
 
         Context.Reservations.AddRange(reservations);
@@ -65,9 +65,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Max", "service1", DateTime.Today, null),
-            new Reservation("user789", "pet3", "Charlie", "service2", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Max", "service1", DateTime.Today, null),
+            Reservation.Create("user789", "pet3", "Charlie", "service2", DateTime.Today, null)
         };
 
         Context.Reservations.AddRange(reservations);
@@ -89,9 +89,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Max", "service2", DateTime.Today, null),
-            new Reservation("user789", "pet3", "Charlie", "service3", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Max", "service2", DateTime.Today, null),
+            Reservation.Create("user789", "pet3", "Charlie", "service3", DateTime.Today, null)
         };
 
         // Marquer une réservation comme validée (via reflection car pas de méthode publique)
@@ -118,9 +118,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         var baseDate = DateTime.Today;
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", baseDate.AddDays(-1), null),
-            new Reservation("user456", "pet2", "Max", "service2", baseDate.AddDays(1), null),
-            new Reservation("user789", "pet3", "Charlie", "service3", baseDate.AddDays(5), null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", baseDate.AddDays(-1), null),
+            Reservation.Create("user456", "pet2", "Max", "service2", baseDate.AddDays(1), null),
+            Reservation.Create("user789", "pet3", "Charlie", "service3", baseDate.AddDays(5), null)
         };
 
         Context.Reservations.AddRange(reservations);
@@ -145,19 +145,19 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         var baseDate = DateTime.Today;
         
         // Créer les réservations une par une avec des délais pour s'assurer que CreatedAt est différent
-        var firstReservation = new Reservation("user123", "pet1", "First", "service1", baseDate, null);
+        var firstReservation = Reservation.Create("user123", "pet1", "First", "service1", baseDate, null);
         Context.Reservations.Add(firstReservation);
         await Context.SaveChangesAsync();
         
         await Task.Delay(10); // Petit délai pour garantir un CreatedAt différent
         
-        var secondReservation = new Reservation("user456", "pet2", "Second", "service2", baseDate, null);
+        var secondReservation = Reservation.Create("user456", "pet2", "Second", "service2", baseDate, null);
         Context.Reservations.Add(secondReservation);
         await Context.SaveChangesAsync();
         
         await Task.Delay(10); // Petit délai pour garantir un CreatedAt différent
         
-        var thirdReservation = new Reservation("user789", "pet3", "Third", "service3", baseDate, null);
+        var thirdReservation = Reservation.Create("user789", "pet3", "Third", "service3", baseDate, null);
         Context.Reservations.Add(thirdReservation);
         await Context.SaveChangesAsync();
 
@@ -177,9 +177,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Max", "service2", DateTime.Today, null),
-            new Reservation("user123", "pet3", "Charlie", "service3", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Max", "service2", DateTime.Today, null),
+            Reservation.Create("user123", "pet3", "Charlie", "service3", DateTime.Today, null)
         };
 
         Context.Reservations.AddRange(reservations);
@@ -199,9 +199,9 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Max", "service1", DateTime.Today, null),
-            new Reservation("user789", "pet3", "Charlie", "service2", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Buddy", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Max", "service1", DateTime.Today, null),
+            Reservation.Create("user789", "pet3", "Charlie", "service2", DateTime.Today, null)
         };
 
         Context.Reservations.AddRange(reservations);
@@ -223,16 +223,16 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         var reservations = new[]
         {
             // Réservation qui commence avant et se termine dans la période
-            new Reservation("user1", "pet1", "Pet1", "service1", baseDate.AddDays(-2), baseDate.AddDays(1)),
+            Reservation.Create("user1", "pet1", "Pet1", "service1", baseDate.AddDays(-2), baseDate.AddDays(1)),
             
             // Réservation complètement dans la période
-            new Reservation("user2", "pet2", "Pet2", "service2", baseDate.AddDays(1), baseDate.AddDays(3)),
+            Reservation.Create("user2", "pet2", "Pet2", "service2", baseDate.AddDays(1), baseDate.AddDays(3)),
             
             // Réservation qui commence dans la période et se termine après
-            new Reservation("user3", "pet3", "Pet3", "service3", baseDate.AddDays(2), baseDate.AddDays(6)),
+            Reservation.Create("user3", "pet3", "Pet3", "service3", baseDate.AddDays(2), baseDate.AddDays(6)),
             
             // Réservation complètement hors période
-            new Reservation("user4", "pet4", "Pet4", "service4", baseDate.AddDays(10), baseDate.AddDays(12))
+            Reservation.Create("user4", "pet4", "Pet4", "service4", baseDate.AddDays(10), baseDate.AddDays(12))
         };
 
         Context.Reservations.AddRange(reservations);
@@ -268,10 +268,10 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Pet1", "service1", DateTime.Today, null),
-            new Reservation("user123", "pet2", "Pet2", "service2", DateTime.Today, null),
-            new Reservation("user123", "pet3", "Pet3", "service3", DateTime.Today, null),
-            new Reservation("user123", "pet4", "Pet4", "service4", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Pet1", "service1", DateTime.Today, null),
+            Reservation.Create("user123", "pet2", "Pet2", "service2", DateTime.Today, null),
+            Reservation.Create("user123", "pet3", "Pet3", "service3", DateTime.Today, null),
+            Reservation.Create("user123", "pet4", "Pet4", "service4", DateTime.Today, null)
         };
 
         // Définir différents statuts via reflection
@@ -301,8 +301,8 @@ public class ReservationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var reservations = new[]
         {
-            new Reservation("user123", "pet1", "Pet1", "service1", DateTime.Today, null),
-            new Reservation("user456", "pet2", "Pet2", "service2", DateTime.Today, null)
+            Reservation.Create("user123", "pet1", "Pet1", "service1", DateTime.Today, null),
+            Reservation.Create("user456", "pet2", "Pet2", "service2", DateTime.Today, null)
         };
 
         // Marquer comme validées

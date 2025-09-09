@@ -6,7 +6,12 @@ using PetBoarding_Domain.Users;
 
 public sealed class Payment : EntityWithDomainEvents<PaymentId>, IAuditableEntity
 {
-    public Payment(
+    // Private constructor for Entity Framework Core
+    private Payment() : base(default!)
+    {
+    }
+
+    private Payment(
         decimal amount,
         PaymentMethod method,
         string? externalTransactionId = null,
@@ -22,6 +27,18 @@ public sealed class Payment : EntityWithDomainEvents<PaymentId>, IAuditableEntit
         Description = description;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Factory method to create a new Payment
+    /// </summary>
+    public static Payment Create(
+        decimal amount,
+        PaymentMethod method,
+        string? externalTransactionId = null,
+        string? description = null)
+    {
+        return new Payment(amount, method, externalTransactionId, description);
     }
 
     public decimal Amount { get; private set; }

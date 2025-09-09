@@ -7,7 +7,8 @@ using PetBoarding_Domain.Abstractions;
 /// </summary>
 public sealed class Prestation : Entity<PrestationId>
 {
-    public Prestation(
+    // Constructeur privé pour création
+    private Prestation(
         string libelle, 
         string description, 
         TypeAnimal categorieAnimal, 
@@ -30,6 +31,20 @@ public sealed class Prestation : Entity<PrestationId>
         DureeEnMinutes = dureeEnMinutes;
         EstDisponible = true;
         DateCreation = DateTime.UtcNow;
+    }
+
+    // Constructeur privé pour Entity Framework
+    private Prestation() : base(default!) { }
+
+    // Méthode factory pour créer une nouvelle prestation
+    public static Prestation Create(
+        string libelle, 
+        string description, 
+        TypeAnimal categorieAnimal, 
+        decimal prix, 
+        int dureeEnMinutes)
+    {
+        return new Prestation(libelle, description, categorieAnimal, prix, dureeEnMinutes);
     }
 
     public string Libelle { get; private set; }

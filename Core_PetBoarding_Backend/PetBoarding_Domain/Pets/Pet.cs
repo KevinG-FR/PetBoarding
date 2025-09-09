@@ -8,7 +8,7 @@ namespace PetBoarding_Domain.Pets;
 /// </summary>
 public sealed class Pet : AuditableEntity<PetId>
 {
-    public Pet(
+    private Pet(
         string name,
         PetType type,
         string breed,
@@ -58,15 +58,31 @@ public sealed class Pet : AuditableEntity<PetId>
         EmergencyContact = emergencyContact;
     }
 
-    // Constructeur pour Entity Framework
-    private Pet() : base(new PetId(Guid.Empty))
+    /// <summary>
+    /// Factory method to create a new Pet
+    /// </summary>
+    public static Pet Create(
+        string name,
+        PetType type,
+        string breed,
+        int age,
+        string color,
+        PetGender gender,
+        bool isNeutered,
+        UserId ownerId,
+        decimal? weight = null,
+        string? microchipNumber = null,
+        string? medicalNotes = null,
+        string? specialNeeds = null,
+        string? photoUrl = null,
+        EmergencyContact? emergencyContact = null)
     {
-        Name = string.Empty;
-        Type = PetType.Chien;
-        Breed = string.Empty;
-        Color = string.Empty;
-        Gender = PetGender.Male;
-        OwnerId = new UserId(Guid.Empty);
+        return new Pet(name, type, breed, age, color, gender, isNeutered, ownerId, weight, microchipNumber, medicalNotes, specialNeeds, photoUrl, emergencyContact);
+    }
+
+    // Constructeur pour Entity Framework
+    private Pet() : base(default!)
+    {
     }
 
     // Propriétés principales

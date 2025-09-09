@@ -15,7 +15,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
     {
         // Arrange
         
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -42,7 +42,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
         // Arrange
         var users = new[]
         {
-            new User(
+            User.Create(
                 Firstname.Create("John").Value,
                 Lastname.Create("Doe").Value,
                 Email.Create("john.doe@test.com").Value,
@@ -50,7 +50,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
                 "hashedpassword1",
                 UserProfileType.Customer
             ),
-            new User(
+            User.Create(
                 Firstname.Create("Jane").Value,
                 Lastname.Create("Smith").Value,
                 Email.Create("jane.smith@test.com").Value,
@@ -85,7 +85,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
     public async Task SaveChangesAsync_Should_HandleMultipleOperations()
     {
         // Arrange        
-        var user1 = new User(
+        var user1 = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -94,7 +94,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
             UserProfileType.Customer
         );
 
-        var user2 = new User(
+        var user2 = User.Create(
             Firstname.Create("Jane").Value,
             Lastname.Create("Smith").Value,
             Email.Create("jane.smith@test.com").Value,
@@ -131,7 +131,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
     public async Task SaveChangesAsync_Should_RespectCancellationToken()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -161,7 +161,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
         var userId = new UserId(Guid.NewGuid());
         var addressId = new AddressId(Guid.NewGuid());
         
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -189,7 +189,7 @@ public class UnitOfWorkTests : PostgreSqlTestBase
     public async Task SaveChangesAsync_Should_UpdateTimestamps()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,

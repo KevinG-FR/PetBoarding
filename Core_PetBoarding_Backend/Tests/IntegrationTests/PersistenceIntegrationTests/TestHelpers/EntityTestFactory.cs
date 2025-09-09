@@ -14,7 +14,7 @@ public static class EntityTestFactory
         string passwordHash = "hashedpassword",
         UserProfileType profileType = UserProfileType.Customer)
     {
-        return new User(
+        return User.Create(
             Firstname.Create(firstname).Value,
             Lastname.Create(lastname).Value,
             Email.Create(email).Value,
@@ -32,7 +32,7 @@ public static class EntityTestFactory
         string country = "Test Country",
         string? complement = null)
     {
-        return new Address(
+        return Address.Create(
             StreetNumber.Create(streetNumber).Value,
             StreetName.Create(streetName).Value,
             City.Create(city).Value,
@@ -49,7 +49,7 @@ public static class EntityTestFactory
         decimal prix = 25.00m,
         int dureeEnMinutes = 480)
     {
-        return new Prestation(libelle, description, categorieAnimal, prix, dureeEnMinutes);
+        return Prestation.Create(libelle, description, categorieAnimal, prix, dureeEnMinutes);
     }
 
     public static void AssignAddressToUser(User user, Address address)

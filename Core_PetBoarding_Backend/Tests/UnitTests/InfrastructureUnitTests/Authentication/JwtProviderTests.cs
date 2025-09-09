@@ -31,7 +31,7 @@ public class JwtProviderTests
         
         _jwtProvider = new JwtProvider(optionsMock.Object);
         
-        _testUser = new User(
+        _testUser = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             PetBoarding_Domain.Users.Email.Create("test@example.com").Value,

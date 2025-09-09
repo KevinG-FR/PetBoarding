@@ -228,5 +228,66 @@ public class DomainTests
             var baseType = type.BaseType;
             baseType.Should().Be(typeof(EntityIdentifier), $"{type.Name} should directly inherit from EntityIdentifier");
         }
-    }    
+    }
+
+    [Fact]
+    public void DomainEntities_Should_Have_StaticCreateMethods()
+    {
+        // Liste des entités domain concrètes qui doivent avoir des méthodes Create
+        var concreteEntities = new[]
+        {
+            nameof(User), nameof(Address), nameof(Pet), nameof(Prestation), nameof(Reservation), nameof(ReservationSlot),
+            nameof(Planning), nameof(AvailableSlot), nameof(Basket), nameof(BasketItem), nameof(Payment)
+        };
+
+        var entityTypes = Types.InAssembly(DomainAssembly)
+        .That()
+        .HaveNameMatching(string.Join("|", concreteEntities.Select(e => $"^{e}$")))
+        .And().Inherit(typeof(Entity<>))
+        .GetTypes();
+
+        foreach (var entityType in entityTypes)
+        {
+            // Vérifie qu'il y a au moins une méthode statique Create ou CreateNew
+            var staticMethods = entityType.GetMethods(BindingFlags.Public | BindingFlags.Static);
+            var createMethods = staticMethods.Where(m => 
+                m.Name == "Create" || m.Name == "CreateNew").ToList();
+
+            createMethods.Should().NotBeEmpty($"{entityType.Name} should have at least one static Create() or CreateNew() method");
+            
+            // Vérifie que la méthode retourne une instance du bon type
+            createMethods.Should().OnlyContain(m => m.ReturnType == entityType, 
+                $"{entityType.Name} Create methods should return {entityType.Name} instances");
+        }
+    }
+
+    [Fact]
+    public void DomainEntities_Should_Have_PrivateConstructors()
+    {
+        // Liste des entités domain concrètes qui doivent avoir des constructeurs privés
+        var concreteEntities = new[]
+        {
+            nameof(User), nameof(Address), nameof(Pet), nameof(Prestation), nameof(Reservation), nameof(ReservationSlot),
+            nameof(Planning), nameof(AvailableSlot), nameof(Basket), nameof(BasketItem), nameof(Payment)
+        };
+
+        var entityTypes = Types.InAssembly(DomainAssembly)
+        .That()
+        .HaveNameMatching(string.Join("|", concreteEntities.Select(e => $"^{e}$")))
+        .And().Inherit(typeof(Entity<>))
+        .GetTypes();
+
+        foreach (var entityType in entityTypes)
+        {
+            // Vérifie qu'il n'y a pas de constructeurs publics (sauf éventuellement pour EF)
+            var publicConstructors = entityType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+            
+            publicConstructors.Should().BeEmpty($"{entityType.Name} should not have public constructors. Use factory methods instead.");
+
+            // Vérifie qu'il y a au moins un constructeur privé
+            var privateConstructors = entityType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+            
+            privateConstructors.Should().NotBeEmpty($"{entityType.Name} should have at least one private constructor");
+        }
+    }
 }

@@ -88,7 +88,7 @@ internal sealed class CreateReservationHandler : ICommandHandler<CreateReservati
             }
 
             // 4. Créer la réservation avec statut Created
-            var reservation = new Reservation(
+            var reservation = Reservation.Create(
                 request.UserId,
                 request.AnimalId,
                 request.AnimalName,

@@ -10,7 +10,7 @@ public sealed class AvailableSlot : Entity<AvailableSlotId>
     // Constructeur privé pour EF Core
     private AvailableSlot() : base(default!) { }
 
-    public AvailableSlot(AvailableSlotId id, PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
+    private AvailableSlot(AvailableSlotId id, PlanningId planningId, DateTime date, int capaciteMax, int capaciteReservee = 0)
         : base(id)
     {
         if (capaciteMax <= 0)

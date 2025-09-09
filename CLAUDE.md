@@ -97,6 +97,7 @@ docker-compose up --build
 - **Repository + UoW**: Data access abstraction with Unit of Work pattern
 - **JWT Authentication**: Bearer tokens with refresh token mechanism via interceptors
 - **Value Objects**: Strong typing for domain primitives (`UserId`, `Email`, `PrestationId`, etc.)
+- **Factory Method Pattern**: All domain entities must have static `Create()` or `CreateNew()` methods for instantiation
 - **Partial Classes**: Endpoint organization (e.g., `UsersEndpoints.CreateUser.cs`)
 
 ### Frontend Implementation  
@@ -142,6 +143,13 @@ docker-compose up --build
 - **File Organization**: Feature-based for specific scope, shared for cross-cutting concerns
 - **DTOs**: Place in contracts folders, keep separate from component models
 - **Windows 11 Compatibility**: Scripts and tools should be Windows-compatible
+
+### Domain Entity Conventions
+- **Factory Method Pattern**: All domain entities MUST have static factory methods (`Create()` or `CreateNew()`)
+- **Private Constructors**: Entity constructors should be private to enforce factory method usage
+- **Entity Creation**: Use `Entity.Create(...)` instead of `new Entity(...)` throughout the codebase
+- **EF Constructor**: Entities may have a private parameterless constructor for Entity Framework reconstruction
+- **Domain Events**: Only trigger domain events during actual entity creation, not during reconstruction
 
 ### API Documentation
 - **Swagger/OpenAPI**: Available at `/swagger` endpoint during development

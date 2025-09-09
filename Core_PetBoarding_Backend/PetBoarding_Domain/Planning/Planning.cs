@@ -8,8 +8,9 @@ using PetBoarding_Domain.Prestations;
 /// </summary>
 public sealed class Planning : Entity<PlanningId>
 {
-    public Planning(PlanningId id, PrestationId prestationId, string label, string? description = null) 
-        : base(id)
+    // Constructeur privé pour création
+    private Planning(PrestationId prestationId, string label, string? description = null) 
+        : base(new PlanningId(Guid.CreateVersion7()))
     {
         PrestationId = prestationId;
         Label = label;
@@ -22,7 +23,13 @@ public sealed class Planning : Entity<PlanningId>
     // Constructeur privé pour EF Core
     private Planning() : base(default!)
     {
-        Creneaux = new List<AvailableSlot>();
+        Creneaux = [];
+    }
+
+    // Méthode factory pour créer un nouveau planning
+    public static Planning Create(PrestationId prestationId, string label, string? description = null)
+    {
+        return new Planning(prestationId, label, description);
     }
 
     public PrestationId PrestationId { get; private set; }

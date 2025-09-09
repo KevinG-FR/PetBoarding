@@ -80,7 +80,7 @@ public class UpdateUserProfileCommandHandler : ICommandHandler<UpdateUserProfile
                 complement = complementResult.Value;
             }
 
-            address = new Address(
+            address = Address.Create(
                 streetNumberResult.Value,
                 streetNameResult.Value,
                 cityResult.Value,

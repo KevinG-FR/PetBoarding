@@ -31,7 +31,7 @@ public class PetTests
     public void Constructor_WithValidParameters_ShouldCreatePet()
     {
         // Act
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
 
         // Assert
         pet.Should().NotBeNull();
@@ -64,7 +64,7 @@ public class PetTests
         var emergencyContact = new EmergencyContact("John Doe", "0123456789", "john@example.com");
 
         // Act
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, 
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, 
                          _validOwnerId, weight, microchipNumber, medicalNotes, specialNeeds, photoUrl, emergencyContact);
 
         // Assert
@@ -84,7 +84,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(invalidName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
+            Pet.Create(invalidName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
         
         exception.Message.Should().Contain("Le nom de l'animal ne peut pas être vide");
         exception.ParamName.Should().Be("name");
@@ -98,7 +98,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(_validName, _validType, invalidBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
+            Pet.Create(_validName, _validType, invalidBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
         
         exception.Message.Should().Contain("La race de l'animal ne peut pas être vide");
         exception.ParamName.Should().Be("breed");
@@ -111,7 +111,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(_validName, _validType, _validBreed, negativeAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
+            Pet.Create(_validName, _validType, _validBreed, negativeAge, _validColor, _validGender, _validIsNeutered, _validOwnerId));
         
         exception.Message.Should().Contain("L'âge de l'animal ne peut pas être négatif");
         exception.ParamName.Should().Be("age");
@@ -122,7 +122,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(_validName, _validType, _validBreed, 51, _validColor, _validGender, _validIsNeutered, _validOwnerId));
+            Pet.Create(_validName, _validType, _validBreed, 51, _validColor, _validGender, _validIsNeutered, _validOwnerId));
         
         exception.Message.Should().Contain("L'âge de l'animal ne peut pas dépasser 50 ans");
         exception.ParamName.Should().Be("age");
@@ -136,7 +136,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(_validName, _validType, _validBreed, _validAge, invalidColor, _validGender, _validIsNeutered, _validOwnerId));
+            Pet.Create(_validName, _validType, _validBreed, _validAge, invalidColor, _validGender, _validIsNeutered, _validOwnerId));
         
         exception.Message.Should().Contain("La couleur de l'animal ne peut pas être vide");
         exception.ParamName.Should().Be("color");
@@ -149,7 +149,7 @@ public class PetTests
     {
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => 
-            new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId, negativeWeight));
+            Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId, negativeWeight));
         
         exception.Message.Should().Contain("Le poids de l'animal ne peut pas être négatif");
         exception.ParamName.Should().Be("weight");
@@ -168,7 +168,7 @@ public class PetTests
         var photoUrlWithSpaces = " https://example.com/photo.jpg ";
 
         // Act
-        var pet = new Pet(nameWithSpaces, _validType, breedWithSpaces, _validAge, colorWithSpaces, _validGender, _validIsNeutered, 
+        var pet = Pet.Create(nameWithSpaces, _validType, breedWithSpaces, _validAge, colorWithSpaces, _validGender, _validIsNeutered, 
                          _validOwnerId, null, microchipWithSpaces, medicalNotesWithSpaces, specialNeedsWithSpaces, photoUrlWithSpaces);
 
         // Assert
@@ -185,7 +185,7 @@ public class PetTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateProperties()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var newName = "Max";
         var newBreed = "Labrador";
         var newAge = 5;
@@ -208,7 +208,7 @@ public class PetTests
     public void UpdateBasicInfo_WithInvalidName_ShouldThrowArgumentException(string invalidName)
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => pet.UpdateBasicInfo(invalidName, _validBreed, _validAge, _validColor));
@@ -221,7 +221,7 @@ public class PetTests
     public void UpdateBasicInfo_WithInvalidAge_ShouldThrowArgumentException(int invalidAge)
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => pet.UpdateBasicInfo(_validName, _validBreed, invalidAge, _validColor));
@@ -232,7 +232,7 @@ public class PetTests
     public void UpdateWeight_WithValidWeight_ShouldUpdateWeight()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var newWeight = 30.5m;
 
         // Act
@@ -246,7 +246,7 @@ public class PetTests
     public void UpdateWeight_WithNull_ShouldSetWeightToNull()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId, 25.0m);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId, 25.0m);
 
         // Act
         pet.UpdateWeight(null);
@@ -259,7 +259,7 @@ public class PetTests
     public void UpdateWeight_WithNegativeWeight_ShouldThrowArgumentException()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => pet.UpdateWeight(-1));
@@ -270,7 +270,7 @@ public class PetTests
     public void UpdateType_ShouldUpdateType()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var newType = PetType.Chat;
 
         // Act
@@ -284,7 +284,7 @@ public class PetTests
     public void UpdateGender_ShouldUpdateGender()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var newGender = PetGender.Female;
 
         // Act
@@ -298,7 +298,7 @@ public class PetTests
     public void UpdateNeuteredStatus_ShouldUpdateIsNeutered()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
 
         // Act
         pet.UpdateNeuteredStatus(true);
@@ -311,7 +311,7 @@ public class PetTests
     public void UpdateMicrochipNumber_ShouldUpdateAndTrimMicrochipNumber()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var microchipNumber = " 123456789012345 ";
 
         // Act
@@ -325,7 +325,7 @@ public class PetTests
     public void UpdateMedicalNotes_ShouldUpdateAndTrimMedicalNotes()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var medicalNotes = " Vaccinated against rabies ";
 
         // Act
@@ -339,7 +339,7 @@ public class PetTests
     public void UpdateSpecialNeeds_ShouldUpdateAndTrimSpecialNeeds()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var specialNeeds = " Needs daily medication ";
 
         // Act
@@ -353,7 +353,7 @@ public class PetTests
     public void UpdatePhotoUrl_ShouldUpdateAndTrimPhotoUrl()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var photoUrl = " https://example.com/photo.jpg ";
 
         // Act
@@ -367,7 +367,7 @@ public class PetTests
     public void UpdateEmergencyContact_ShouldUpdateEmergencyContact()
     {
         // Arrange
-        var pet = new Pet(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
+        var pet = Pet.Create(_validName, _validType, _validBreed, _validAge, _validColor, _validGender, _validIsNeutered, _validOwnerId);
         var emergencyContact = new EmergencyContact("Jane Doe", "0987654321", "jane@example.com");
 
         // Act

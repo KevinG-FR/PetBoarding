@@ -45,12 +45,11 @@ internal sealed class CreatePlanningCommandHandler : ICommandHandler<CreatePlann
             throw new InvalidOperationException("Un planning existe déjà pour cette prestation");
         }
 
-        var planningId = PlanningId.New();
-        var planning = new Planning(planningId, prestationId, request.Nom, request.Description);
+        var planning = Planning.Create(prestationId, request.Nom, request.Description);
 
         await _planningRepository.AddAsync(planning, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(planningId.Value.ToString());
+        return Result.Ok(planning.Id.Value.ToString());
     }
 }

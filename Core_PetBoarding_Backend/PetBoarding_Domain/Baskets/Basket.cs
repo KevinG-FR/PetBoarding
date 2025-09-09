@@ -12,11 +12,24 @@ public sealed class Basket : AuditableEntity<BasketId>
     
     private readonly List<BasketItem> _items = new();
 
-    public Basket(UserId userId) : base(new BasketId(Guid.CreateVersion7()))
+    // Private constructor for Entity Framework Core
+    private Basket() : base(default!)
+    {
+    }
+
+    private Basket(UserId userId) : base(new BasketId(Guid.CreateVersion7()))
     {
         UserId = userId;
         Status = BasketStatus.Created;
         PaymentFailureCount = 0;
+    }
+
+    /// <summary>
+    /// Factory method to create a new Basket
+    /// </summary>
+    public static Basket Create(UserId userId)
+    {
+        return new Basket(userId);
     }
 
     public UserId UserId { get; private set; }
@@ -38,7 +51,7 @@ public sealed class Basket : AuditableEntity<BasketId>
         if (existingItem is not null)
             return Result.Fail("Reservation is already in basket");
 
-        var newItem = new BasketItem(Id, reservationId);
+        var newItem = BasketItem.Create(Id, reservationId);
         _items.Add(newItem);
 
         return Result.Ok();

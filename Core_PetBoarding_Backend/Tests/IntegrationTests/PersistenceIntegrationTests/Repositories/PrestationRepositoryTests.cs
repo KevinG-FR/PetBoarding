@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PersistenceIntegrationTests.TestHelpers;
 using PetBoarding_Domain.Prestations;
 using PetBoarding_Persistence.Repositories;
 
@@ -12,13 +13,7 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
     public async Task GetByIdAsync_Should_ReturnPrestation_When_PrestationExists()
     {
         // Arrange
-        var prestation = new Prestation(
-            "Garde de chien",
-            "Garde complète pour chien à domicile",
-            TypeAnimal.Chien,
-            25.50m,
-            480 // 8 heures
-        );
+        var prestation = EntityTestFactory.CreatePrestation();
 
         Context.Prestations.Add(prestation);
         await Context.SaveChangesAsync();
@@ -29,8 +24,8 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(prestation.Id);
-        result.Libelle.Should().Be("Garde de chien");
-        result.Prix.Should().Be(25.50m);
+        result.Libelle.Should().Be("Test Prestation");
+        result.Prix.Should().Be(25.00m);
     }
 
     [Fact]
@@ -39,9 +34,9 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var prestations = new[]
         {
-            new Prestation("Garde chien", "Description 1", TypeAnimal.Chien, 25.00m, 480),
-            new Prestation("Garde chat", "Description 2", TypeAnimal.Chat, 20.00m, 360),
-            new Prestation("Garde oiseau", "Description 3", TypeAnimal.Oiseau, 15.00m, 240)
+            Prestation.Create("Garde chien", "Description 1", TypeAnimal.Chien, 25.00m, 480),
+            Prestation.Create("Garde chat", "Description 2", TypeAnimal.Chat, 20.00m, 360),
+            Prestation.Create("Garde oiseau", "Description 3", TypeAnimal.Oiseau, 15.00m, 240)
         };
 
         Context.Prestations.AddRange(prestations);
@@ -63,9 +58,9 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var prestations = new[]
         {
-            new Prestation("Garde chien 1", "Description 1", TypeAnimal.Chien, 25.00m, 480),
-            new Prestation("Garde chien 2", "Description 2", TypeAnimal.Chien, 30.00m, 600),
-            new Prestation("Garde chat", "Description 3", TypeAnimal.Chat, 20.00m, 360)
+            Prestation.Create("Garde chien 1", "Description 1", TypeAnimal.Chien, 25.00m, 480),
+            Prestation.Create("Garde chien 2", "Description 2", TypeAnimal.Chien, 30.00m, 600),
+            Prestation.Create("Garde chat", "Description 3", TypeAnimal.Chat, 20.00m, 360)
         };
 
         Context.Prestations.AddRange(prestations);
@@ -90,9 +85,9 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var prestations = new[]
         {
-            new Prestation("Prestation économique", "Description 1", TypeAnimal.Chien, 15.00m, 240),
-            new Prestation("Prestation standard", "Description 2", TypeAnimal.Chat, 25.00m, 360),
-            new Prestation("Prestation premium", "Description 3", TypeAnimal.Chien, 45.00m, 600)
+            Prestation.Create("Prestation économique", "Description 1", TypeAnimal.Chien, 15.00m, 240),
+            Prestation.Create("Prestation standard", "Description 2", TypeAnimal.Chat, 25.00m, 360),
+            Prestation.Create("Prestation premium", "Description 3", TypeAnimal.Chien, 45.00m, 600)
         };
 
         Context.Prestations.AddRange(prestations);
@@ -114,45 +109,31 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
     public async Task AddAsync_Should_AddPrestation_And_SaveChanges()
     {
         // Arrange
-        var prestation = new Prestation(
-            "Nouvelle prestation",
-            "Description de la nouvelle prestation",
-            TypeAnimal.Lapin,
-            18.50m,
-            300
-        );
+        var prestation = EntityTestFactory.CreatePrestation();
 
         // Act
         var result = await _repository.AddAsync(prestation, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Libelle.Should().Be("Nouvelle prestation");
-        result.CategorieAnimal.Should().Be(TypeAnimal.Lapin);
+        result.Libelle.Should().Be("Test Prestation");
+        result.CategorieAnimal.Should().Be(TypeAnimal.Chien);
 
         var prestationInDb = await Context.Prestations.FindAsync(prestation.Id);
         prestationInDb.Should().NotBeNull();
-        prestationInDb!.Prix.Should().Be(18.50m);
+        prestationInDb!.Prix.Should().Be(25.00m);
     }
 
     [Fact]
     public async Task UpdateAsync_Should_UpdateExistingPrestation()
     {
         // Arrange
-        var prestation = new Prestation(
-            "Prestation originale",
-            "Description originale",
-            TypeAnimal.Chien,
-            20.00m,
-            360
-        );
+        var prestation = EntityTestFactory.CreatePrestation();
 
         Context.Prestations.Add(prestation);
         await Context.SaveChangesAsync();
 
-        // Modifier la prestation via reflection car pas de méthodes publiques
-        var prixProperty = typeof(Prestation).GetProperty(nameof(Prestation.Prix));
-        prixProperty?.SetValue(prestation, 25.00m);
+        prestation.ModifierPrix(25.00m);
 
         // Act
         var result = await _repository.UpdateAsync(prestation, CancellationToken.None);
@@ -166,13 +147,7 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
     public async Task DeleteAsync_Should_DeletePrestation()
     {
         // Arrange
-        var prestation = new Prestation(
-            "Prestation à supprimer",
-            "Description",
-            TypeAnimal.Chat,
-            20.00m,
-            360
-        );
+        var prestation = EntityTestFactory.CreatePrestation();
 
         Context.Prestations.Add(prestation);
         await Context.SaveChangesAsync();
@@ -197,7 +172,7 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
     public async Task Repository_Should_HandleAllAnimalTypes(TypeAnimal typeAnimal)
     {
         // Arrange
-        var prestation = new Prestation(
+        var prestation = Prestation.Create(
             $"Prestation {typeAnimal}",
             $"Description pour {typeAnimal}",
             typeAnimal,
@@ -223,10 +198,10 @@ public class PrestationRepositoryTests : PostgreSqlTestBase
         // Arrange
         var prestations = new[]
         {
-            new Prestation("Courte", "30 min", TypeAnimal.Hamster, 10.00m, 30),
-            new Prestation("Moyenne", "2 heures", TypeAnimal.Chat, 20.00m, 120),
-            new Prestation("Longue", "8 heures", TypeAnimal.Chien, 50.00m, 480),
-            new Prestation("Très longue", "24 heures", TypeAnimal.Chien, 100.00m, 1440)
+            Prestation.Create("Courte", "30 min", TypeAnimal.Hamster, 10.00m, 30),
+            Prestation.Create("Moyenne", "2 heures", TypeAnimal.Chat, 20.00m, 120),
+            Prestation.Create("Longue", "8 heures", TypeAnimal.Chien, 50.00m, 480),
+            Prestation.Create("Très longue", "24 heures", TypeAnimal.Chien, 100.00m, 1440)
         };
 
         Context.Prestations.AddRange(prestations);

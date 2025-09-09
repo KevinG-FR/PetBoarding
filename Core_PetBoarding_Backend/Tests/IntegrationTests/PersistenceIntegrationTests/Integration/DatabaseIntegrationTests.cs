@@ -40,7 +40,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
         var addressId = new AddressId(Guid.NewGuid());
         const string duplicateEmail = "duplicate@test.com";
         
-        var user1 = new User(
+        var user1 = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create(duplicateEmail).Value,
@@ -49,7 +49,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
             UserProfileType.Customer
         );
 
-        var user2 = new User(
+        var user2 = User.Create(
             Firstname.Create("Jane").Value,
             Lastname.Create("Smith").Value,
             Email.Create(duplicateEmail).Value,
@@ -74,7 +74,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
         // Arrange
         await InitializeAsync();
         
-        var prestation = new Prestation(
+        var prestation = Prestation.Create(
             "Garde de chien premium",
             "Service de garde haut de gamme",
             TypeAnimal.Chien,
@@ -107,7 +107,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
         var users = new List<User>();
         for (int i = 0; i < 100; i++)
         {
-            users.Add(new User(
+            users.Add(User.Create(
                 Firstname.Create($"User{i}").Value,
                 Lastname.Create($"Test{i}").Value,
                 Email.Create($"user{i}@test.com").Value,
@@ -137,7 +137,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
         // Arrange
         await InitializeAsync();
                 
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -197,7 +197,7 @@ public class DatabaseIntegrationTests : PostgreSqlTestBase
         var prestations = new List<Prestation>();
         for (int i = 0; i < 1000; i++)
         {
-            prestations.Add(new Prestation(
+            prestations.Add(Prestation.Create(
                 $"Prestation {i}",
                 $"Description {i}",
                 (TypeAnimal)((i % 5) + 1), // Rotation entre les types d'animaux

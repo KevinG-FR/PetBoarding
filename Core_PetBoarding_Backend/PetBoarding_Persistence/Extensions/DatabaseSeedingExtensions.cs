@@ -115,7 +115,7 @@ public static class DatabaseSeedingExtensions
         var passwordHash = accountService.GetHashPassword("TestPetboarding123*");
         var profileType = UserProfileType.Customer;
 
-        return new User(firstname, lastname, email, phoneNumber, passwordHash, profileType);
+        return User.Create(firstname, lastname, email, phoneNumber, passwordHash, profileType);
     }
     
     private static Address CreateTestAddress()
@@ -126,7 +126,7 @@ public static class DatabaseSeedingExtensions
         var postalCode = PostalCode.Create("75001").Value;
         var country = Country.Create("France").Value;
 
-        return new Address(streetNumber, streetName, city, postalCode, country);
+        return Address.Create(streetNumber, streetName, city, postalCode, country);
     }
 
     private static List<Pet> CreateTestPets(UserId ownerId)
@@ -134,7 +134,7 @@ public static class DatabaseSeedingExtensions
         var pets = new List<Pet>();
 
         // Rex le chien
-        var rex = new Pet(
+        var rex = Pet.Create(
             name: "Rex",
             type: PetType.Chien,
             breed: "Labrador",
@@ -149,7 +149,7 @@ public static class DatabaseSeedingExtensions
         pets.Add(rex);
 
         // Minou le chat
-        var minou = new Pet(
+        var minou = Pet.Create(
             name: "Minou",
             type: PetType.Chat,
             breed: "Siamois",
@@ -171,11 +171,11 @@ public static class DatabaseSeedingExtensions
     {
         var prestations = new List<Prestation>
         {
-            new Prestation("Pension pour chien", "Garde de votre chien dans nos locaux", TypeAnimal.Chien, 45.00m, 1440),
-            new Prestation("Pension pour chat", "Garde de votre chat dans nos locaux", TypeAnimal.Chat, 35.00m, 1440),
-            new Prestation("Promenade chien (1h)", "Promenade individuelle d'une heure avec votre chien", TypeAnimal.Chien, 20.00m, 60),
-            new Prestation("Garde à domicile (journée)", "Garde de votre animal à domicile pendant une journée complète", TypeAnimal.Autre, 80.00m, 480),
-            new Prestation("Soins vétérinaires basiques", "Consultation, vaccination et soins de base", TypeAnimal.Chien, 60.00m, 30)
+            Prestation.Create("Pension pour chien", "Garde de votre chien dans nos locaux", TypeAnimal.Chien, 45.00m, 1440),
+            Prestation.Create("Pension pour chat", "Garde de votre chat dans nos locaux", TypeAnimal.Chat, 35.00m, 1440),
+            Prestation.Create("Promenade chien (1h)", "Promenade individuelle d'une heure avec votre chien", TypeAnimal.Chien, 20.00m, 60),
+            Prestation.Create("Garde à domicile (journée)", "Garde de votre animal à domicile pendant une journée complète", TypeAnimal.Autre, 80.00m, 480),
+            Prestation.Create("Soins vétérinaires basiques", "Consultation, vaccination et soins de base", TypeAnimal.Chien, 60.00m, 30)
         };
 
         return prestations;
@@ -189,8 +189,7 @@ public static class DatabaseSeedingExtensions
 
         foreach (var prestation in prestations)
         {
-            var planningId = new PlanningId(Guid.CreateVersion7());
-            var planning = new Planning(planningId, prestation.Id, $"Planning {prestation.Libelle}", $"Planning automatique pour {prestation.Libelle}");
+            var planning = Planning.Create(prestation.Id, $"Planning {prestation.Libelle}", $"Planning automatique pour {prestation.Libelle}");
             plannings.Add(planning);
 
             // Créer des créneaux du 09 septembre au 30 octobre 2025
@@ -205,7 +204,7 @@ public static class DatabaseSeedingExtensions
                     var maxCapacity = GetMaxCapacityForPrestation(prestation.Libelle);
                     var reservedCapacity = GenerateRealisticReservedCapacity(random, maxCapacity, date);
                     
-                    var slot = AvailableSlot.Create(planningId, date, maxCapacity, reservedCapacity);
+                    var slot = AvailableSlot.Create(planning.Id, date, maxCapacity, reservedCapacity);
                     slots.Add(slot);
                 }
             }

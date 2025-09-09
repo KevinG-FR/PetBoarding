@@ -37,7 +37,7 @@ public class UserConfigurationTests : PostgreSqlTestBase
     public void UserConfiguration_Should_ConfigureValueObjectConversions()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -66,7 +66,7 @@ public class UserConfigurationTests : PostgreSqlTestBase
     public void UserConfiguration_Should_ConfigureEnumConversions()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,

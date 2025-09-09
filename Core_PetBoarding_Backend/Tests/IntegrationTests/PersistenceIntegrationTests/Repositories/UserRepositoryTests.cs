@@ -1,5 +1,5 @@
 using FluentAssertions;
-using PetBoarding_Domain.Addresses;
+using PersistenceIntegrationTests.TestHelpers;
 using PetBoarding_Domain.Users;
 using PetBoarding_Persistence.Repositories;
 
@@ -13,22 +13,9 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetByIdAsync_Should_IncludeAddress_When_UserHasAddress()
     {
         // Arrange        
-        var address = new Address(
-            StreetNumber.Create("123").Value,
-            StreetName.Create("Test Street").Value,
-            City.Create("Test City").Value,
-            PostalCode.Create("12345").Value,
-            Country.Create("Test Country").Value
-        );
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var address = EntityTestFactory.CreateAddress();
+
+        var user = EntityTestFactory.CreateUser();
 
         user.AddressId = address.Id;
 
@@ -50,22 +37,13 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task UserEmailAlreadyUsed_Should_ReturnTrue_When_EmailExists()
     {
         // Arrange
-        const string email = "john.doe@test.com";
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create(email).Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.UserEmailAlreadyUsed(email, CancellationToken.None);
+        var result = await _repository.UserEmailAlreadyUsed(user.Email.Value, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -88,27 +66,19 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetUserForAuthentification_Should_ReturnUser_When_CredentialsAreCorrect()
     {
         // Arrange
-        const string email = "john.doe@test.com";
         const string passwordHash = "hashedpassword";
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create(email).Value,
-            PhoneNumber.Create("+33123456789").Value,
-            passwordHash,
-            UserProfileType.Customer
-        );
+
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetUserForAuthentification(email, passwordHash, CancellationToken.None);
+        var result = await _repository.GetUserForAuthentification(user.Email.Value, passwordHash, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Email.Value.Should().Be(email);
+        result!.Email.Value.Should().Be(user.Email.Value);
         result.PasswordHash.Should().Be(passwordHash);
     }
 
@@ -116,18 +86,10 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetUserForAuthentification_Should_ReturnNull_When_EmailIsWrong()
     {
         // Arrange
-        const string email = "john.doe@test.com";
         const string wrongEmail = "wrong@test.com";
         const string passwordHash = "hashedpassword";
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create(email).Value,
-            PhoneNumber.Create("+33123456789").Value,
-            passwordHash,
-            UserProfileType.Customer
-        );
+
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
@@ -143,24 +105,15 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetUserForAuthentification_Should_ReturnNull_When_PasswordIsWrong()
     {
         // Arrange
-        const string email = "john.doe@test.com";
-        const string passwordHash = "hashedpassword";
         const string wrongPasswordHash = "wrongpassword";
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create(email).Value,
-            PhoneNumber.Create("+33123456789").Value,
-            passwordHash,
-            UserProfileType.Customer
-        );
+
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetUserForAuthentification(email, wrongPasswordHash, CancellationToken.None);
+        var result = await _repository.GetUserForAuthentification(user.Email.Value, wrongPasswordHash, CancellationToken.None);
 
         // Assert
         result.Should().BeNull();
@@ -170,25 +123,11 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetUserForAuthentification_Should_IncludeAddress()
     {
         // Arrange
-        const string email = "john.doe@test.com";
         const string passwordHash = "hashedpassword";
-        
-        var address = new Address(
-            StreetNumber.Create("123").Value,
-            StreetName.Create("Test Street").Value,
-            City.Create("Test City").Value,
-            PostalCode.Create("12345").Value,
-            Country.Create("Test Country").Value
-        );
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create(email).Value,
-            PhoneNumber.Create("+33123456789").Value,
-            passwordHash,
-            UserProfileType.Customer
-        );
+
+        var address = EntityTestFactory.CreateAddress();
+
+        var user = EntityTestFactory.CreateUser();
 
         user.AddressId = address.Id;
 
@@ -197,7 +136,7 @@ public class UserRepositoryTests : PostgreSqlTestBase
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetUserForAuthentification(email, passwordHash, CancellationToken.None);
+        var result = await _repository.GetUserForAuthentification(user.Email.Value, passwordHash, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -210,26 +149,17 @@ public class UserRepositoryTests : PostgreSqlTestBase
     public async Task GetByEmailAsync_Should_ReturnUser_When_EmailExists()
     {
         // Arrange
-        var email = Email.Create("john.doe@test.com").Value;
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            email,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetByEmailAsync(email, CancellationToken.None);
+        var result = await _repository.GetByEmailAsync(user.Email, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Email.Should().Be(email);
+        result!.Email.Should().Be(user.Email);
     }
 
     [Fact]
@@ -250,23 +180,10 @@ public class UserRepositoryTests : PostgreSqlTestBase
     {
         // Arrange
         var email = Email.Create("john.doe@test.com").Value;
-        
-        var address = new Address(
-            StreetNumber.Create("123").Value,
-            StreetName.Create("Test Street").Value,
-            City.Create("Test City").Value,
-            PostalCode.Create("12345").Value,
-            Country.Create("Test Country").Value
-        );
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            email,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+
+        var address = EntityTestFactory.CreateAddress();
+
+        var user = EntityTestFactory.CreateUser();
 
         user.AddressId = address.Id;
 

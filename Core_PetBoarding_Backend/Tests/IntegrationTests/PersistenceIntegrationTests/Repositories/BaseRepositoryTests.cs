@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PersistenceIntegrationTests.TestHelpers;
 using PetBoarding_Domain.Addresses;
 using PetBoarding_Domain.Users;
 using PetBoarding_Persistence.Repositories;
@@ -13,14 +14,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task GetByIdAsync_Should_ReturnEntity_When_EntityExists()
     {
         // Arrange
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
@@ -51,28 +45,17 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task GetWithFilterAsync_Should_ReturnEntity_When_FilterMatches()
     {
         // Arrange
-        var userId = new UserId(Guid.NewGuid());
-        var addressId = new AddressId(Guid.NewGuid());
-        var email = Email.Create("john.doe@test.com").Value;
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            email,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
 
         // Act
-        var result = await _repository.GetWithFilterAsync(u => u.Email == email, CancellationToken.None);
+        var result = await _repository.GetWithFilterAsync(u => u.Email == user.Email, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Email.Should().Be(email);
+        result!.Email.Should().Be(user.Email);
     }
 
     [Fact]
@@ -81,7 +64,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
         // Arrange
         var users = new List<User>
         {
-            new User(
+            User.Create(
                 Firstname.Create("John").Value,
                 Lastname.Create("Doe").Value,
                 Email.Create("john.doe@test.com").Value,
@@ -89,7 +72,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
                 "hashedpassword",
                 UserProfileType.Customer
             ),
-            new User(
+            User.Create(
                 Firstname.Create("Jane").Value,
                 Lastname.Create("Smith").Value,
                 Email.Create("jane.smith@test.com").Value,
@@ -117,7 +100,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
         // Arrange
         var users = new List<User>
         {
-            new User(
+            User.Create(
                 Firstname.Create("John").Value,
                 Lastname.Create("Doe").Value,
                 Email.Create("john.doe@test.com").Value,
@@ -125,7 +108,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
                 "hashedpassword",
                 UserProfileType.Customer
             ),
-            new User(
+            User.Create(
                 Firstname.Create("Jane").Value,
                 Lastname.Create("Doe").Value,
                 Email.Create("jane.doe@test.com").Value,
@@ -152,14 +135,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task AddAsync_Should_AddEntity_And_ReturnAddedEntity()
     {
         // Arrange
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         // Act
         var result = await _repository.AddAsync(user, CancellationToken.None);
@@ -176,17 +152,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task UpdateAsync_Should_UpdateExistingEntity()
     {
         // Arrange
-        var userId = new UserId(Guid.NewGuid());
-        var addressId = new AddressId(Guid.NewGuid());
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
@@ -206,14 +172,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task UpdateAsync_Should_ReturnNull_When_EntityDoesNotExist()
     {
         // Arrange
-        var nonExistentUser = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var nonExistentUser = EntityTestFactory.CreateUser();
 
         // Act
         var result = await _repository.UpdateAsync(nonExistentUser, CancellationToken.None);
@@ -226,17 +185,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task DeleteAsync_Should_DeleteEntity_And_ReturnDeletedCount()
     {
         // Arrange
-        var userId = new UserId(Guid.NewGuid());
-        var addressId = new AddressId(Guid.NewGuid());
-        
-        var user = new User(
-            Firstname.Create("John").Value,
-            Lastname.Create("Doe").Value,
-            Email.Create("john.doe@test.com").Value,
-            PhoneNumber.Create("+33123456789").Value,
-            "hashedpassword",
-            UserProfileType.Customer
-        );
+        var user = EntityTestFactory.CreateUser();
 
         Context.Users.Add(user);
         await Context.SaveChangesAsync();
@@ -247,7 +196,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
         // Assert
         result.Should().Be(1);
         
-        var entityInDb = await Context.Users.FindAsync(userId);
+        var entityInDb = await Context.Users.FindAsync(user.Id);
         entityInDb.Should().BeNull();
     }
 
@@ -255,7 +204,7 @@ public class BaseRepositoryTests : PostgreSqlTestBase
     public async Task DeleteAsync_Should_ReturnZero_When_EntityDoesNotExist()
     {
         // Arrange
-        var nonExistentUser = new User(
+        var nonExistentUser = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,

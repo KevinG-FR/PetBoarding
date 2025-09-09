@@ -7,7 +7,12 @@ using PetBoarding_Domain.Abstractions;
 /// </summary>
 public sealed class Reservation : AuditableEntity<ReservationId>
 {
-    public Reservation(
+    // Private constructor for Entity Framework Core
+    private Reservation() : base(default!)
+    {        
+    }
+
+    private Reservation(
         string userId,
         string animalId,
         string animalName,
@@ -36,6 +41,21 @@ public sealed class Reservation : AuditableEntity<ReservationId>
         EndDate = endDate?.Date;
         Comments = comments;
         Status = ReservationStatus.Created;
+    }
+
+    /// <summary>
+    /// Factory method to create a new Reservation
+    /// </summary>
+    public static Reservation Create(
+        string userId,
+        string animalId,
+        string animalName,
+        string serviceId,
+        DateTime startDate,
+        DateTime? endDate = null,
+        string? comments = null)
+    {
+        return new Reservation(userId, animalId, animalName, serviceId, startDate, endDate, comments);
     }
 
     public string UserId { get; private set; }
@@ -174,7 +194,7 @@ public sealed class Reservation : AuditableEntity<ReservationId>
         if (_reservedSlots.Any(rs => rs.AvailableSlotId == availableSlotId && rs.IsActive))
             throw new InvalidOperationException($"Slot {availableSlotId} is already reserved for this reservation");
 
-        var reservationSlot = new ReservationSlot(Id, availableSlotId);
+        var reservationSlot = ReservationSlot.Create(Id, availableSlotId);
         _reservedSlots.Add(reservationSlot);
     }
 

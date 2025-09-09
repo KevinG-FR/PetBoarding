@@ -13,7 +13,7 @@ public class ApplicationDbContextTests : PostgreSqlTestBase
     {
         // Arrange
         
-        var address = new Address(
+        var address = Address.Create(
             StreetNumber.Create("123").Value,
             StreetName.Create("Test Street").Value,
             City.Create("Test City").Value,
@@ -21,7 +21,7 @@ public class ApplicationDbContextTests : PostgreSqlTestBase
             Country.Create("Test Country").Value
         );
         
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -49,7 +49,7 @@ public class ApplicationDbContextTests : PostgreSqlTestBase
     public async Task SaveChangesAsync_Should_PublishDomainEvents_When_EntityHasEvents()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,
@@ -74,7 +74,7 @@ public class ApplicationDbContextTests : PostgreSqlTestBase
     public async Task SaveChangesAsync_Should_ClearDomainEvents_After_Publishing()
     {
         // Arrange        
-        var user = new User(
+        var user = User.Create(
             Firstname.Create("John").Value,
             Lastname.Create("Doe").Value,
             Email.Create("john.doe@test.com").Value,

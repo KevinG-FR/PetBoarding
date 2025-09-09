@@ -26,7 +26,7 @@ public sealed class CreatePrestationCommandHandler : ICommandHandler<CreatePrest
     {
         try
         {            
-            var prestation = new Prestation(
+            var prestation = Prestation.Create(
                 command.Libelle,
                 command.Description,
                 command.CategorieAnimal,

@@ -4,7 +4,7 @@ namespace PetBoarding_Domain.Addresses;
 
 public class Address : Entity<AddressId>, IAuditableEntity
 {
-    public Address(
+    private Address(
         StreetNumber streetNumber,
         StreetName streetName,
         City city,
@@ -21,6 +21,20 @@ public class Address : Entity<AddressId>, IAuditableEntity
         Complement = complement;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Factory method to create a new Address
+    /// </summary>
+    public static Address Create(
+        StreetNumber streetNumber,
+        StreetName streetName,
+        City city,
+        PostalCode postalCode,
+        Country country,
+        Complement? complement = null)
+    {
+        return new Address(streetNumber, streetName, city, postalCode, country, complement);
     }
 
     // Constructeur sans paramètres pour EF Core

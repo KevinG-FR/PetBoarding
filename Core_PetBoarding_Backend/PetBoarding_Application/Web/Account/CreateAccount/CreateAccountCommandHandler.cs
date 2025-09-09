@@ -28,7 +28,7 @@ namespace PetBoarding_Application.Web.Account.CreateAccount
 
             var passwordHash = _accountService.GetHashPassword(request.Password);
 
-            User newUser = new User(
+            User newUser = User.Create(
                Firstname.Create(request.Firstname).Value,
                Lastname.Create(request.Lastname).Value,
                PetBoarding_Domain.Users.Email.Create(request.Email).Value,

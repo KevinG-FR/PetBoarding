@@ -36,7 +36,7 @@ public sealed class CreatePetCommandHandler : ICommandHandler<CreatePetCommand, 
             }
 
             // Créer l'animal
-            var pet = new Pet(
+            var pet = Pet.Create(
                 name: request.Name,
                 type: request.Type,
                 breed: request.Breed,

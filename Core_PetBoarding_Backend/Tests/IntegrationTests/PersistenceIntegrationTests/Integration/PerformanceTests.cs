@@ -20,7 +20,7 @@ public class PerformanceTests : PostgreSqlTestBase
         var users = new List<User>();
         for (int i = 0; i < 10000; i++)
         {
-            users.Add(new User(
+            users.Add(User.Create(
                 Firstname.Create($"User{i}").Value,
                 Lastname.Create($"Test{i}").Value,
                 Email.Create($"user{i}@test.com").Value,
@@ -55,7 +55,7 @@ public class PerformanceTests : PostgreSqlTestBase
         var users = new List<User>();
         for (int i = 0; i < 1000; i++)
         {
-            users.Add(new User(
+            users.Add(User.Create(
                 Firstname.Create($"User{i}").Value,
                 Lastname.Create($"Test{i}").Value,
                 Email.Create($"user{i}@test.com").Value,
@@ -97,7 +97,7 @@ public class PerformanceTests : PostgreSqlTestBase
         for (int i = 0; i < 5000; i++)
         {
             var startDate = baseDate.AddDays(i % 180); // Répartir sur 6 mois
-            reservations.Add(new Reservation(
+            reservations.Add(Reservation.Create(
                 $"user{i % 100}",
                 $"pet{i % 50}",
                 $"Animal{i % 50}",
@@ -136,7 +136,7 @@ public class PerformanceTests : PostgreSqlTestBase
         var prestations = new List<Prestation>();
         for (int i = 0; i < 2000; i++)
         {
-            prestations.Add(new Prestation(
+            prestations.Add(Prestation.Create(
                 $"Prestation {i}",
                 $"Description {i}",
                 (TypeAnimal)((i % 5) + 1),
@@ -174,7 +174,7 @@ public class PerformanceTests : PostgreSqlTestBase
         var addresses = new List<Address>();
         for (int i = 0; i < 1000; i++)
         {
-            addresses.Add(new Address(
+            addresses.Add(Address.Create(
                 StreetNumber.Create($"{i}").Value,
                 StreetName.Create($"Test Street").Value,
                 City.Create($"City{i % 10}").Value,
@@ -212,7 +212,7 @@ public class PerformanceTests : PostgreSqlTestBase
         {
             var cityName = i % 2 == 0 ? $"Paris {i}" : $"Lyon {i}";
             
-            var address = new Address(
+            var address = Address.Create(
                 StreetNumber.Create($"{i}").Value,
                 StreetName.Create($"Test Street").Value,
                 City.Create(cityName).Value,
@@ -220,7 +220,7 @@ public class PerformanceTests : PostgreSqlTestBase
                 Country.Create("France").Value
             );
 
-            var user = new User(
+            var user = User.Create(
                 Firstname.Create($"User{i}").Value,
                 Lastname.Create($"Test{i}").Value,
                 Email.Create($"jointest{i}@test.com").Value,
@@ -243,7 +243,7 @@ public class PerformanceTests : PostgreSqlTestBase
         var users = new List<User>();
         for (int i = 0; i < 20; i++)
         {
-            users.Add(new User(
+            users.Add(User.Create(
                 Firstname.Create($"Concurrent{i}").Value,
                 Lastname.Create($"Test{i}").Value,
                 Email.Create($"concurrent{i}@test.com").Value,

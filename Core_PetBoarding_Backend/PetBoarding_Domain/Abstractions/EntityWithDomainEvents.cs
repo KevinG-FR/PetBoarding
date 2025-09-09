@@ -2,7 +2,8 @@
 
 namespace PetBoarding_Domain.Abstractions;
 
-public abstract class EntityWithDomainEvents<TIdentifier> : Entity<TIdentifier>, IEntityWithDomainEvents where TIdentifier : EntityIdentifier
+public abstract class EntityWithDomainEvents<TIdentifier> : Entity<TIdentifier>, IEntityWithDomainEvents 
+    where TIdentifier : EntityIdentifier
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 
