@@ -193,9 +193,9 @@ export class DateSelectionComponent implements OnInit {
         .toPromise();
 
       if (planning?.creneaux) {
-        const allFutureSlots = planning.creneaux.filter(
-          (slot: AvailableSlot) => slot.date >= this.minDate
-        );
+        const allFutureSlots = planning.creneaux
+          .filter((slot: AvailableSlot) => slot.date >= this.minDate)
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         this.allSlots.set(allFutureSlots);
 
         const slotsWithAvailability = allFutureSlots.filter(

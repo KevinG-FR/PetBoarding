@@ -92,7 +92,7 @@
               error
             }
           </mat-icon>
-          <h4>Selection Summary</h4>
+          <h4>Résumé de la sélection</h4>
         </div>
 
         <div class="summary-details">
@@ -172,7 +172,7 @@
           Prochaines dates disponibles
         </h5>
         <div class="availability-grid">
-          @for (slot of filteredAvailableSlots().slice(0, 18); track slot.date) {
+          @for (slot of filteredAvailableSlots().slice(0, 24); track slot.date) {
             <div
               class="availability-item"
               [class.selected]="isDateSelected(slot.date)"
@@ -180,7 +180,7 @@
               [class.limited]="slot.capaciteDisponible > 0 && slot.capaciteDisponible <= 2"
               [class.clickable]="slot.capaciteDisponible > 0"
               (click)="onDateClick(slot.date)">
-              <div class="date">{{ slot.date | date: 'MM/dd' }}</div>
+              <div class="date">{{ slot.date | date: 'dd/MM' }}</div>
               @if (slot.capaciteDisponible <= 2) {
                 <div class="capacity">
                   <mat-icon [matBadge]="slot.capaciteDisponible" matBadgeColor="primary">
