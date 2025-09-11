@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DurationPipe } from '../../../shared/pipes/duration.pipe';
+import { RoleService } from '../../../shared/services/role.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { BasketService } from '../../basket/services/basket.service';
 import { PetType } from '../../pets/models/pet.model';
@@ -42,9 +43,13 @@ export class PrestationItemComponent {
   private basketService = inject(BasketService);
   private reservationsService = inject(ReservationsService);
   private authService = inject(AuthService);
+  private roleService = inject(RoleService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+
+  // Getters pour les rôles
+  canMakeReservations = this.roleService.canMakeReservations;
 
   categoryInfo = computed(() =>
     this.prestationsService.getCategoryInfo(this.prestation().categorieAnimal)

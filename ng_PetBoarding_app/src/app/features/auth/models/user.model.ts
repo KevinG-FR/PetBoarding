@@ -1,3 +1,5 @@
+import { ProfileType } from '../../../shared/enums/profile-type.enum';
+
 export interface Address {
   id?: string;
   streetNumber: string;
@@ -14,7 +16,7 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
-  profileType: string;
+  profileType: ProfileType;
   status: string;
   address?: {
     streetNumber: string;

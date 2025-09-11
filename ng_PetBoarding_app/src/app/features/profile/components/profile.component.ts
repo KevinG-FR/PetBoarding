@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { RoleService } from '../../../shared/services/role.service';
 import { PetsSectionComponent } from '../../pets/components/pets-section.component';
 import { PetService } from '../../pets/services/pet.service';
 import { ProfileService } from '../services/profile.service';
@@ -28,11 +29,16 @@ import { ProfileInfoComponent } from './profile-info.component';
 export class ProfileComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly petService = inject(PetService);
+  private readonly roleService = inject(RoleService);
   private readonly router = inject(Router);
 
   currentUser = this.profileService.currentUser;
   pets = this.petService.pets;
   isLoading = this.petService.isLoading;
+
+  // Getters pour les rôles
+  isAdmin = this.roleService.isAdmin;
+  canManagePets = this.roleService.canMakeReservations; // Les clients peuvent gérer leurs animaux
 
   totalPets = computed(() => this.pets().length);
   lastUpdate = computed(() => {

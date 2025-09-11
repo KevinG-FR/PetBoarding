@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ProfileType, BackendToFrontendProfileType } from '../../../shared/enums/profile-type.enum';
 import { TokenService } from '../../../shared/services/token.service';
 import { User } from '../../auth/models/user.model';
 import { AuthService } from '../../auth/services/auth.service';
@@ -109,7 +110,7 @@ export class ProfileService {
     );
   }
 
-  private mapBackendUserToUser(response: UpdateProfileResponseDto): User {
+  private mapBackendUserToUser(response: UpdateProfileResponseDto | GetProfileResponseDto): User {
     if (!response?.user) {
       throw new Error('Données utilisateur manquantes');
     }
@@ -120,7 +121,7 @@ export class ProfileService {
       lastName: response.user.lastName ?? '',
       email: response.user.email ?? '',
       phoneNumber: response.user.phoneNumber ?? '',
-      profileType: response.user.profileType ?? '',
+      profileType: BackendToFrontendProfileType[response.user.profileType as keyof typeof BackendToFrontendProfileType] || ProfileType.Customer,
       status: response.user.status ?? '',
       address: response.user.address
         ? {

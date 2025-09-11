@@ -157,12 +157,12 @@
       </div>
       <div class="action-buttons">
         <button mat-button (click)="onClose()" class="cancel-button">Fermer</button>
-        @if (prestationData.disponible) {
+        @if (prestationData.disponible && canMakeReservations()) {
           <button mat-raised-button color="primary" (click)="onReserver()" class="reserve-button">
             <mat-icon class="me-2">add_shopping_cart</mat-icon>
             Réserver maintenant
           </button>
-        } @else {
+        } @else if (!prestationData.disponible) {
           <button mat-stroked-button disabled class="unavailable-button">
             <mat-icon class="me-2">block</mat-icon>
             Non disponible

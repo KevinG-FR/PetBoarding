@@ -10,8 +10,10 @@
             (editProfile)="editProfile()" />
         </div>
 
-        <!-- Section des animaux -->
-        <app-pets-section [pets]="pets()" [loading]="isLoading()" (addPet)="onAddPet()" />
+        <!-- Section des animaux (masquée pour les admins) -->
+        @if (canManagePets()) {
+          <app-pets-section [pets]="pets()" [loading]="isLoading()" (addPet)="onAddPet()" />
+        }
       </div>
     </div>
   </div>

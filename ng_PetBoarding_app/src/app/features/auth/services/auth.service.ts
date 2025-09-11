@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector, inject, signal } from '@angular/core';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ProfileType, BackendToFrontendProfileType } from '../../../shared/enums/profile-type.enum';
 import { LoginRequestDto } from '../../../shared/contracts/auth/login-request.dto';
 import { LoginResponseDto, UserDto } from '../../../shared/contracts/auth/login-response.dto';
 import { RegisterRequestDto } from '../../../shared/contracts/auth/register-request.dto';
@@ -170,7 +171,7 @@ export class AuthService {
             firstName: 'John',
             lastName: 'Doe',
             phoneNumber: '+33123456789',
-            profileType: 'CLIENT',
+            profileType: ProfileType.Administrator,
             status: 'ACTIVE',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -190,7 +191,7 @@ export class AuthService {
       firstName: userDto.firstName,
       lastName: userDto.lastName,
       phoneNumber: userDto.phoneNumber,
-      profileType: userDto.profileType,
+      profileType: BackendToFrontendProfileType[userDto.profileType as keyof typeof BackendToFrontendProfileType] || ProfileType.Customer,
       status: userDto.status,
       address: userDto.address
         ? {

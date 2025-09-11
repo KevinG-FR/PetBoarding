@@ -47,10 +47,12 @@
         <mat-icon>info</mat-icon>
         Plus d'infos
       </button>
-      <button mat-raised-button color="primary" (click)="$event.stopPropagation(); onReserve()">
-        <mat-icon>add_shopping_cart</mat-icon>
-        Réserver
-      </button>
+      @if (canMakeReservations()) {
+        <button mat-raised-button color="primary" (click)="$event.stopPropagation(); onReserve()">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Réserver
+        </button>
+      }
     }
   </mat-card-actions>
 </mat-card>

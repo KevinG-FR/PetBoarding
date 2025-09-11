@@ -11,6 +11,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../features/auth/services/auth.service';
 import { BasketMiniComponent } from '../../features/basket/components/basket-mini.component';
 import { ProfileService } from '../../features/profile/services/profile.service';
+import { RoleService } from '../../shared/services/role.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -34,6 +35,7 @@ import { ProfileService } from '../../features/profile/services/profile.service'
 export class MainLayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly roleService = inject(RoleService);
 
   // Signals pour l'état du layout
   sidenavOpened = signal(false);
@@ -41,6 +43,10 @@ export class MainLayoutComponent {
   // Getters pour l'authentification
   isAuthenticated = this.authService.isAuthenticated;
   currentUser = this.profileService.currentUser;
+
+  // Getters pour les rôles
+  isAdmin = this.roleService.isAdmin;
+  canMakeReservations = this.roleService.canMakeReservations;
 
   // Année courante pour le footer
   currentYear = signal(new Date().getFullYear());

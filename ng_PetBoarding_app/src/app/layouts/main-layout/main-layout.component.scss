@@ -37,10 +37,23 @@
     gap: $spacing-sm;
     margin-left: $spacing-xl;
 
-    a {
+    a, button {
       @include shared.nav-link;
       mat-icon {
         font-size: 1.2rem;
+      }
+    }
+
+    .admin-menu-trigger {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      
+      mat-icon:last-child {
+        font-size: 1rem;
       }
     }
   }
@@ -151,6 +164,40 @@
       }
       mat-icon {
         font-size: 1.3rem;
+      }
+    }
+
+    .admin-section {
+      margin-top: $spacing-lg;
+      padding-top: $spacing-md;
+      border-top: 1px solid $divider-color;
+
+      .admin-title {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-md;
+        font-weight: 600;
+        color: $primary-color;
+        margin-bottom: $spacing-xs;
+
+        mat-icon {
+          font-size: 1.3rem;
+        }
+      }
+
+      .admin-link {
+        padding-left: $spacing-xl !important;
+        margin-left: $spacing-sm;
+        border-left: 2px solid transparent;
+
+        &:hover {
+          border-left-color: $primary-color;
+        }
+
+        &.active {
+          border-left-color: $primary-color;
+        }
       }
     }
 

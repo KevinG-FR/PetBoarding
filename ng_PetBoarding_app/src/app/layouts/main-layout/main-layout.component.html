@@ -21,11 +21,32 @@
         <mat-icon>room_service</mat-icon>
         Prestations
       </a>
-      @if (isAuthenticated()) {
+      @if (isAuthenticated() && canMakeReservations()) {
         <a routerLink="/reservations" routerLinkActive="active" mat-button>
           <mat-icon>event</mat-icon>
           Mes réservations
         </a>
+      }
+      @if (isAuthenticated() && isAdmin()) {
+        <button mat-button [matMenuTriggerFor]="adminMenu" class="admin-menu-trigger">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Administration
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #adminMenu="matMenu">
+          <button mat-menu-item routerLink="/admin/users">
+            <mat-icon>people</mat-icon>
+            Utilisateurs
+          </button>
+          <button mat-menu-item routerLink="/admin/prestations">
+            <mat-icon>room_service</mat-icon>
+            Prestations
+          </button>
+          <button mat-menu-item routerLink="/admin/planning">
+            <mat-icon>calendar_today</mat-icon>
+            Planning
+          </button>
+        </mat-menu>
       }
       <a routerLink="/about" routerLinkActive="active" mat-button>
         <mat-icon>info</mat-icon>
@@ -42,8 +63,10 @@
 
     <!-- Actions utilisateur -->
     <div class="user-actions">
-      <!-- Mini panier -->
-      <app-basket-mini></app-basket-mini>
+      <!-- Mini panier (masqué pour les admins) -->
+      @if (!isAdmin()) {
+        <app-basket-mini></app-basket-mini>
+      }
 
       <!-- Non connecté (masquer boutons sur mobile/tablette) -->
       @if (!isAuthenticated()) {
@@ -119,11 +142,13 @@
           <mat-icon>room_service</mat-icon>
           Prestations
         </a>
-        <a routerLink="/basket" routerLinkActive="active" mat-button (click)="toggleSidenav()">
-          <mat-icon>shopping_cart</mat-icon>
-          Mon panier
-        </a>
-        @if (isAuthenticated()) {
+        @if (!isAdmin()) {
+          <a routerLink="/basket" routerLinkActive="active" mat-button (click)="toggleSidenav()">
+            <mat-icon>shopping_cart</mat-icon>
+            Mon panier
+          </a>
+        }
+        @if (isAuthenticated() && canMakeReservations()) {
           <a
             routerLink="/reservations"
             routerLinkActive="active"
@@ -132,6 +157,26 @@
             <mat-icon>event</mat-icon>
             Réservations
           </a>
+        }
+        @if (isAuthenticated() && isAdmin()) {
+          <div class="admin-section">
+            <div class="admin-title">
+              <mat-icon>admin_panel_settings</mat-icon>
+              Administration
+            </div>
+            <a routerLink="/admin/users" routerLinkActive="active" mat-button (click)="toggleSidenav()" class="admin-link">
+              <mat-icon>people</mat-icon>
+              Utilisateurs
+            </a>
+            <a routerLink="/admin/prestations" routerLinkActive="active" mat-button (click)="toggleSidenav()" class="admin-link">
+              <mat-icon>room_service</mat-icon>
+              Prestations
+            </a>
+            <a routerLink="/admin/planning" routerLinkActive="active" mat-button (click)="toggleSidenav()" class="admin-link">
+              <mat-icon>calendar_today</mat-icon>
+              Planning
+            </a>
+          </div>
         }
         <a routerLink="/about" routerLinkActive="active" mat-button (click)="toggleSidenav()">
           <mat-icon>info</mat-icon>
