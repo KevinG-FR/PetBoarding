@@ -1,0 +1,55 @@
+<div class="user-list-container">
+  <div class="user-list-header">
+    <h2>Gestion des Utilisateurs</h2>
+    
+    <div class="filters-and-actions">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filtrer par type de profil</mat-label>
+        <mat-select 
+          [(ngModel)]="selectedFilter" 
+          (selectionChange)="onFilterChange()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option value="Administrator">Administrateur</mat-option>
+          <mat-option value="Employee">Employé</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="add-user-btn"
+        (click)="onAddUser()">
+        <mat-icon>person_add</mat-icon>
+        Ajouter un utilisateur
+      </button>
+    </div>
+  </div>
+
+  <div class="user-list-content">
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des utilisateurs...</p>
+      </div>
+    } @else if (users().length === 0) {
+      <mat-card class="no-users-card">
+        <mat-card-content>
+          <div class="no-users-message">
+            <mat-icon class="no-users-icon">people_outline</mat-icon>
+            <h3>Aucun utilisateur trouvé</h3>
+            <p>Il n'y a aucun utilisateur correspondant aux critères de filtrage.</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="users-grid">
+        @for (user of users(); track user.id) {
+          <app-user-item 
+            [user]="user" 
+            (userDeleted)="onUserDeleted()">
+          </app-user-item>
+        }
+      </div>
+    }
+  </div>
+</div>

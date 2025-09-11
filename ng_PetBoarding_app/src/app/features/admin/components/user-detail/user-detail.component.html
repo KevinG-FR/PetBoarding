@@ -1,0 +1,236 @@
+<div class="user-detail-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Chargement des détails de l'utilisateur...</p>
+    </div>
+  } @else if (user()) {
+    <div class="user-detail-header">
+      <button 
+        mat-icon-button 
+        color="primary" 
+        (click)="onBack()"
+        class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      
+      <div class="header-info">
+        <div class="user-avatar-large">
+          {{ userInitials }}
+        </div>
+        
+        <div class="user-title">
+          <h2>{{ user()!.firstName }} {{ user()!.lastName }}</h2>
+          <mat-chip [color]="profileTypeColor" selected>
+            {{ profileTypeLabel }}
+          </mat-chip>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        @if (!isEditMode()) {
+          <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="onEdit()"
+            [disabled]="deleting()">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+          
+          <button 
+            mat-raised-button 
+            color="warn" 
+            (click)="onDelete()"
+            [disabled]="deleting()">
+            <mat-icon>delete</mat-icon>
+            @if (deleting()) {
+              Suppression...
+            } @else {
+              Supprimer
+            }
+          </button>
+        } @else {
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="onSave()"
+            [disabled]="saving() || userForm.invalid">
+            <mat-icon>save</mat-icon>
+            @if (saving()) {
+              Enregistrement...
+            } @else {
+              Enregistrer
+            }
+          </button>
+          
+          <button 
+            mat-button 
+            (click)="onCancelEdit()"
+            [disabled]="saving()">
+            <mat-icon>cancel</mat-icon>
+            Annuler
+          </button>
+        }
+      </div>
+    </div>
+
+    <form [formGroup]="userForm" class="user-detail-form">
+      <mat-card class="user-info-card">
+        <mat-card-header>
+          <mat-card-title>Informations personnelles</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Prénom</mat-label>
+              <input 
+                matInput 
+                formControlName="firstName"
+                [readonly]="!isEditMode()">
+              @if (isEditMode() && userForm.get('firstName')?.errors) {
+                <mat-error>{{ getFieldErrorMessage('firstName') }}</mat-error>
+              }
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nom</mat-label>
+              <input 
+                matInput 
+                formControlName="lastName"
+                [readonly]="!isEditMode()">
+              @if (isEditMode() && userForm.get('lastName')?.errors) {
+                <mat-error>{{ getFieldErrorMessage('lastName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email</mat-label>
+              <input 
+                matInput 
+                type="email" 
+                formControlName="email"
+                [readonly]="!isEditMode()">
+              @if (isEditMode() && userForm.get('email')?.errors) {
+                <mat-error>{{ getFieldErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Téléphone</mat-label>
+              <input 
+                matInput 
+                formControlName="phoneNumber"
+                [readonly]="!isEditMode()">
+              @if (isEditMode() && userForm.get('phoneNumber')?.errors) {
+                <mat-error>{{ getFieldErrorMessage('phoneNumber') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field-full">
+              <mat-label>Type de profil</mat-label>
+              @if (isEditMode()) {
+                <mat-select formControlName="profileType">
+                  @for (profileType of adminProfileTypes; track profileType) {
+                    <mat-option [value]="profileType">
+                      {{ profileType === ProfileType.Administrator ? 'Administrateur' : 'Employé' }}
+                    </mat-option>
+                  }
+                </mat-select>
+              } @else {
+                <input 
+                  matInput 
+                  [value]="profileTypeLabel"
+                  readonly>
+              }
+              @if (isEditMode() && userForm.get('profileType')?.errors) {
+                <mat-error>{{ getFieldErrorMessage('profileType') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon class="info-icon">schedule</mat-icon>
+            <span>Créé le {{ user()!.createdAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon class="info-icon">update</mat-icon>
+            <span>Mis à jour le {{ user()!.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="address-card" formGroupName="address">
+        <mat-card-header>
+          <mat-card-title>Adresse</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field-small">
+              <mat-label>Numéro</mat-label>
+              <input 
+                matInput 
+                formControlName="streetNumber"
+                [readonly]="!isEditMode()">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="form-field-large">
+              <mat-label>Rue</mat-label>
+              <input 
+                matInput 
+                formControlName="streetName"
+                [readonly]="!isEditMode()">
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Ville</mat-label>
+              <input 
+                matInput 
+                formControlName="city"
+                [readonly]="!isEditMode()">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Code postal</mat-label>
+              <input 
+                matInput 
+                formControlName="postalCode"
+                [readonly]="!isEditMode()">
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field-full">
+              <mat-label>Pays</mat-label>
+              <input 
+                matInput 
+                formControlName="country"
+                [readonly]="!isEditMode()">
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field-full">
+              <mat-label>Complément d'adresse</mat-label>
+              <textarea 
+                matInput 
+                rows="2" 
+                formControlName="complement"
+                [readonly]="!isEditMode()">
+              </textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  }
+</div>

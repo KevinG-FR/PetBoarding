@@ -1,0 +1,212 @@
+<div class="add-user-container">
+  <div class="add-user-header">
+    <button 
+      mat-icon-button 
+      color="primary" 
+      (click)="onCancel()"
+      class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    
+    <h2>Ajouter un nouvel utilisateur</h2>
+  </div>
+
+  <mat-stepper orientation="vertical" #stepper class="add-user-stepper">
+    <mat-step [stepControl]="personalInfoForm" label="Informations personnelles">
+      <form [formGroup]="personalInfoForm" class="step-form">
+        <mat-card>
+          <mat-card-content>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Prénom *</mat-label>
+                <input matInput formControlName="firstName" required>
+                @if (personalInfoForm.get('firstName')?.errors) {
+                  <mat-error>{{ getPersonalInfoErrorMessage('firstName') }}</mat-error>
+                }
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Nom *</mat-label>
+                <input matInput formControlName="lastName" required>
+                @if (personalInfoForm.get('lastName')?.errors) {
+                  <mat-error>{{ getPersonalInfoErrorMessage('lastName') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email *</mat-label>
+                <input matInput type="email" formControlName="email" required>
+                @if (personalInfoForm.get('email')?.errors) {
+                  <mat-error>{{ getPersonalInfoErrorMessage('email') }}</mat-error>
+                }
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Téléphone *</mat-label>
+                <input matInput formControlName="phoneNumber" required>
+                @if (personalInfoForm.get('phoneNumber')?.errors) {
+                  <mat-error>{{ getPersonalInfoErrorMessage('phoneNumber') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Type de profil *</mat-label>
+                <mat-select formControlName="profileType" required>
+                  @for (profileType of adminProfileTypes; track profileType) {
+                    <mat-option [value]="profileType">
+                      {{ profileType === ProfileType.Administrator ? 'Administrateur' : 'Employé' }}
+                    </mat-option>
+                  }
+                </mat-select>
+                @if (personalInfoForm.get('profileType')?.errors) {
+                  <mat-error>{{ getPersonalInfoErrorMessage('profileType') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <div class="step-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            matStepperNext
+            [disabled]="personalInfoForm.invalid">
+            Suivant
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="addressForm" label="Adresse (optionnel)">
+      <form [formGroup]="addressForm" class="step-form">
+        <mat-card>
+          <mat-card-content>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-small">
+                <mat-label>Numéro</mat-label>
+                <input matInput formControlName="streetNumber">
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="form-field-large">
+                <mat-label>Rue</mat-label>
+                <input matInput formControlName="streetName">
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Ville</mat-label>
+                <input matInput formControlName="city">
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Code postal</mat-label>
+                <input matInput formControlName="postalCode">
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Pays</mat-label>
+                <input matInput formControlName="country">
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Complément d'adresse</mat-label>
+                <textarea matInput rows="2" formControlName="complement"></textarea>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Précédent
+          </button>
+          
+          <button 
+            mat-raised-button 
+            color="primary" 
+            matStepperNext>
+            Suivant
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="passwordForm" label="Mot de passe">
+      <form [formGroup]="passwordForm" class="step-form">
+        <mat-card>
+          <mat-card-content>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Mot de passe *</mat-label>
+                <input matInput type="password" formControlName="password" required>
+                <mat-hint>Minimum 8 caractères</mat-hint>
+                @if (passwordForm.get('password')?.errors) {
+                  <mat-error>{{ getPasswordErrorMessage('password') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Confirmer le mot de passe *</mat-label>
+                <input matInput type="password" formControlName="confirmPassword" required>
+                @if (passwordForm.get('confirmPassword')?.errors) {
+                  <mat-error>{{ getPasswordErrorMessage('confirmPassword') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Précédent
+          </button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-stepper>
+
+  <div class="final-actions">
+    <button 
+      mat-button 
+      color="warn" 
+      (click)="onCancel()"
+      [disabled]="saving()">
+      <mat-icon>cancel</mat-icon>
+      Annuler
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()"
+      [disabled]="!isFormValid || saving()">
+      @if (saving()) {
+        <ng-container>
+          <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+          Création en cours...
+        </ng-container>
+      } @else {
+        <ng-container>
+          <mat-icon>person_add</mat-icon>
+          Créer l'utilisateur
+        </ng-container>
+      }
+    </button>
+  </div>
+</div>

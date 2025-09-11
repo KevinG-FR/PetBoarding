@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { adminRoutes } from './features/admin/admin.routes';
 import { authGuard } from './shared/guards/auth.guard';
 import { AdminGuard } from './shared/guards/admin.guard';
 import { CustomerGuard } from './shared/guards/customer.guard';
@@ -87,32 +88,10 @@ export const routes: Routes = [
       import('./features/contact/components/contact.component').then((m) => m.ContactComponent)
   },
   // Routes d'administration (protégées par AdminGuard)
+  ...adminRoutes,
   // TODO: Créer les composants d'administration suivants :
-  // - AdminUsersComponent pour gérer les utilisateurs
-  // - AdminPrestationsComponent pour gérer les prestations  
+  // - AdminPrestationsComponent pour gérer les prestations
   // - AdminPlanningComponent pour gérer le planning
-  // 
-  // Exemple d'utilisation une fois les composants créés :
-  /*
-  {
-    path: 'admin/users',
-    loadComponent: () =>
-      import('./features/admin/components/admin-users.component').then((m) => m.AdminUsersComponent),
-    canActivate: [AdminGuard]
-  },
-  {
-    path: 'admin/prestations', 
-    loadComponent: () =>
-      import('./features/admin/components/admin-prestations.component').then((m) => m.AdminPrestationsComponent),
-    canActivate: [AdminGuard]
-  },
-  {
-    path: 'admin/planning',
-    loadComponent: () =>
-      import('./features/admin/components/admin-planning.component').then((m) => m.AdminPlanningComponent),
-    canActivate: [AdminGuard]
-  },
-  */
   {
     path: '**',
     redirectTo: '/home'

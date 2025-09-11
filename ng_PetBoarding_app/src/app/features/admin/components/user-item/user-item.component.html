@@ -1,0 +1,104 @@
+<mat-card class="user-item-card">
+  <mat-card-header>
+    <div mat-card-avatar class="user-avatar">
+      {{ userInitials }}
+    </div>
+    
+    <mat-card-title class="user-name">
+      {{ user.firstName }} {{ user.lastName }}
+    </mat-card-title>
+    
+    <mat-card-subtitle class="user-email">
+      {{ user.email }}
+    </mat-card-subtitle>
+    
+    <div class="card-actions">
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="menu"
+        [disabled]="deleting()">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="user-info">
+      <div class="info-row">
+        <mat-icon class="info-icon">phone</mat-icon>
+        <span class="info-text">{{ user.phoneNumber }}</span>
+      </div>
+      
+      <div class="info-row">
+        <mat-icon class="info-icon">badge</mat-icon>
+        <mat-chip [color]="profileTypeColor" selected>
+          {{ profileTypeLabel }}
+        </mat-chip>
+      </div>
+      
+      <div class="info-row">
+        <mat-icon class="info-icon">schedule</mat-icon>
+        <span class="info-text">Créé le {{ user.createdAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+      
+      @if (user.address) {
+        <div class="info-row">
+          <mat-icon class="info-icon">location_on</mat-icon>
+          <span class="info-text">
+            {{ user.address.city }}, {{ user.address.postalCode }}
+          </span>
+        </div>
+      }
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="card-footer-actions">
+    <button 
+      mat-button 
+      color="primary" 
+      (click)="onViewDetails()"
+      [disabled]="deleting()">
+      <mat-icon>visibility</mat-icon>
+      Voir détails
+    </button>
+    
+    <button 
+      mat-button 
+      color="accent" 
+      (click)="onEdit()"
+      [disabled]="deleting()">
+      <mat-icon>edit</mat-icon>
+      Modifier
+    </button>
+  </mat-card-actions>
+
+  @if (deleting()) {
+    <div class="deleting-overlay">
+      <mat-icon class="deleting-spinner">hourglass_empty</mat-icon>
+      <span>Suppression...</span>
+    </div>
+  }
+</mat-card>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="onViewDetails()">
+    <mat-icon>visibility</mat-icon>
+    <span>Voir les détails</span>
+  </button>
+  
+  <button mat-menu-item (click)="onEdit()">
+    <mat-icon>edit</mat-icon>
+    <span>Modifier</span>
+  </button>
+  
+  <mat-divider></mat-divider>
+  
+  <button 
+    mat-menu-item 
+    class="delete-menu-item" 
+    (click)="onDelete()"
+    [disabled]="deleting()">
+    <mat-icon>delete</mat-icon>
+    <span>Supprimer</span>
+  </button>
+</mat-menu>
