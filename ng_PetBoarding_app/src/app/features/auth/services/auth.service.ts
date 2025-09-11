@@ -147,43 +147,6 @@ export class AuthService {
     this._currentUser.set(null);
   }
 
-  toggleAuthForTesting(): void {
-    const isAuth = this._isAuthenticated();
-    if (isAuth) {
-      this.logout();
-    } else {
-      const testToken = 'test-jwt-token';
-      this.tokenService.setToken(testToken);
-      this.tokenService.setRememberMe(true);
-      this._isAuthenticated.set(true);
-
-      this._isLoading.set(true);
-      this.getUserProfile().subscribe({
-        next: (getProfileResponseDto: GetProfileResponseDto) => {
-          const user = this.mapUserDtoToUser(getProfileResponseDto.user);
-          this._currentUser.set(user);
-          this._isLoading.set(false);
-        },
-        error: () => {
-          const testUser: User = {
-            id: 'test-user-id',
-            email: 'test@example.com',
-            firstName: 'John',
-            lastName: 'Doe',
-            phoneNumber: '+33123456789',
-            profileType: ProfileType.Administrator,
-            status: 'ACTIVE',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          };
-          this._currentUser.set(testUser);
-          this._isAuthenticated.set(true);
-          this._isLoading.set(false);
-        }
-      });
-    }
-  }
-
   private mapUserDtoToUser(userDto: UserDto): User {
     return {
       id: userDto.id,

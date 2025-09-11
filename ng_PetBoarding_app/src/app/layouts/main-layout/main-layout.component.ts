@@ -65,10 +65,4 @@ export class MainLayoutComponent {
     this.authService.logout();
   }
 
-  /**
-   * Basculer l'authentification (pour tests)
-   */
-  toggleAuth(): void {
-    this.authService.toggleAuthForTesting();
-  }
 }
