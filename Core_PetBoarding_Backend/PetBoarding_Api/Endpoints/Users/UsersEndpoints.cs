@@ -17,6 +17,13 @@ public static partial class UsersEndpoints
             .RequireAuthorization()
             .Produces<GetAllUsersResponse>();
 
+        group.MapGet("admin-employees", GetAdminAndEmployeeUsers)
+            .WithName("GetAdminAndEmployeeUsers")
+            .WithSummary("Get admin and employee users")
+            .WithDescription("Retrieves a list of admin and employee users, excluding the current user.")
+            .RequireAuthorization()
+            .Produces<GetAllUsersResponse>();
+
         group.MapGet("{userId}", GetUser)
             .WithName("GetUserById")
             .WithSummary("Get a user by ID")
