@@ -4,6 +4,10 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PetType } from '../../features/pets/models/pet.model';
 import {
+  PrestationScheduleRequest,
+  PrestationScheduleResponse
+} from '../../features/prestations/services/prestations.service';
+import {
   CreatePrestationRequest,
   CreatePrestationResponse,
   DeletePrestationResponse,
@@ -59,5 +63,20 @@ export class PrestationApiService {
 
   deletePrestation(id: string): Observable<DeletePrestationResponse> {
     return this.http.delete<DeletePrestationResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  getPrestationSchedule(
+    request: PrestationScheduleRequest
+  ): Observable<PrestationScheduleResponse> {
+    let params = new HttpParams().set('year', request.year.toString());
+
+    if (request.month) {
+      params = params.set('month', request.month.toString());
+    }
+
+    return this.http.get<PrestationScheduleResponse>(
+      `${this.baseUrl}/${request.prestationId}/schedule`,
+      { params }
+    );
   }
 }

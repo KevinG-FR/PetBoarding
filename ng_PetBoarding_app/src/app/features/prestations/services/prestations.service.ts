@@ -10,6 +10,49 @@ import { PetType } from '../../pets/models/pet.model';
 import { PlanningPrestation, Prestation, PrestationFilters } from '../models/prestation.model';
 import { PlanningService } from './planning.service';
 
+// Types pour le planning
+export interface PrestationScheduleRequest {
+  prestationId: string;
+  year: number;
+  month?: number;
+}
+
+export interface ScheduleDay {
+  date: string;
+  totalReservations: number;
+  reservations: ReservationSummary[];
+}
+
+export interface ReservationSummary {
+  reservationId: string;
+  animalName: string;
+  userName: string;
+  status: string;
+  startDate: string;
+  endDate?: string;
+  totalPrice?: number;
+}
+
+export interface ScheduleStatistics {
+  totalReservations: number;
+  validatedReservations: number;
+  inProgressReservations: number;
+  completedReservations: number;
+  cancelledReservations: number;
+  totalRevenue: number;
+  busiestDay?: string;
+  maxReservationsPerDay: number;
+}
+
+export interface PrestationScheduleResponse {
+  prestationId: string;
+  prestationName: string;
+  year: number;
+  month?: number;
+  scheduleDays: ScheduleDay[];
+  statistics: ScheduleStatistics;
+}
+
 export interface CategoryInfo {
   label: string;
   icon: string;
@@ -332,5 +375,19 @@ export class PrestationsService {
 
   getCategoryColor(category: PetType): string {
     return this.getCategoryInfo(category).color;
+  }
+
+  /**
+   * Récupère le planning d'une prestation pour une période donnée
+   */
+  getPrestationSchedule(
+    request: PrestationScheduleRequest
+  ): Observable<PrestationScheduleResponse> {
+    return this.prestationApiService.getPrestationSchedule(request).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération du planning:', error);
+        throw error;
+      })
+    );
   }
 }

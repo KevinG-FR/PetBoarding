@@ -1,16 +1,22 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef
+} from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PrestationsService } from '../../../prestations/services/prestations.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PrestationScheduleComponent } from '../../../../shared/components/prestation-schedule/prestation-schedule.component';
 import { Prestation } from '../../../../shared/models/prestation.model';
 import { PetType, PetTypeLabels } from '../../../pets/models/pet.model';
+import { PrestationsService } from '../../../prestations/services/prestations.service';
 
 @Component({
   selector: 'app-admin-prestation-detail',
@@ -23,7 +29,8 @@ import { PetType, PetTypeLabels } from '../../../pets/models/pet.model';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    PrestationScheduleComponent
   ],
   templateUrl: './admin-prestation-detail.component.html',
   styleUrl: './admin-prestation-detail.component.scss'
@@ -113,7 +120,7 @@ export class AdminPrestationDetailComponent implements OnInit {
       data: { prestationName: prestation.libelle }
     });
 
-    confirmRef.afterClosed().subscribe(result => {
+    confirmRef.afterClosed().subscribe((result) => {
       if (result && prestation.id) {
         this.deletePrestation(prestation.id);
       }
@@ -153,7 +160,10 @@ export class AdminPrestationDetailComponent implements OnInit {
   template: `
     <h2 mat-dialog-title>Confirmer la suppression</h2>
     <mat-dialog-content>
-      <p>Êtes-vous sûr de vouloir supprimer la prestation <strong>{{ data.prestationName }}</strong> ?</p>
+      <p>
+        Êtes-vous sûr de vouloir supprimer la prestation
+        <strong>{{ data.prestationName }}</strong> ?
+      </p>
       <p>Cette action est irréversible.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -166,10 +176,8 @@ export class AdminPrestationDetailComponent implements OnInit {
 })
 export class ConfirmDeleteDialog {
   public data = inject(MAT_DIALOG_DATA) as { prestationName: string };
-  
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmDeleteDialog>
-  ) {}
+
+  constructor(public dialogRef: MatDialogRef<ConfirmDeleteDialog>) {}
 
   onCancel(): void {
     this.dialogRef.close(false);

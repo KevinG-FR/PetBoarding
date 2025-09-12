@@ -52,4 +52,14 @@ public class UserRepository : BaseRepository<User, UserId>, IUserRepository
 
         return user;
     }
+
+    public async Task<IEnumerable<User>> GetByIdsAsync(List<string> userIds, CancellationToken cancellationToken)
+    {
+        var userIdObjects = userIds.Select(id => new UserId(Guid.Parse(id))).ToList();
+        
+        return await _dbSet
+            .Include(x => x.Address)
+            .Where(x => userIdObjects.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
 }

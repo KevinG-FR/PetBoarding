@@ -93,5 +93,11 @@
         </button>
       </mat-card-actions>
     </mat-card>
+
+    <!-- Section Planning -->
+    <app-prestation-schedule 
+      [prestationId]="prestation()!.id"
+      [prestationName]="prestation()!.libelle">
+    </app-prestation-schedule>
   }
 </div>

@@ -37,4 +37,13 @@ public interface IReservationRepository : IBaseRepository<Reservation, Reservati
     Task<IEnumerable<Reservation>> GetUserDisplayedReservationsAsync(
         string userId,
         CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Récupère les réservations pour un service spécifique dans une plage de dates
+    /// </summary>
+    Task<IEnumerable<Reservation>> GetByServiceIdAndDateRangeAsync(
+        string serviceId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default);
 }

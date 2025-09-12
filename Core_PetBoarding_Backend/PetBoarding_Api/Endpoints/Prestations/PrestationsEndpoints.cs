@@ -46,5 +46,13 @@ public static partial class PrestationsEndpoints
             .Produces<DeletePrestationResponse>(200)
             .Produces(400)
             .Produces(404);
+
+        group.MapGet("/{id}/schedule", GetPrestationSchedule)
+            .WithName("GetPrestationSchedule")
+            .WithSummary("Get prestation schedule")
+            .WithDescription("Returns the reservation schedule for a prestation by month or year.")
+            .Produces<GetPrestationScheduleResponse>(200)
+            .Produces(400)
+            .Produces(404);
     }
 }

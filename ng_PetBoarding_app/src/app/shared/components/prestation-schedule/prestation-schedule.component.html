@@ -1,0 +1,184 @@
+<div class="prestation-schedule">
+  <!-- En-tête avec contrôles -->
+  <mat-card class="controls-card">
+    <mat-card-content>
+      <div class="controls-header">
+        <h3>Planning de {{ prestationName || 'la prestation' }}</h3>
+        
+        <div class="controls-row">
+          <!-- Sélection du mode de vue -->
+          <mat-tab-group [selectedIndex]="selectedTabIndex()" 
+                         (selectedIndexChange)="onTabChange($event)"
+                         class="view-mode-tabs">
+            <mat-tab label="Vue mensuelle">
+              <ng-template matTabContent></ng-template>
+            </mat-tab>
+            <mat-tab label="Vue annuelle">
+              <ng-template matTabContent></ng-template>
+            </mat-tab>
+          </mat-tab-group>
+
+          <!-- Sélecteurs -->
+          <div class="date-selectors">
+            <mat-form-field appearance="outline" class="year-select">
+              <mat-label>Année</mat-label>
+              <mat-select [value]="currentYear()" (selectionChange)="onYearChange($event.value)">
+                <mat-option *ngFor="let year of years()" [value]="year">
+                  {{ year }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="month-select" *ngIf="viewMode() === 'monthly'">
+              <mat-label>Mois</mat-label>
+              <mat-select [value]="currentMonth()" (selectionChange)="onMonthChange($event.value)">
+                <mat-option *ngFor="let month of months()" [value]="month.value">
+                  {{ month.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Statistiques -->
+  <mat-card class="statistics-card" *ngIf="scheduleData() && !isLoading()">
+    <mat-card-content>
+      <h4>Statistiques</h4>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <mat-icon>event</mat-icon>
+          <span class="stat-value">{{ scheduleData()!.statistics.totalReservations }}</span>
+          <span class="stat-label">Total réservations</span>
+        </div>
+        <div class="stat-item validated">
+          <mat-icon>check_circle</mat-icon>
+          <span class="stat-value">{{ scheduleData()!.statistics.validatedReservations }}</span>
+          <span class="stat-label">Validées</span>
+        </div>
+        <div class="stat-item in-progress">
+          <mat-icon>hourglass_empty</mat-icon>
+          <span class="stat-value">{{ scheduleData()!.statistics.inProgressReservations }}</span>
+          <span class="stat-label">En cours</span>
+        </div>
+        <div class="stat-item completed">
+          <mat-icon>done_all</mat-icon>
+          <span class="stat-value">{{ scheduleData()!.statistics.completedReservations }}</span>
+          <span class="stat-label">Terminées</span>
+        </div>
+        <div class="stat-item revenue">
+          <mat-icon>euro</mat-icon>
+          <span class="stat-value">{{ scheduleData()!.statistics.totalRevenue | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+          <span class="stat-label">Chiffre d'affaires</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>Chargement du planning...</p>
+  </div>
+
+  <!-- Error -->
+  <mat-card class="error-card" *ngIf="error()">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadSchedule()">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Vue mensuelle -->
+  <mat-card class="calendar-card" *ngIf="viewMode() === 'monthly' && !isLoading() && !error()">
+    <mat-card-content>
+      <div class="monthly-calendar">
+        <!-- En-têtes des jours -->
+        <div class="calendar-header">
+          <div class="day-header">Dim</div>
+          <div class="day-header">Lun</div>
+          <div class="day-header">Mar</div>
+          <div class="day-header">Mer</div>
+          <div class="day-header">Jeu</div>
+          <div class="day-header">Ven</div>
+          <div class="day-header">Sam</div>
+        </div>
+
+        <!-- Calendrier -->
+        <div class="calendar-grid">
+          <div class="calendar-week" *ngFor="let week of monthlyCalendar()">
+            <div class="calendar-day" 
+                 *ngFor="let day of week"
+                 [class.other-month]="!day.isCurrentMonth"
+                 [class.has-reservations]="day.scheduleDay && day.scheduleDay.totalReservations > 0">
+              
+              <div class="day-number">{{ day.date.getDate() }}</div>
+              
+              <div class="reservations-indicator" *ngIf="day.scheduleDay && day.scheduleDay.totalReservations > 0">
+                <mat-chip-set class="reservation-chips">
+                  <mat-chip *ngFor="let reservation of day.scheduleDay.reservations.slice(0, 2)"
+                           [style.background-color]="getStatusColor(reservation.status)"
+                           [matTooltip]="reservation.animalName + ' - ' + reservation.userName">
+                    {{ reservation.animalName.substring(0, 3) }}
+                  </mat-chip>
+                  <mat-chip *ngIf="day.scheduleDay.totalReservations > 2"
+                           class="more-indicator"
+                           [matTooltip]="'+ ' + (day.scheduleDay.totalReservations - 2) + ' autres'">
+                    +{{ day.scheduleDay.totalReservations - 2 }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Vue annuelle -->
+  <mat-card class="yearly-view-card" *ngIf="viewMode() === 'yearly' && !isLoading() && !error()">
+    <mat-card-content>
+      <div class="yearly-schedule">
+        <h4>Réservations par jour</h4>
+        
+        <div class="yearly-list" *ngIf="scheduleData()">
+          <div class="day-entry" 
+               *ngFor="let day of scheduleData()!.scheduleDays"
+               [class.has-many-reservations]="day.totalReservations > 5">
+            
+            <div class="day-info">
+              <span class="day-date">{{ formatDate(day.date) }}</span>
+              <span class="day-count">{{ day.totalReservations }} réservation(s)</span>
+            </div>
+
+            <div class="day-reservations">
+              <div class="reservation-item" 
+                   *ngFor="let reservation of day.reservations">
+                <div class="reservation-info">
+                  <span class="animal-name">{{ reservation.animalName }}</span>
+                  <span class="user-name">{{ reservation.userName }}</span>
+                  <span class="price">{{ formatPrice(reservation.totalPrice) }}</span>
+                </div>
+                <mat-chip [style.background-color]="getStatusColor(reservation.status)"
+                         class="status-chip">
+                  {{ getStatusLabel(reservation.status) }}
+                </mat-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-data" *ngIf="scheduleData() && scheduleData()!.scheduleDays.length === 0">
+          <mat-icon>calendar_today</mat-icon>
+          <p>Aucune réservation trouvée pour cette période</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

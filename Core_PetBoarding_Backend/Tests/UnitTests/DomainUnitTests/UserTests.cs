@@ -180,7 +180,7 @@ public class UserTests
         var newPhoneNumber = PhoneNumber.Create("0987654321").Value;
 
         // Act
-        var result = user.UpdateProfile(newFirstname, newLastname, newPhoneNumber);
+        var result = user.UpdateProfile(newFirstname, newLastname, user.Email, newPhoneNumber);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -206,7 +206,7 @@ public class UserTests
         var address = Address.Create(streetNumber, streetName, city, postalCode, country);
 
         // Act
-        var result = user.UpdateProfile(newFirstname, newLastname, newPhoneNumber, address);
+        var result = user.UpdateProfile(newFirstname, newLastname, user.Email, newPhoneNumber, address);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -224,7 +224,7 @@ public class UserTests
         var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
-        var result = user.UpdateProfile(null!, _validLastname, _validPhoneNumber);
+        var result = user.UpdateProfile(null!, _validLastname, user.Email, _validPhoneNumber);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -238,7 +238,7 @@ public class UserTests
         var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
-        var result = user.UpdateProfile(_validFirstname, null!, _validPhoneNumber);
+        var result = user.UpdateProfile(_validFirstname, null!, user.Email, _validPhoneNumber);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -252,7 +252,7 @@ public class UserTests
         var user = User.Create(_validFirstname, _validLastname, _validEmail, _validPhoneNumber, _validPasswordHash, _validProfileType);
 
         // Act
-        var result = user.UpdateProfile(_validFirstname, _validLastname, null!);
+        var result = user.UpdateProfile(_validFirstname, _validLastname, user.Email, null!);
 
         // Assert
         result.IsSuccess.Should().BeFalse();

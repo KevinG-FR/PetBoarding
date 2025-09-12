@@ -112,4 +112,18 @@ internal sealed class ReservationRepository : BaseRepository<Reservation, Reserv
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<Reservation>> GetByServiceIdAndDateRangeAsync(
+        string serviceId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(r => r.ServiceId == serviceId &&
+                       ((r.StartDate <= endDate) && 
+                        (r.EndDate == null || r.EndDate >= startDate || r.StartDate >= startDate)))
+            .OrderBy(r => r.StartDate)
+            .ToListAsync(cancellationToken);
+    }
 }
