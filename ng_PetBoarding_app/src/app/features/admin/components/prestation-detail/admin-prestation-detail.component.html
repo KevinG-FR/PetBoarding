@@ -1,0 +1,97 @@
+<div class="detail-container">
+  <div class="header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2>Détails de la prestation</h2>
+    <div class="actions">
+      @if (prestation() && !isEditing) {
+        <button mat-raised-button color="primary" (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Chargement des détails...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-button (click)="loadPrestation()">Réessayer</button>
+    </div>
+  } @else if (prestation()) {
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title class="title-with-status">
+          <span>{{ prestation()!.libelle }}</span>
+          <mat-chip-set>
+            <mat-chip 
+              [color]="prestation()!.disponible ? 'primary' : 'warn'"
+              selected>
+              {{ prestation()!.disponible ? 'Actif' : 'Inactif' }}
+            </mat-chip>
+          </mat-chip-set>
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="detail-grid">
+          <div class="detail-section">
+            <h3>Informations générales</h3>
+            <div class="detail-item">
+              <span class="label">Libellé :</span>
+              <span class="value">{{ prestation()!.libelle }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Description :</span>
+              <span class="value">{{ prestation()!.description }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Type d'animal :</span>
+              <span class="value">{{ getPetTypeLabel(prestation()!.categorieAnimal) }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h3>Tarification et durée</h3>
+            <div class="detail-item">
+              <span class="label">Prix :</span>
+              <span class="value price">{{ prestation()!.prix | currency:'EUR':'symbol':'1.2-2':'fr' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Durée :</span>
+              <span class="value">{{ formatDuration(prestation()!.duree) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Statut :</span>
+              <span class="value" [class.active]="prestation()!.disponible" [class.inactive]="!prestation()!.disponible">
+                {{ prestation()!.disponible ? 'Disponible' : 'Non disponible' }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="actions">
+        <button mat-raised-button color="primary" (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-button color="warn" (click)="onDelete()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+        <button mat-button (click)="goBack()">
+          Retour à la liste
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>

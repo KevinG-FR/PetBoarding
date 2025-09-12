@@ -1,0 +1,138 @@
+.detail-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header h2 {
+  flex: 1;
+  margin: 0;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+}
+
+.detail-card {
+  margin-bottom: 24px;
+}
+
+.title-with-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.detail-section h3 {
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+
+.detail-item .label {
+  font-weight: 500;
+  min-width: 140px;
+  color: #666;
+}
+
+.detail-item .value {
+  flex: 1;
+  color: #333;
+}
+
+.detail-item .value.price {
+  font-weight: bold;
+  color: #4caf50;
+  font-size: 1.1em;
+}
+
+.detail-item .value.active {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.detail-item .value.inactive {
+  color: #f44336;
+  font-weight: 500;
+}
+
+mat-card-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+mat-card-actions button {
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-item .label {
+    min-width: auto;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,53 @@
+@if (prestation) {
+@let categoryData = categoryInfo();
+  <mat-card class="prestation-card" [class.inactive]="!prestation.disponible">
+    <mat-card-header class="header-with-badge">
+      <div class="header-content">
+        <mat-card-title>{{ prestation.libelle }}</mat-card-title>
+        <mat-card-subtitle class="d-flex align-items-center">
+          <mat-chip [class]="getCategoryChipClass()">
+            <i [class]="categoryData.icon" class="chip-icon"></i>
+            {{ categoryData.label }}
+          </mat-chip>
+          <span class="duration-separator">•</span>
+          <span class="duration">{{ prestation.duree | duration }}</span>
+        </mat-card-subtitle>
+      </div>
+      <mat-chip-set class="status-badge">
+        <mat-chip 
+          [color]="prestation.disponible ? 'primary' : 'warn'"
+          selected>
+          {{ prestation.disponible ? 'Actif' : 'Inactif' }}
+        </mat-chip>
+      </mat-chip-set>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="description">{{ prestation.description }}</p>
+      <div class="pricing">
+        <strong>{{ prestation.prix | currency:'EUR':'symbol':'1.2-2':'fr' }}</strong>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions class="actions-centered">
+      <button mat-button (click)="onView()">
+        <mat-icon>visibility</mat-icon>
+        Voir détails
+      </button>
+      <button mat-button (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+        Modifier
+      </button>
+      <button mat-button class="delete-button" (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+        Supprimer
+      </button>
+    </mat-card-actions>
+  </mat-card>
+} @else {
+  <mat-card class="prestation-card">
+    <mat-card-content>
+      <p>Données de prestation non disponibles</p>
+    </mat-card-content>
+  </mat-card>
+}

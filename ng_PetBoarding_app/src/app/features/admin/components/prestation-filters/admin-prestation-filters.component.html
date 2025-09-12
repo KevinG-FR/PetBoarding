@@ -1,0 +1,62 @@
+<mat-card class="filters-card">
+  <mat-card-header>
+    <mat-card-title class="filters-title">
+      <mat-icon>filter_list</mat-icon>
+      Filtres
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="filtersForm" class="filters-form">
+      <div class="filters-row">
+        <mat-form-field class="filter-field">
+          <mat-label>Rechercher</mat-label>
+          <input 
+            matInput 
+            placeholder="Nom de la prestation..."
+            formControlName="searchText">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field">
+          <mat-label>Type d'animal</mat-label>
+          <mat-select formControlName="categorieAnimal">
+            <mat-option [value]="null">Tous les animaux</mat-option>
+            @for (petType of petTypes; track petType.value) {
+              <mat-option [value]="petType.value">
+                {{ petType.label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="filter-field">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="estDisponible">
+            <mat-option [value]="null">Tous les statuts</mat-option>
+            <mat-option [value]="true">Actif</mat-option>
+            <mat-option [value]="false">Inactif</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filters-actions">
+        <button 
+          mat-button 
+          type="button" 
+          (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Effacer
+        </button>
+        <span class="spacer"></span>
+        <div class="results-count">
+          @if (hasActiveFilters()) {
+            <span class="active-filters-indicator">
+              Filtres actifs
+            </span>
+          }
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

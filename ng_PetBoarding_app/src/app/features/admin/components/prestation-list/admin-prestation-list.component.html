@@ -1,0 +1,49 @@
+<div class="admin-prestations-container">
+  <div class="header">
+    <h2>Gestion des Prestations</h2>
+    <button mat-raised-button color="primary" (click)="onAddPrestation()">
+      <mat-icon>add</mat-icon>
+      Ajouter une prestation
+    </button>
+  </div>
+
+  <app-admin-prestation-filters
+    [filters]="filters()"
+    (filtersChange)="onFiltersChange($event)">
+  </app-admin-prestation-filters>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Chargement des prestations...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-button (click)="loadPrestations()">Réessayer</button>
+    </div>
+  } @else {
+    <div class="prestations-grid">
+      @if (filteredPrestations().length === 0) {
+        <div class="no-results">
+          <mat-icon>info</mat-icon>
+          <p>Aucune prestation trouvée avec les critères sélectionnés.</p>
+        </div>
+      } @else {
+        @for (prestation of filteredPrestations(); track prestation.id) {
+          <app-admin-prestation-item
+            [prestation]="prestation"
+            (view)="onViewPrestation($event)"
+            (edit)="onEditPrestation($event)"
+            (delete)="onDeletePrestation($event)">
+          </app-admin-prestation-item>
+        }
+      }
+    </div>
+
+    <div class="summary">
+      <p>{{ filteredPrestations().length }} prestation(s) affichée(s) sur {{ prestations().length }} au total</p>
+    </div>
+  }
+</div>

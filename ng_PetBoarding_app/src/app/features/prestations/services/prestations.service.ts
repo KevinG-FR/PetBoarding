@@ -18,12 +18,12 @@ export interface CategoryInfo {
 
 // Mapping des types d'animaux entre backend (TypeAnimal enum) et frontend (PetType enum)
 const FrontendPetTypeMap = {
-  1: PetType.DOG,    // TypeAnimal.Chien = 1
-  2: PetType.CAT,    // TypeAnimal.Chat = 2
-  3: PetType.BIRD,   // TypeAnimal.Oiseau = 3
+  1: PetType.DOG, // TypeAnimal.Chien = 1
+  2: PetType.CAT, // TypeAnimal.Chat = 2
+  3: PetType.BIRD, // TypeAnimal.Oiseau = 3
   4: PetType.RABBIT, // TypeAnimal.Lapin = 4
-  5: PetType.HAMSTER,// TypeAnimal.Hamster = 5
-  99: PetType.DOG    // TypeAnimal.Autre = 99 -> par défaut Chien
+  5: PetType.HAMSTER, // TypeAnimal.Hamster = 5
+  99: PetType.DOG // TypeAnimal.Autre = 99 -> par défaut Chien
 } as const;
 
 import { switchMap } from 'rxjs';
@@ -40,7 +40,11 @@ export class PrestationsService {
   private isLoading = signal<boolean>(false);
   private error = signal<string | null>(null);
 
-  private mapBackendPetType(backendType: any): PetType {
+  /**
+   * Convertit un type d'animal backend (entier) en PetType frontend (enum string)
+   * Méthode publique pour être utilisée dans tous les composants
+   */
+  mapBackendPetType(backendType: any): PetType {
     const mapped =
       FrontendPetTypeMap[backendType as keyof typeof FrontendPetTypeMap] || backendType;
     return mapped;
